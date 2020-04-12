@@ -12,8 +12,6 @@ jobs:
       language: shell       # 'language: python' is an error on Travis CI macOS
 
 
-sudo: false
-
 git:
   depth: false
 
@@ -24,10 +22,11 @@ branches:
 cache: pip
 
 install:
+  - cd ..
   - git clone https://github.com/tonigi/apbs-pdb2pqr --depth=1 -b htmd-fixups
   - cd apbs-pdb2pqr
   - pip3 install .
-  - cd ..
+  - cd ../pdb_manip_py/
   - pip install -r requirements.txt
 
 script:
