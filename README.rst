@@ -1,0 +1,68 @@
+
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1455734.svg
+   :target: https://doi.org/10.5281/zenodo.1455734
+
+
+
+Pdb_Manip_py
+=======================================
+
+
+Pdb_Manip_py is a python library allowing simple operations on pdb coor files.
+
+* Online Documentation:
+   https://pdb-manip-py.readthedocs.io
+
+* Source code repository:
+   https://github.com/samuelmurail/pdb_manip_py
+
+Main features:
+---------------------------------------
+
+* Basic pdb operations
+   - pdb wrapper
+   - selection tools
+   - rotation
+   - translation
+   - alignement
+   - RMSD calculation
+   - insertion of molecules in solvant
+   - ...
+
+
+Installation
+---------------------------------------
+
+Using Pypi
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   pip3 install os_command_py
+
+
+From source code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Get the os_command_py library from `github`_.
+
+.. code-block:: bash
+
+   git clone https://github.com/samuelmurail/os_command_py.git
+   ./setup.py install --user
+
+.. _github: https://github.com/samuelmurail/os_command_py
+
+
+Author
+---------------------------------------
+
+* `Samuel Murail <https://samuelmurail.github.io/PersonalPage/>`_, Associate Professor - `Université Paris Diderot <https://www.univ-paris-diderot.fr>`_, `CMPLI <http://bfa.univ-paris-diderot.fr/equipe-8/>`_.
+
+See also the list of `contributors <https://github.com/samuelmurail/os_command_py/contributors>`_ who participated in this project.
+
+License
+---------------------------------------
+
+This project is licensed under the GNU General Public License v2.0 - see the ``LICENSE`` file for details.
