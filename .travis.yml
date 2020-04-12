@@ -34,7 +34,7 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   # Test os_command_py
   # Need to add --ignore to avoid weird error, see: https://github.com/pytest-dev/pytest/issues/4782
-  - pytest --ignore ci-helpers --cov-report=xml --cov=os_command_py
+  - pytest --ignore ci-helpers --cov-report=xml --cov=pdb_manip_py
   # Build Doc:
   - cd pdb_manip_py/doc
   - sphinx-build -b html . _build
