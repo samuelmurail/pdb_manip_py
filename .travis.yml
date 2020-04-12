@@ -24,7 +24,11 @@ branches:
 cache: pip
 
 install:
-  - pip3 install -r requirements.txt
+  - git clone https://github.com/tonigi/apbs-pdb2pqr --depth=1 -b htmd-fixups
+  - cd apbs-pdb2pqr
+  - pip3 install .
+  - cd ..
+  - pip3 install .
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
