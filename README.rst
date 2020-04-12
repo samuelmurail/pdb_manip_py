@@ -1,9 +1,11 @@
 
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1455734.svg
-   :target: https://doi.org/10.5281/zenodo.1455734
+.. image:: https://readthedocs.org/projects/pdb-manip-py/badge/?version=latest
+    :target: https://pdb-manip-py.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
-
+.. image:: https://travis-ci.org/samuelmurail/pdb_manip_py.svg?branch=master
+    :target: https://travis-ci.org/samuelmurail/pdb_manip_py
 
 Pdb_Manip_py
 =======================================

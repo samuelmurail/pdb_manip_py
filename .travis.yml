@@ -1,0 +1,41 @@
+language: python
+
+jobs:
+  include:
+    - name: "Python 3.5 on Xenial Linux"
+      python: 3.5          # this works for Linux but is ignored on macOS or Windows
+    - name: "Python 3.7 on Xenial Linux"
+      python: 3.7           # this works for Linux but is ignored on macOS or Windows
+    - name: "Python 3.7 on macOS"
+      os: osx
+      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      language: shell       # 'language: python' is an error on Travis CI macOS
+
+
+sudo: false
+
+git:
+  depth: false
+
+branches:
+  only:
+    - master
+
+cache: pip
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - cd ${TRAVIS_BUILD_DIR}
+  # Test os_command_py
+  # Need to add --ignore to avoid weird error, see: https://github.com/pytest-dev/pytest/issues/4782
+  - pytest --ignore ci-helpers --cov-report=xml --cov=os_command_py
+  # Build Doc:
+  - cd pdb_manip_py/doc
+  - sphinx-build -b html . _build
+
+after_success:
+  # Launch pytest for codecov
+  - cd ${TRAVIS_BUILD_DIR}
+  - codecov
