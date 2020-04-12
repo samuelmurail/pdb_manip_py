@@ -28,7 +28,7 @@ install:
   - cd apbs-pdb2pqr
   - pip3 install .
   - cd ..
-  - pip3 install .
+  - pip install -r requirements.txt
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
