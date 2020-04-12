@@ -39,7 +39,7 @@ Using Pypi
 
 .. code-block:: bash
 
-   pip3 install os_command_py
+   pip3 install pdb_manip_py
 
 
 From source code
@@ -49,10 +49,10 @@ Get the os_command_py library from `github`_.
 
 .. code-block:: bash
 
-   git clone https://github.com/samuelmurail/os_command_py.git
+   git clone https://github.com/samuelmurail/pdb_manip_py.git
    ./setup.py install --user
 
-.. _github: https://github.com/samuelmurail/os_command_py
+.. _github: https://github.com/samuelmurail/pdb_manip_py
 
 
 Author
