@@ -7,6 +7,12 @@
 .. image:: https://travis-ci.org/samuelmurail/pdb_manip_py.svg?branch=master
     :target: https://travis-ci.org/samuelmurail/pdb_manip_py
 
+.. image:: https://codecov.io/gh/samuelmurail/pdb_manip_py/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/samuelmurail/pdb_manip_py
+
+.. image:: https://badge.fury.io/py/pdb-manip-py.svg
+    :target: https://badge.fury.io/py/pdb-manip-py
+
 Pdb_Manip_py
 =======================================
 
