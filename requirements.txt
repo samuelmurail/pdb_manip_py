@@ -7,4 +7,3 @@ pytest-cov
 numpy
 scipy
 os_command_py
-htmd-pdb2pqr
