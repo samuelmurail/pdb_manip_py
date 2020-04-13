@@ -7,3 +7,4 @@ pytest-cov
 numpy
 scipy
 os_command_py
+pdb2pqr_htmd_propka30

@@ -39,7 +39,7 @@ setup(
     install_requires=[
         "numpy",
         "scipy",
-        "htmd-pdb2pqr",
+        "pdb2pqr_htmd_propka30",
         "os_command_py",
         "sphinx_rtd_theme",
         "sphinx-argparse",
