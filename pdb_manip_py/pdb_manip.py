@@ -15,6 +15,7 @@ import numpy as np
 from numpy.linalg import norm
 from numpy import sin, cos
 from scipy.spatial import distance_matrix
+from scipy.spatial.transform import Rotation
 
 from os_command_py import os_command
 
@@ -2319,53 +2320,210 @@ AFPLVFLIFNIFYWITYKLVPR'
 
         return
 
-    def moment_Inertia(self):
+    def moment_inertia(self):
+        """ Tensor moment of inertia relative to center of mass.
 
-        Inertia = numpy.zeros((3, 3), numpy.float64)
-        centerOfMass = self.center_of_mass()
+        Taken from:
+        https://github.com/MDAnalysis/mdanalysis/blob/develop/package/MDAnalysis/core/topologyattrs.py
 
-        for atom, coord0 in enumerate(self.coordinates):
-            mass = self.mass[atom] / constants.Na
-            coord = coord0 - centerOfMass
-            Inertia[0, 0] += mass * (coord[1] * coord[1] + coord[2] * coord[2])
-            Inertia[1, 1] += mass * (coord[0] * coord[0] + coord[2] * coord[2])
-            Inertia[2, 2] += mass * (coord[0] * coord[0] + coord[1] * coord[1])
-            Inertia[0, 1] -= mass * coord[0] * coord[1]
-            Inertia[0, 2] -= mass * coord[0] * coord[2]
-            Inertia[1, 2] -= mass * coord[1] * coord[2]
-        Inertia[1, 0] = Inertia[0, 1]
-        Inertia[2, 0] = Inertia[0, 2]
-        Inertia[2, 1] = Inertia[1, 2]
+        :return: tensor matrix 3*3
+        :rtype: np.array
 
-    def compute_principal_axis(self):
-        """ Compute coordinates of a system after a rotation on x, y and z axis.
-
-        :param tau_x: angle of rotation (degrees) on the x axis
-        :type tau_x: float
-
-
+        :Example:
 
         >>> prot_coor = Coor()
         >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
-        >>> com_1y0m = prot_coor.center_of_mass()
-        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
-        x:16.01 y:0.45 z:8.57
-        >>> prot_coor.rotation_angle(90, 90, 90)
-        >>> com_1y0m = prot_coor.center_of_mass()
-        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m)) #doctest: +ELLIPSIS
-        x:9.98 y:-4.03 z:-14.63
-
+        >>> tensor = prot_coor.moment_inertia()
+        >>> print(tensor)
+        [[343695.37614973  31289.34303697  40416.71166176]
+         [ 31289.34303697 478561.60329129  -9443.32698326]
+         [ 40416.71166176  -9443.32698326 413840.08602987]]
         """
 
         coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
 
+        # Convert to local coordinates
+        com = self.center_of_mass()
 
+        coor_array -= com
+
+        masses = self.get_mass_array()
+
+        # Create the inertia tensor
+        # m_i = mass of atom i
+        # (x_i, y_i, z_i) = pos of atom i
+        # Ixx = sum(m_i*(y_i^2+z_i^2));
+        # Iyy = sum(m_i*(x_i^2+z_i^2));
+        # Izz = sum(m_i*(x_i^2+y_i^2))
+        # Ixy = Iyx = -1*sum(m_i*x_i*y_i)
+        # Ixz = Izx = -1*sum(m_i*x_i*z_i)
+        # Iyz = Izy = -1*sum(m_i*y_i*z_i)
+        tens = np.zeros((3, 3), dtype=np.float64)
+        # xx
+        tens[0][0] = (masses * (coor_array[:, 1] ** 2 + coor_array[:, 2] ** 2)).sum()
+        # xy & yx
+        tens[0][1] = tens[1][0] = - (masses * coor_array[:, 0] * coor_array[:, 1]).sum()
+        # xz & zx
+        tens[0][2] = tens[2][0] = - (masses * coor_array[:, 0] * coor_array[:, 2]).sum()
+        # yy
+        tens[1][1] = (masses * (coor_array[:, 0] ** 2 + coor_array[:, 2] ** 2)).sum()
+        # yz + zy
+        tens[1][2] = tens[2][1] = - (masses * coor_array[:, 1] * coor_array[:, 2]).sum()
+        # zz
+        tens[2][2] = (masses * (coor_array[:, 0] ** 2 + coor_array[:, 1] ** 2)).sum()
+
+        return tens
+
+    def principal_axis(self):
+        """ Calculate the principal axes from the moment of inertia.
+
+        Taken from:
+        https://github.com/MDAnalysis/mdanalysis/blob/develop/package/MDAnalysis/core/topologyattrs.py
+
+        :return: 3 principal axis
+        :rtype: list of np.array
+
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        >>> princ_axis = prot_coor.principal_axis()
+        >>> print(princ_axis)
+        [[-0.21318784 -0.97697417  0.00850932]
+         [ 0.39228202 -0.07761763  0.91656441]
+         [-0.89479929  0.19873844  0.39979654]]
+        """
+
+
+        e_val, e_vec = np.linalg.eig(self.moment_inertia())
+
+        # Sort
+        indices = np.argsort(e_val)[::-1]
+        # Return transposed in more logical form. See Issue 33.
+        return e_vec[:, indices].T
+
+    def align_principal_axis(self, axis=2, vector=[0, 0, 1], selec_dict={'name': ['CA']}):
+        """Align principal axis with index `axis` with `vector`.
+
+        Taken from:
+        https://github.com/MDAnalysis/mdanalysis/blob/develop/package/MDAnalysis/core/topologyattrs.py
+
+
+        :param axis: principal axis to align (0, 1, or 2)
+        :type axis: int (Default 2)
+
+        :param vector: vector to align
+        :type vector: list (Default z axis)
+
+        :param selec_dict: selection dictionnary
+        :type selec_dict: dict, default={'name': ['CA']}
+
+
+        Parameters
+        ----------
+        axis : {0, 1, 2}
+            Index of the principal axis (0, 1, or 2), as produced by
+            :meth:`~principal_axes`.
+        vector : array_like
+            Vector to align principal axis with.
+
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        >>> prot_coor.align_principal_axis()
+        Do a rotation of 59.43°
+        >>> prot_coor.align_principal_axis()
+        Do a rotation of 0.00°
+        """
+
+        sele_dict = self.select_part_dict(selec_dict)
+
+        p = sele_dict.principal_axis()[axis]
+        # print(p, vector)
+        angle = np.degrees(Coor.angle_vec(p, vector))
+        print('Do a rotation of {:.2f}°'.format(angle))
+
+        r, rmsd = Rotation.align_vectors(p.reshape((1, 3)), np.array(vector).reshape((1, 3)))
+        # print(r.as_matrix())
+
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array -= self.center_of_mass()
+        coor_array = np.dot(coor_array, r.as_matrix())
 
         for i, atom_num in enumerate(sorted(self.atom_dict)):
             self.atom_dict[atom_num]['xyz'] = coor_array[i]
 
         return
+
+    @staticmethod
+    def angle_vec(vec_a, vec_b):
+        """ Compute angle between two vectors.
+
+        :param vec_a: vector
+        :type vec_a: list
+
+        :param vec_b: vector
+        :type vec_b: list
+
+        :return: angle in radian
+        :rtype: float
+
+        :Example:
+
+        >>> angle = Coor.angle_vec([1, 0, 0], [0, 1, 0])
+        >>> print('angle = {:.2f}'.format(np.degrees(angle)))
+        angle = 90.00
+        >>> angle = Coor.angle_vec([1, 0, 0], [1, 0, 0])
+        >>> print('angle = {:.2f}'.format(np.degrees(angle)))
+        angle = 0.00
+        >>> angle = Coor.angle_vec([1, 0, 0], [1, 1, 0])
+        >>> print('angle = {:.2f}'.format(np.degrees(angle)))
+        angle = 45.00
+        >>> angle = Coor.angle_vec([1, 0, 0], [-1, 0, 0])
+        >>> print('angle = {:.2f}'.format(np.degrees(angle)))
+        angle = 180.00
+
+        """
+
+        unit_vec_a = vec_a / np.linalg.norm(vec_a)
+        unit_vec_b = vec_b / np.linalg.norm(vec_b)
+
+        dot_product = np.dot(unit_vec_a, unit_vec_b)
+
+        angle = np.arccos(dot_product)
+
+        return(angle)
+
+    @staticmethod
+    def rotaxis(a, b):
+        """Return the rotation axis to rotate vector a into b.
+
+        Parameters
+        ----------
+        a, b : array_like
+            two vectors
+
+        Returns
+        -------
+        c : np.ndarray
+            vector to rotate a into b
+
+
+        Note
+        ----
+        If a == b this will always return [1, 0, 0]
+
+        """
+        if np.allclose(a, b):
+            return np.array([1, 0, 0])
+        c = np.cross(a, b)
+        return c / np.linalg.norm(c)
 
     def dist_under_index(self, atom_sel_2, cutoff=10.0):
         """ Check is distance between atoms of self.coor is under cutoff with
@@ -2380,6 +2538,10 @@ AFPLVFLIFNIFYWITYKLVPR'
 
         :param cutoff: distance cutoff
         :type cutoff: float, default=10.0
+
+        :return: array of index
+        :rtype: np.array
+
         """
 
         coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
