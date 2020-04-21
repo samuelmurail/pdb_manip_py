@@ -2500,30 +2500,6 @@ AFPLVFLIFNIFYWITYKLVPR'
 
         return(angle)
 
-    @staticmethod
-    def rotaxis(a, b):
-        """Return the rotation axis to rotate vector a into b.
-
-        Parameters
-        ----------
-        a, b : array_like
-            two vectors
-
-        Returns
-        -------
-        c : np.ndarray
-            vector to rotate a into b
-
-
-        Note
-        ----
-        If a == b this will always return [1, 0, 0]
-
-        """
-        if np.allclose(a, b):
-            return np.array([1, 0, 0])
-        c = np.cross(a, b)
-        return c / np.linalg.norm(c)
 
     def dist_under_index(self, atom_sel_2, cutoff=10.0):
         """ Check is distance between atoms of self.coor is under cutoff with
