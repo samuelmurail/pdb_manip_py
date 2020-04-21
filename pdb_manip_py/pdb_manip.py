@@ -44,6 +44,15 @@ TEST_PATH = os.path.abspath(os.path.join(PDB_LIB_DIR, "test/input/"))
 
 
 # Global variables:
+
+ATOM_MASS_DIST = {'H': 1,
+                  'C': 6,
+                  'N': 7,
+                  'O': 8,
+                  'P': 15,
+                  'S': 16}
+
+
 AA_DICT = {'GLY': 'G',
            'HIS': 'H',
            'HSE': 'H',
@@ -1655,6 +1664,36 @@ class Coor:
 
         return
 
+    def get_mass_array(self):
+        """ Extract mass of each `atom_dict` and return it as an numpy array
+        Avoid using atoms with 2 letters atom name like NA Cl ...
+        :return: mass array
+        :rtype: np.array
+
+
+        :Example:
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        >>> mass_1y0m = prot_coor.get_mass_array()
+        >>> print("Mass of 10 first atoms: {}".format(mass_1y0m[:10]))
+        Mass of 10 first atoms: [7 6 6 8 6 8 6 7 6 6]
+        >>> prot_coor_ca = prot_coor.select_part_dict({'name':['CA']})
+        >>> mass_1y0m_ca = prot_coor_ca.get_mass_array()
+        >>> print("Mass of 10 first atoms: {}".format(mass_1y0m_ca[:10]))
+        Mass of 10 first atoms: [6 6 6 6 6 6 6 6 6 6]
+        """
+
+        name_array = np.array([atom['name'] for key, atom in sorted(self.atom_dict.items())])
+        mass_list = []
+        for name in name_array:
+            if name[0] in ATOM_MASS_DIST:
+                mass_list.append(ATOM_MASS_DIST[name[0]])
+        mass_array = np.array(mass_list)
+
+        return mass_array
+
+
     def center_of_mass(self, selec_dict={}):
         """ Compute the center of mass of a selection
         Avoid using atoms with 2 letters atom name like NA Cl ...
@@ -1671,6 +1710,9 @@ class Coor:
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
+        >>> com_1y0m_ca = prot_coor.center_of_mass({'name':['CA']})
+        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m_ca))
+        x:15.95 y:0.72 z:8.96
 
         .. warning::
             Atom name must start with its type letter (H, C, N, O, P, S).
@@ -1679,27 +1721,11 @@ class Coor:
         com_array = np.zeros(3)
         mass_tot = 0
 
-        atom_mass_dict = {'H': 1, 'C': 6, 'N': 7, 'O': 8, 'P': 15, 'S': 16}
+        local_select = self.select_part_dict(selec_dict=selec_dict)
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(local_select.atom_dict.items())])
+        mass_array = local_select.get_mass_array()
 
-        for atom_num, atom in self.atom_dict.items():
-            selected = True
-            # print("atom_num:",atom_num,"atom:",atom)
-            for selection in selec_dict.keys():
-                # print("select",selection, selec_dict[selection],".")
-                # print("selection=",selection)
-                # print("atom:",atom)
-                # print("atom",atom[selection],".")
-                if atom[selection] not in selec_dict[selection]:
-                    selected = False
-                    break
-            if selected:
-                # print(atom)
-                if atom['name'][0] in atom_mass_dict:
-                    mass = atom_mass_dict[atom['name'][0]]
-                    com_array += atom['xyz'] * mass
-                    mass_tot += mass
-
-        return com_array / mass_tot
+        return (coor_array.T * mass_array).sum(axis=1) / sum(mass_array)
 
     def centroid(self, selec_dict={}):
         """ Compute the centroid of a selection
@@ -1716,28 +1742,16 @@ class Coor:
         >>> com_1y0m = prot_coor.centroid()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.03 y:0.44 z:8.57
+        >>> com_1y0m_ca = prot_coor.centroid(selec_dict={'name':['CA']})
+        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m_ca))
+        x:15.95 y:0.72 z:8.96
+
 
         """
 
-        com_array = np.zeros(3)
-        num_tot = 0
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.select_part_dict(selec_dict=selec_dict).atom_dict.items())])
 
-        for atom_num, atom in self.atom_dict.items():
-            selected = True
-            # print("atom_num:",atom_num,"atom:",atom)
-            for selection in selec_dict.keys():
-                # print("select",selection, selec_dict[selection],".")
-                # print("selection=",selection)
-                # print("atom:",atom)
-                # print("atom",atom[selection],".")
-                if atom[selection] not in selec_dict[selection]:
-                    selected = False
-                    break
-            if selected:
-                com_array += atom['xyz']
-                num_tot += 1
-
-        return com_array / num_tot
+        return coor_array.mean(axis=0)
 
     def get_box_dim(self, selec_dict={}):
         """ Compute the x, y, z dimension of a selection
@@ -2299,6 +2313,54 @@ AFPLVFLIFNIFYWITYKLVPR'
         rotation_matrix = np.dot(np.dot(x_rot_mat, y_rot_mat), z_rot_mat)
 
         coor_array = np.dot(coor_array, rotation_matrix)
+
+        for i, atom_num in enumerate(sorted(self.atom_dict)):
+            self.atom_dict[atom_num]['xyz'] = coor_array[i]
+
+        return
+
+    def moment_Inertia(self):
+
+        Inertia = numpy.zeros((3, 3), numpy.float64)
+        centerOfMass = self.center_of_mass()
+
+        for atom, coord0 in enumerate(self.coordinates):
+            mass = self.mass[atom] / constants.Na
+            coord = coord0 - centerOfMass
+            Inertia[0, 0] += mass * (coord[1] * coord[1] + coord[2] * coord[2])
+            Inertia[1, 1] += mass * (coord[0] * coord[0] + coord[2] * coord[2])
+            Inertia[2, 2] += mass * (coord[0] * coord[0] + coord[1] * coord[1])
+            Inertia[0, 1] -= mass * coord[0] * coord[1]
+            Inertia[0, 2] -= mass * coord[0] * coord[2]
+            Inertia[1, 2] -= mass * coord[1] * coord[2]
+        Inertia[1, 0] = Inertia[0, 1]
+        Inertia[2, 0] = Inertia[0, 2]
+        Inertia[2, 1] = Inertia[1, 2]
+
+    def compute_principal_axis(self):
+        """ Compute coordinates of a system after a rotation on x, y and z axis.
+
+        :param tau_x: angle of rotation (degrees) on the x axis
+        :type tau_x: float
+
+
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        >>> com_1y0m = prot_coor.center_of_mass()
+        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
+        x:16.01 y:0.45 z:8.57
+        >>> prot_coor.rotation_angle(90, 90, 90)
+        >>> com_1y0m = prot_coor.center_of_mass()
+        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m)) #doctest: +ELLIPSIS
+        x:9.98 y:-4.03 z:-14.63
+
+        """
+
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+
+
 
         for i, atom_num in enumerate(sorted(self.atom_dict)):
             self.atom_dict[atom_num]['xyz'] = coor_array[i]
