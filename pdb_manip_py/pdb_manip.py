@@ -1783,6 +1783,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         for name in name_array:
             if name[0] in ATOM_MASS_DIST:
                 mass_list.append(ATOM_MASS_DIST[name[0]])
+            else:
+                print('Warning atom {} mass could not be founded'.format(name))
+                mass_list.append(0)
         mass_array = np.array(mass_list)
 
         return mass_array
