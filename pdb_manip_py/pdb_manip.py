@@ -1694,7 +1694,6 @@ class Coor:
 
         return mass_array
 
-
     def center_of_mass(self, selec_dict={}):
         """ Compute the center of mass of a selection
         Avoid using atoms with 2 letters atom name like NA Cl ...
@@ -2397,7 +2396,6 @@ AFPLVFLIFNIFYWITYKLVPR'
          [-0.89479929  0.19873844  0.39979654]]
         """
 
-
         e_val, e_vec = np.linalg.eig(self.moment_inertia())
 
         # Sort
@@ -2499,7 +2497,6 @@ AFPLVFLIFNIFYWITYKLVPR'
         angle = np.arccos(dot_product)
 
         return(angle)
-
 
     def dist_under_index(self, atom_sel_2, cutoff=10.0):
         """ Check is distance between atoms of self.coor is under cutoff with

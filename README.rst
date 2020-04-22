@@ -10,8 +10,9 @@
 .. image:: https://codecov.io/gh/samuelmurail/pdb_manip_py/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/samuelmurail/pdb_manip_py
 
-.. image:: https://badge.fury.io/py/pdb-manip-py.svg
-    :target: https://badge.fury.io/py/pdb-manip-py
+
+.. image:: https://img.shields.io/pypi/v/pdb_manip_py.svg
+        :target: https://pypi.python.org/pypi/pdb_manip_py
 
 Pdb_Manip_py
 =======================================
