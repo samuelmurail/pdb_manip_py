@@ -2,7 +2,7 @@
 # coding: utf-8
 
 #####################################
-#########     PDB2PQR      ##########
+# #######     PDB2PQR      ##########
 #####################################
 
 
@@ -38,7 +38,7 @@ if on_rtd:
 else:
     # Add 'pdb2pqr_cli' in case it is installed with conda
     PDB2PQR_BIN = os_command.which('pdb2pqr.py', 'pdb2pqr_cli')
-    #PDB2PQR_BIN = os_command.which('pdb2pqr_cli')
+    # PDB2PQR_BIN = os_command.which('pdb2pqr_cli')
 
 # Test folder path
 PQR_LIB_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -58,8 +58,8 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
     :param ff: forcefield nomenclature for atom names
     :type ff: str, optional, default="CHARMM"
 
-    :param check_file_out: flag to check or not if file has already been created.
-        If the file is present then the command break.
+    :param check_file_out: flag to check or not if file has already
+    been created. If the file is present then the command break.
     :type check_file_out: bool, optional, default=True
 
 
@@ -67,26 +67,33 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
 
     >>> TEST_OUT = str(getfixture('tmpdir'))
     >>> # Compute protonation with pdb2pqr:
-    >>> compute_pdb2pqr(os.path.join(TEST_PATH,'4n1m.pdb'), os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
+    >>> compute_pdb2pqr(os.path.join(TEST_PATH,'4n1m.pdb'),
+    ... os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
     Succeed to read file ...test/input/4n1m.pdb ,  2530 atoms found
     Succeed to save file .../tmp_pdb2pqr.pdb
-    pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka .../tmp_pdb2pqr.pdb .../4n1m.pqr
+    pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
+.../tmp_pdb2pqr.pdb .../4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
-    >>> prot_coor.read_pdb(TEST_OUT+'/4n1m.pqr', pqr_format = True) #doctest: +ELLIPSIS
+    >>> prot_coor.read_pdb(TEST_OUT+'/4n1m.pqr', pqr_format = True)\
+    #doctest: +ELLIPSIS
     Succeed to read file .../4n1m.pqr ,  2549 atoms found
-    >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'], 'name':['CA']})
+    >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],
+    ... 'name':['CA']})
     >>> print(len(HSD_index))
     4
-    >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'], 'name':['CA']})
+    >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'],
+    ... 'name':['CA']})
     >>> print(len(HSE_index))
     0
-    >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'], 'name':['CA']})
+    >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'],
+    ... 'name':['CA']})
     >>> print(len(HSP_index))
     1
 
     .. note::
-        Idealy I would need a pdb file with 3 different histidine protonation. I couldn't find one.
+        Idealy I would need a pdb file with 3 different histidine protonation.
+        I couldn't find one.
 
     """
 
@@ -111,12 +118,14 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
     no_hetatm_pdb = tmp_coor.select_part_dict({'field': 'ATOM'})
     no_hetatm_pdb.write_pdb(os.path.join(out_folder + "/tmp_pdb2pqr.pdb"))
 
-    cmd_pdb2pqr = os_command.Command([PDB2PQR_BIN,
-                                      "--ff", ff,
-                                      "--ffout", ff,
-                                      "--chain",
-                                      "--ph-calc-method=propka",
-                                      os.path.join(out_folder + "/tmp_pdb2pqr.pdb"), pdb_out])
+    cmd_pdb2pqr = os_command.Command(
+        [PDB2PQR_BIN,
+         "--ff", ff,
+         "--ffout", ff,
+         "--chain",
+         "--ph-calc-method=propka",
+         os.path.join(out_folder + "/tmp_pdb2pqr.pdb"),
+         pdb_out])
 
     cmd_pdb2pqr.display()
     out_data = cmd_pdb2pqr.run()
