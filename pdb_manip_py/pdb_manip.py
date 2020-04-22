@@ -8,7 +8,6 @@
 """
 
 import os
-import sys
 import time
 
 import numpy as np
@@ -20,12 +19,12 @@ from scipy.spatial.transform import Rotation
 from os_command_py import os_command
 
 
-# In case pdb2pqr is launched as main, relative import will failed
-try:
-    from . import pdb_manip
-except ImportError:
-    print("Relative import from . fails, use absolute import instead")
-    import pdb_manip
+# # In case pdb2pqr is launched as main, relative import will failed
+# try:
+#     from . import pdb_manip
+# except ImportError:
+#     print("Relative import from . fails, use absolute import instead")
+#     import pdb_manip
 
 
 # Autorship information
@@ -121,10 +120,13 @@ AA_ATOM_DICT = {'X': ['CH3', 'O', 'C'],  # X:ACE
                 'E': BACK_ATOM + ['CB', 'CG', 'CD', 'OE1', 'OE2'],
                 'K': BACK_ATOM + ['CB', 'CG', 'CD', 'CE', 'NZ'],
                 'R': BACK_ATOM + ['CB', 'CG', 'CD', 'NE', 'CZ', 'NH1', 'NH2'],
-                'F': BACK_ATOM + ['CB', 'CG', 'CD1', 'CE1', 'CZ', 'CD2', 'CE2'],
-                'Y': BACK_ATOM + ['CB', 'CG', 'CD1', 'CE1', 'CZ', 'CD2', 'CE2', 'OH'],
+                'F': BACK_ATOM + ['CB', 'CG', 'CD1', 'CE1', 'CZ', 'CD2',
+                                  'CE2'],
+                'Y': BACK_ATOM + ['CB', 'CG', 'CD1', 'CE1', 'CZ', 'CD2',
+                                  'CE2', 'OH'],
                 'H': BACK_ATOM + ['CB', 'CG', 'ND1', 'CE1', 'CD2', 'NE2'],
-                'W': BACK_ATOM + ['CB', 'CG', 'CD1', 'NE1', 'CD2', 'CE2', 'CE3', 'CZ3', 'CH2', 'CZ2'],
+                'W': BACK_ATOM + ['CB', 'CG', 'CD1', 'NE1', 'CD2', 'CE2',
+                                  'CE3', 'CZ3', 'CH2', 'CZ2'],
                 'P': BACK_ATOM + ['CB', 'CG', 'CD']}
 
 # Bond definition:
@@ -132,7 +134,8 @@ AA_ATOM_DICT = {'X': ['CH3', 'O', 'C'],  # X:ACE
 BACK_BOND = [['-C', 'N'], ['N', 'CA'], ['CA', 'C'], ['C', 'O']]
 # X is for ACE special case
 AA_BOND_DICT = {}
-AA_BOND_DICT['X'] = [['CH3', 'O'], ['O', 'C']]  # Need to use a trick with unphysical bond
+# Need to use a trick with unphysical bond
+AA_BOND_DICT['X'] = [['CH3', 'O'], ['O', 'C']]
 AA_BOND_DICT['G'] = BACK_BOND
 AA_BOND_DICT['A'] = BACK_BOND + [['CA', 'CB']]
 AA_BOND_DICT['S'] = BACK_BOND + [['CA', 'CB'], ['CB', 'OG']]
@@ -643,8 +646,8 @@ class Coor:
         ``atom_num`` field of the dictionnary.
 
     .. note::
-        Files necessary for testing : ../test/input/1y0m.pdb, ../test/input/1rxz.pdb
-        and ../test/input/4n1m.pdb.
+        Files necessary for testing : ../test/input/1y0m.pdb,
+        ../test/input/1rxz.pdb and ../test/input/4n1m.pdb.
         To do the unitary test, execute pdb_mani.py (-v for verbose mode)
 
     .. todo::
@@ -657,8 +660,9 @@ class Coor:
         self.crystal_pack = None
 
     def read_pdb(self, pdb_in, pqr_format=False):
-        """Read a pdb file and return atom informations as a dictionnary indexed on the atom num.
-        The fonction can also read pqr files if specified with ``pqr_format = True``,
+        """Read a pdb file and return atom informations as a dictionnary
+        indexed on the atom num. The fonction can also read pqr files if
+        specified with ``pqr_format = True``,
         it will only change the column format of beta and occ factors.
 
         :param pdb_in: path of the pdb file to read
@@ -670,7 +674,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
 
         """
@@ -693,7 +698,9 @@ class Coor:
                     chain = line[21]
                     res_num = int(line[22:26])
                     insert_res = line[26:27]
-                    xyz = np.array([float(line[30:38]), float(line[38:46]), float(line[46:54])])
+                    xyz = np.array([float(line[30:38]),
+                                    float(line[38:46]),
+                                    float(line[46:54])])
                     if pqr_format:
                         alter_loc = ""
                         res_name = line[16:20].strip()
@@ -732,7 +739,8 @@ class Coor:
 
                     self.atom_dict[atom_index] = atom
                     atom_index += 1
-        print("Succeed to read file", os.path.relpath(pdb_in), ", ", atom_index, "atoms found")
+        print("Succeed to read file",
+              os.path.relpath(pdb_in), ", ", atom_index, "atoms found")
 
     def write_pdb(self, pdb_out, check_file_out=True):
         """Write a pdb file.
@@ -744,9 +752,11 @@ class Coor:
 
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
-        >>> prot_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to save file .../tmp.pdb
 
         """
@@ -761,26 +771,29 @@ class Coor:
         for atom_num, atom in sorted(self.atom_dict.items()):
             # print(pdb_dict[atom_num]["name"])
 
-            # Atom name should start a column 14, with the type of atom ex: with atom type 'C': ' CH3'
-            # for 2 letters atom type, it should start at coulumn 13 ex: with atom type 'FE': 'FE1'
+            # Atom name should start a column 14, with the type of atom ex:
+            #   - with atom type 'C': ' CH3'
+            # for 2 letters atom type, it should start at coulumn 13 ex:
+            #   - with atom type 'FE': 'FE1'
             name = atom["name"]
             if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
                 name = " " + name
 
-            filout.write("{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
-                atom["field"],
-                atom["num"],
-                name,
-                atom["alter_loc"],
-                atom["res_name"],
-                atom["chain"],
-                atom["res_num"],
-                atom["insert_res"],
-                atom["xyz"][0],
-                atom["xyz"][1],
-                atom["xyz"][2],
-                atom["occ"],
-                atom["beta"]))
+            filout.write("{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"
+                         "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
+                            atom["field"],
+                            atom["num"],
+                            name,
+                            atom["alter_loc"],
+                            atom["res_name"],
+                            atom["chain"],
+                            atom["res_num"],
+                            atom["insert_res"],
+                            atom["xyz"][0],
+                            atom["xyz"][1],
+                            atom["xyz"][2],
+                            atom["occ"],
+                            atom["beta"]))
         filout.write("TER\n")
         filout.close()
 
@@ -796,7 +809,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
@@ -837,7 +851,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_num()
         61
@@ -861,11 +876,13 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
-        >>> prot_coor.change_pdb_field(change_dict = {"chain" : "B"}) #doctest: +ELLIPSIS
+        >>> prot_coor.change_pdb_field(change_dict = {"chain" : "B"})\
+        #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_coor.get_aa_seq()
         {'B': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
@@ -891,13 +908,17 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
-        >>> res_826_852 = prot_coor.get_index_selection({'res_num' : range(826,852)})
-        >>> prot_coor.change_index_pdb_field(index_list = res_826_852, change_dict = {"chain" : "B"}) #doctest: +ELLIPSIS
+        >>> res_826_852 = prot_coor.get_index_selection({'res_num' :
+        ... range(826,852)})
+        >>> prot_coor.change_index_pdb_field(index_list = res_826_852,
+        ... change_dict = {"chain" : "B"}) #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_seq = prot_coor.get_aa_seq()
-        >>> prot_seq == {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQD', 'B': 'GGWWRGDYGGKKQLWFPSNYVEEMIN'}
+        >>> prot_seq == {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQD',
+        ... 'B': 'GGWWRGDYGGKKQLWFPSNYVEEMIN'}
         True
 
         """
@@ -922,17 +943,21 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_num()
         61
-        >>> prot_20_coor = prot_coor.select_part_dict(selec_dict = {'res_num' : list(range(791,800))})
+        >>> prot_20_coor = prot_coor.select_part_dict(selec_dict = \
+{'res_num' : list(range(791,800))})
         >>> prot_20_coor.get_aa_seq()
         {'A': 'TFKSAVKAL'}
         >>> prot_20_coor.get_aa_num()
         9
-        >>> prot_N_atom = prot_coor.select_part_dict(selec_dict = {'name' : ['ZN']})
-        >>> # WARNING using selec_dict = {'name' : 'ZN'} will give you 61 residues !!
+        >>> prot_N_atom = prot_coor.select_part_dict(selec_dict = {'name'\
+: ['ZN']})
+        >>> # WARNING using selec_dict = {'name' : 'ZN'} will
+        >>> # give you 61 residues !!
         >>> print(len(prot_N_atom.atom_dict))
         0
 
@@ -966,7 +991,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_index_selection({'res_num' : [826,827]})
         [297, 298, 299, 300, 301, 302, 303, 304]
@@ -992,7 +1018,8 @@ class Coor:
 
         return index_list
 
-    def get_attribute_selection(self, selec_dict={}, attribute='uniq_resid', index_list=None):
+    def get_attribute_selection(self, selec_dict={}, attribute='uniq_resid',
+                                index_list=None):
         """Select atom of a coor object based on the change_dict dictionnary.
         Return the list of unique attribute of the selected atoms.
 
@@ -1005,9 +1032,11 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
-        >>> prot_coor.get_attribute_selection({'res_num' : [826,827]}, attribute='uniq_resid')
+        >>> prot_coor.get_attribute_selection({'res_num' : [826,827]},\
+attribute='uniq_resid')
         [35, 36]
 
         """
@@ -1045,12 +1074,15 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
-        >>> res_810_852 = prot_coor.get_index_selection({'res_num' : range(810,852)})
-        >>> prot_coor.del_atom_index(index_list = res_810_852) #doctest: +ELLIPSIS
+        >>> res_810_852 = prot_coor.get_index_selection({'res_num' :\
+range(810,852)})
+        >>> prot_coor.del_atom_index(index_list = res_810_852)\
+        #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDE'}
@@ -1064,9 +1096,9 @@ class Coor:
         return self
 
     def correct_chain(self, Ca_cutoff=4.5):
-        """Correct the chain ID's of a coor object, by checking consecutive Calphas atoms distance.
-        If the distance is higher than ``Ca_cutoff``, the former atoms are considered
-        as in a different chain.
+        """Correct the chain ID's of a coor object, by checking consecutive
+        Calphas atoms distance. If the distance is higher than ``Ca_cutoff``
+        , the former atoms are considered as in a different chain.
 
         :param Ca_cutoff: cutoff for distances between Calphas atoms (X)
         :type Ca_cutoff: float, default=4.5
@@ -1074,7 +1106,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> res_810 = prot_coor.get_index_selection({'res_num' : [810]})
         >>> prot_coor = prot_coor.del_atom_index(index_list = res_810)
@@ -1084,7 +1117,8 @@ class Coor:
         Chain: A  Residue: 0 to 18
         Chain: B  Residue: 20 to 60
         <...Coor object at ...>
-        >>> # As a residue is missing, Calphas after residue 18 is no more consecutive
+        >>> # As a residue is missing, Calphas after residue 18 is no
+        >>> # more consecutive
 
 
         .. note::
@@ -1097,6 +1131,7 @@ class Coor:
         first_flag = True
         chain_res_list = []
         res_list = []
+        old_atom = None
 
         # Identify Chain uniq_resid
         # Need to use sorted to be sure to check consecutive residues (atoms)
@@ -1121,7 +1156,8 @@ class Coor:
         # print(Ca_atom.atomChabge_dict)
 
         for i, chain_res in enumerate(chain_res_list):
-            print("Chain:", chr(65 + i), " Residue:", chain_res[0], "to", chain_res[-1])
+            print("Chain:", chr(65 + i), " Residue:",
+                  chain_res[0], "to", chain_res[-1])
             chain_index = self.get_index_selection({'uniq_resid': chain_res})
             # print(chain_index)
             self.change_index_pdb_field(chain_index, {"chain": chr(65 + i)})
@@ -1146,31 +1182,39 @@ class Coor:
         Start import...
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> # Compute protonation with pdb2pqr:
-        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '4n1m.pdb'), os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
+        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '4n1m.pdb'),\
+os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...test/input/4n1m.pdb ,  2530 atoms found
         Succeed to save file .../tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka .../tmp_pdb2pqr.pdb .../4n1m.pqr
+        pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
+--ph-calc-method=propka .../tmp_pdb2pqr.pdb .../4n1m.pqr
         0
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), pqr_format = True) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), pqr_format\
+= True) #doctest: +ELLIPSIS
         Succeed to read file .../4n1m.pqr ,  2549 atoms found
-        >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'], 'name':['CA']})
+        >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
+'name':['CA']})
         >>> print(len(HSD_index))
         4
-        >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'], 'name':['CA']})
+        >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'],\
+'name':['CA']})
         >>> print(len(HSE_index))
         0
-        >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'], 'name':['CA']})
+        >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'],\
+'name':['CA']})
         >>> print(len(HSP_index))
         1
         >>> prot_coor.correct_his_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> HIS_index = prot_coor.get_index_selection({'res_name' : ['HIS'], 'name':['CA']})
+        >>> HIS_index = prot_coor.get_index_selection({'res_name' : ['HIS'],\
+'name':['CA']})
         >>> print(len(HIS_index))
         0
 
         .. note::
-            This function seems useless. Since last version of pdb2pqr residue name seems correct.
+            This function seems useless. Since last version of pdb2pqr
+            residue name seems correct.
         """
 
         # FIND HISTIDINE res
@@ -1206,8 +1250,10 @@ class Coor:
         return self
 
     def add_zinc_finger(self, ZN_pdb, cutoff=3.2):
-        """ Change protonation state of cysteins and histidine coordinating Zinc atoms.
-        To do after `correct_his_name` and `correct_cys_name`, in order that protonation is recognize by pdb2gmx.
+        """ Change protonation state of cysteins and histidine coordinating
+        Zinc atoms.
+        To do after `correct_his_name` and `correct_cys_name`,
+        in order that protonation is recognize by pdb2gmx.
 
         :Example:
 
@@ -1221,20 +1267,26 @@ class Coor:
         >>>
         >>> # Read the pdb 1jd4 and keep only chain A
         >>> input_pdb = Coor()
-        >>> input_pdb.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb')) #doctest: +ELLIPSIS
+        >>> input_pdb.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1jd4.pdb ,  1586 atoms found
-        >>> chain_A = input_pdb.select_part_dict(selec_dict = {'chain' : ['A']})
-        >>> chain_A.write_pdb(os.path.join(TEST_OUT, '1jd4_A.pdb')) #doctest: +ELLIPSIS
+        >>> chain_A = input_pdb.select_part_dict(selec_dict =\
+{'chain' : ['A']})
+        >>> chain_A.write_pdb(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to save file .../1jd4_A.pdb
         >>>
         >>> # Compute protonation with pdb2pqr:
-        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_OUT, '1jd4_A.pdb'), os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
+        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_OUT, '1jd4_A.pdb'),\
+os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         Succeed to read file .../1jd4_A.pdb ,  793 atoms found
         Succeed to save file .../tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka .../tmp_pdb2pqr.pdb .../1jd4.pqr
+        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
+.../tmp_pdb2pqr.pdb .../1jd4.pqr
         0
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '1jd4.pqr'), pqr_format = True)
+        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '1jd4.pqr'),\
+pqr_format = True)
         Succeed to read file .../1jd4.pqr ,  1549 atoms found
         >>> prot_coor.correct_cys_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
@@ -1246,7 +1298,8 @@ class Coor:
         >>> ZN_index = prot_coor.get_index_selection({'name':['ZN']})
         >>> print(len(ZN_index))
         0
-        >>> prot_coor.add_zinc_finger(os.path.join(TEST_OUT, '1jd4_A.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.add_zinc_finger(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file .../1jd4_A.pdb ,  793 atoms found
         Presence of 1 Zinc detected
         change cystein residue(s) : [48, 51, 75]
@@ -1257,7 +1310,8 @@ class Coor:
         1
 
         .. note::
-            This function seems useless. Since last version of pdb2pqr residue name seems correct.
+            This function seems useless. Since last version of pdb2pqr
+            residue name seems correct.
         """
 
         # Check the number of ZN atoms:
@@ -1292,30 +1346,38 @@ class Coor:
         his_uniq_res_list = list(set(his_uniq_res_list))
 
         # Change CYS to CYN:
-        print("change cystein residue(s) : {}".format(sorted(cys_uniq_res_list)))
-        to_change_cys = self.get_index_selection({'uniq_resid': cys_uniq_res_list})
+        print("change cystein residue(s) : {}".format(
+            sorted(cys_uniq_res_list)))
+        to_change_cys = self.get_index_selection(
+            {'uniq_resid': cys_uniq_res_list})
         self.change_index_pdb_field(to_change_cys, {'res_name': 'CYN'})
 
         # Change Histidine to HSD or HSE
         # the non protonated nitrogen have to be the closest to the ZN atom:
-        print("change histidine residue(s) : {}".format(sorted(his_uniq_res_list)))
+        print("change histidine residue(s) : {}".format(
+            sorted(his_uniq_res_list)))
         for his_uniq_res in his_uniq_res_list:
             # NE2 ND1
-            epsilon_his_index = self.get_index_selection({'uniq_resid': [his_uniq_res],
-                                                          'name': ['NE2']})[0]
-            delta_his_index = self.get_index_selection({'uniq_resid': [his_uniq_res],
-                                                        'name': ['ND1']})[0]
+            epsilon_his_index = self.get_index_selection(
+                {'uniq_resid': [his_uniq_res], 'name': ['NE2']})[0]
+            delta_his_index = self.get_index_selection(
+                {'uniq_resid': [his_uniq_res], 'name': ['ND1']})[0]
             for key, val in Zinc_sel.atom_dict.items():
 
-                epsilon_dist = Coor.atom_dist(val, self.atom_dict[epsilon_his_index])
-                delta_dist = Coor.atom_dist(val, self.atom_dict[delta_his_index])
+                epsilon_dist = Coor.atom_dist(
+                    val, self.atom_dict[epsilon_his_index])
+                delta_dist = Coor.atom_dist(
+                    val, self.atom_dict[delta_his_index])
 
                 if (epsilon_dist < cutoff or delta_dist < cutoff):
-                    to_change_his = self.get_index_selection({'uniq_resid': [his_uniq_res]})
+                    to_change_his = self.get_index_selection(
+                        {'uniq_resid': [his_uniq_res]})
                     if (epsilon_dist < delta_dist):
-                        self.change_index_pdb_field(to_change_his, {'res_name': 'HSD'})
+                        self.change_index_pdb_field(
+                            to_change_his, {'res_name': 'HSD'})
                     else:
-                        self.change_index_pdb_field(to_change_his, {'res_name': 'HSE'})
+                        self.change_index_pdb_field(
+                            to_change_his, {'res_name': 'HSE'})
 
         return True
 
@@ -1332,13 +1394,16 @@ class Coor:
         Start import...
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> # Compute protonation with pdb2pqr:
-        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '1dpx.pdb'), os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
+        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '1dpx.pdb'),\
+os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
         Succeed to save file .../tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka .../tmp_pdb2pqr.pdb .../1dpx.pqr
+        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method\
+=propka .../tmp_pdb2pqr.pdb .../1dpx.pqr
         0
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '1dpx.pqr'), pqr_format = True)
+        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '1dpx.pqr'),
+        ... pqr_format = True)
         Succeed to read file .../1dpx.pqr ,  1961 atoms found
         >>> Isu_index = prot_coor.get_index_selection({'res_name' : ['DISU']})
         >>> print(len(Isu_index))
@@ -1368,18 +1433,21 @@ class Coor:
         return self
 
     def correct_ion_octa(self, ion_name):
-        """ For specified ion, create an octahedral dummy model described by a set of 6 cationic
-        dummy atoms connected around a central metal atom.
+        """ For specified ion, create an octahedral dummy model described
+        by a set of 6 cationic dummy atoms connected around a central metal
+        atom.
         From Duarte et al. J Phys Chem B 2014.
 
-        :param ion_name: name of metal present in .pdb to transform in octahedral dummy model
+        :param ion_name: name of metal present in .pdb to transform
+        in octahedral dummy model
         :type ion_name: str
 
         :Example:
 
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file .../1jd4.pdb ,  1586 atoms found
         >>> ion_index = prot_coor.get_index_selection({'res_name' : ['ZN']})
         >>> print(len(ion_index))
@@ -1478,7 +1546,8 @@ class Coor:
         ...   import pdb2pqr
         Start import...
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
         >>> hetatm_index = prot_coor.get_index_selection({'field':['HETATM']})
         >>> print(len(hetatm_index))
@@ -1494,7 +1563,8 @@ class Coor:
         """
 
         # FIND Water res
-        water_index_list = self.get_index_selection({'res_name': ['HOH'], 'field': ['HETATM']})
+        water_index_list = self.get_index_selection(
+            {'res_name': ['HOH'], 'field': ['HETATM']})
         if not water_index_list:
             return self
         else:
@@ -1514,22 +1584,29 @@ class Coor:
         Start import...
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
         >>> prot_coor.water_to_ATOM() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> prot_coor.write_pdb(os.path.join(TEST_OUT, '1dpx_water.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.write_pdb(os.path.join(TEST_OUT, '1dpx_water.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to save file .../1dpx_water.pdb
         >>> # Compute protonation with pdb2pqr:
-        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_OUT, '1dpx_water.pdb'), os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
+        >>> pdb2pqr.compute_pdb2pqr(
+        ... os.path.join(TEST_OUT, '1dpx_water.pdb'),
+        ... os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file .../1dpx_water.pdb ,  1192 atoms found
         Succeed to save file .../tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka .../tmp_pdb2pqr.pdb .../1dpx_water.pqr
+        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
+.../tmp_pdb2pqr.pdb .../1dpx_water.pqr
         0
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '1dpx_water.pqr'), pqr_format = True) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(
+        ... TEST_OUT, '1dpx_water.pqr'), pqr_format = True) #doctest: +ELLIPSIS
         Succeed to read file .../1dpx_water.pqr ,  2492 atoms found
-        >>> water_index = prot_coor.get_index_selection({'res_name':['TP3M'], 'name':['OH2']})
+        >>> water_index = prot_coor.get_index_selection(
+        ... {'res_name':['TP3M'], 'name':['OH2']})
         >>> print(len(water_index))
         177
         """
@@ -1571,13 +1648,15 @@ class Coor:
         :param mol_chain: chain ID of the molecule to be inserted,
         :type mol_chain: str
 
-        :param check_file_out: flag to check or not if file has already been created.
-            If the file is present then the command break.
+        :param check_file_out: flag to check or not if
+        file has already been created.
+        If the file is present then the command break.
         :type check_file_out: bool, optional, default=True
 
         .. warning::
-            self.atom_dict file must contain alredy a concatenated system with a
-            ligand (chain: ``mol_chain``) and a solvated system.
+            self.atom_dict file must contain alredy a concatenated
+            system with a ligand (chain: ``mol_chain``) and a
+            solvated system.
         """
 
         # Create the out_folder:
@@ -1599,42 +1678,53 @@ class Coor:
         # Select protein, water and molecule atoms :
         prot_insert_CA = self.select_part_dict(selec_dict={'name': ['CA']})
         water = self.select_part_dict(selec_dict={'res_name': ['SOL']})
-        water_O = self.select_part_dict(selec_dict={'res_name': ['SOL'], 'name': ['OW']})
+        water_O = self.select_part_dict(
+            selec_dict={'res_name': ['SOL'], 'name': ['OW']})
         insert = self.select_part_dict(selec_dict={'chain': [mol_chain]})
-        insert_ACE_C = self.select_part_dict(selec_dict={'chain': [mol_chain],
-                                                         'name': ['C'],
-                                                         'res_name': ['ACE']})
+        insert_ACE_C = self.select_part_dict(
+            selec_dict={'chain': [mol_chain], 'name': ['C'],
+                        'res_name': ['ACE']})
 
         mol_num = len(insert_ACE_C.atom_dict)
-        res_insert_list = insert.get_attribute_selection(attribute='uniq_resid')
+        res_insert_list = insert.get_attribute_selection(
+            attribute='uniq_resid')
         # Need to sort the resid, to have consecutive residues
         res_insert_list.sort()
         # print("Residue list = ", res_insert_list)
         mol_len = int(len(res_insert_list) / mol_num)
 
-        print("Insert {} mol of {:d} residues each".format(mol_num, mol_len))
+        print("Insert {} mol of {:d} residues each".format(
+            mol_num, mol_len))
         start_time = time.time()
         # Insert one molecule at a time:
         for i in range(mol_num):
             start_time = time.time()
-            water_good_index = water_O.get_index_dist_between(prot_insert_CA,
-                                                              cutoff_max=cutoff_prot_in,
-                                                              cutoff_min=cutoff_prot_off)
-            print('insert mol {:3}, water mol {:5}, time={:.2f}'.format(i + 1, len(water_good_index), time.time() - start_time))
-            insert_unique = insert.select_part_dict(selec_dict={'chain': [mol_chain],
-                                                                'uniq_resid': res_insert_list[(mol_len * i):(mol_len * (i + 1))]})
+            water_good_index = water_O.get_index_dist_between(
+                prot_insert_CA, cutoff_max=cutoff_prot_in,
+                cutoff_min=cutoff_prot_off)
+            print('insert mol {:3}, water mol {:5}, time={:.2f}'.format(
+                i + 1, len(water_good_index), time.time() - start_time))
+            insert_unique = insert.select_part_dict(
+                selec_dict={'chain': [mol_chain],
+                            'uniq_resid': res_insert_list[
+                            (mol_len * i):(mol_len * (i + 1))]})
             com_insert = insert_unique.center_of_mass()
-            trans_vector = self.atom_dict[water_good_index[0]]['xyz'] - com_insert
+            trans_vector = self.atom_dict[water_good_index[0]]['xyz'] -\
+                com_insert
 
             insert_unique.translate(trans_vector)
 
-        # Delete water residues in which at leat one atom is close enough to peptides
-        water_to_del_index = water.get_index_dist_between(insert, cutoff_max=cutoff_water_clash)
-        water_res_to_del = water.get_attribute_selection(selec_dict={},
-                                                         attribute='uniq_resid',
-                                                         index_list=water_to_del_index)
-        water_to_del_index = water.get_index_selection(selec_dict={'uniq_resid': water_res_to_del})
-        print("Delete {} overlapping water atoms".format(len(water_to_del_index)))
+        # Delete water residues in which at leat one atom is close
+        # enough to peptides
+        water_to_del_index = water.get_index_dist_between(
+            insert, cutoff_max=cutoff_water_clash)
+        water_res_to_del = water.get_attribute_selection(
+            selec_dict={}, attribute='uniq_resid',
+            index_list=water_to_del_index)
+        water_to_del_index = water.get_index_selection(
+            selec_dict={'uniq_resid': water_res_to_del})
+        print("Delete {} overlapping water atoms".format(
+            len(water_to_del_index)))
         self.del_atom_index(index_list=water_to_del_index)
 
         self.write_pdb(pdb_out)
@@ -1649,7 +1739,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
@@ -1674,7 +1765,8 @@ class Coor:
 
         :Example:
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> mass_1y0m = prot_coor.get_mass_array()
         >>> print("Mass of 10 first atoms: {}".format(mass_1y0m[:10]))
@@ -1685,7 +1777,8 @@ class Coor:
         Mass of 10 first atoms: [6 6 6 6 6 6 6 6 6 6]
         """
 
-        name_array = np.array([atom['name'] for key, atom in sorted(self.atom_dict.items())])
+        name_array = np.array([atom['name'] for key, atom in sorted(
+            self.atom_dict.items())])
         mass_list = []
         for name in name_array:
             if name[0] in ATOM_MASS_DIST:
@@ -1705,7 +1798,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
@@ -1718,11 +1812,9 @@ class Coor:
             Atom name must start with its type letter (H, C, N, O, P, S).
         """
 
-        com_array = np.zeros(3)
-        mass_tot = 0
-
         local_select = self.select_part_dict(selec_dict=selec_dict)
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(local_select.atom_dict.items())])
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(
+            local_select.atom_dict.items())])
         mass_array = local_select.get_mass_array()
 
         return (coor_array.T * mass_array).sum(axis=1) / sum(mass_array)
@@ -1737,7 +1829,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.centroid()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
@@ -1749,7 +1842,8 @@ class Coor:
 
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.select_part_dict(selec_dict=selec_dict).atom_dict.items())])
+        coor_array = np.array([atom['xyz'] for key, atom in sorted(
+            self.select_part_dict(selec_dict=selec_dict).atom_dict.items())])
 
         return coor_array.mean(axis=0)
 
@@ -1762,7 +1856,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> box_1y0m = prot_coor.get_box_dim()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*box_1y0m))
@@ -1774,9 +1869,11 @@ class Coor:
 
         if len(selec_dict) > 0:
             sel_coor = self.select_part_dict(selec_dict=selec_dict)
-            coor_array = np.array([atom['xyz'] for key, atom in sorted(sel_coor.atom_dict.items())])
+            coor_array = np.array([atom['xyz'] for key, atom in sorted(
+                sel_coor.atom_dict.items())])
         else:
-            coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+            coor_array = np.array([atom['xyz'] for key, atom in sorted(
+                self.atom_dict.items())])
 
         min_val = np.amin(coor_array, axis=0)
         max_val = np.amax(coor_array, axis=0)
@@ -1802,29 +1899,36 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> res_810 = prot_coor.select_part_dict({'res_num' : [810]})
-        >>> close_r810 = prot_coor.get_index_dist_between(res_810, cutoff_min = 3, cutoff_max = 5)
+        >>> close_r810 = prot_coor.get_index_dist_between(
+        ... res_810, cutoff_min = 3, cutoff_max = 5)
         >>> print(len(close_r810))
         65
 
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in self.atom_dict.items()])
-        index_array = np.array([key for key, atom in self.atom_dict.items()])
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in self.atom_dict.items()])
+        index_array = np.array(
+            [key for key, atom in self.atom_dict.items()])
 
-        coor_array_2 = np.array([atom['xyz'] for key, atom in atom_sel_2.atom_dict.items()])
+        coor_array_2 = np.array(
+            [atom['xyz'] for key, atom in atom_sel_2.atom_dict.items()])
 
         # Compute distance matrix
         dist_mat = distance_matrix(coor_array, coor_array_2)
 
         # Compute index of matrix column under cutoff_max and over cutoff_min:
-        dist_mat_good = np.where((dist_mat.min(1) < cutoff_max) & (dist_mat.min(1) > cutoff_min))[0]
+        dist_mat_good = np.where(
+            (dist_mat.min(1) < cutoff_max) & (dist_mat.min(1) > cutoff_min))[0]
 
         return index_array[dist_mat_good]
 
-    def compute_rmsd_to(self, atom_sel_2, selec_dict={'name': ['CA']}, index_list=None):
+    def compute_rmsd_to(self, atom_sel_2, selec_dict={'name': ['CA']},
+                        index_list=None):
         """ Compute RMSD between two atom_dict
         Then return the RMSD value.
 
@@ -1837,7 +1941,7 @@ class Coor:
         :param selec_dict: selection dictionnary
         :type selec_dict: dict, default={}
 
-        :return: rsmd
+        :return: RMSD
         :rtype: float
 
         :Example:
@@ -1849,11 +1953,15 @@ class Coor:
         if index_list is None:
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
-            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(sel_1_coor.atom_dict.items())])
-            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(sel_2_coor.atom_dict.items())])
+            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
+                sel_1_coor.atom_dict.items())])
+            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(
+                sel_2_coor.atom_dict.items())])
         else:
-            coor_array_1 = np.array([self.atom_dict[index]['xyz'] for index in index_list[0]])
-            coor_array_2 = np.array([atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
+            coor_array_1 = np.array(
+                [self.atom_dict[index]['xyz'] for index in index_list[0]])
+            coor_array_2 = np.array([
+                atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
 
         diff = coor_array_1 - coor_array_2
         N = len(coor_array_1)
@@ -1862,7 +1970,8 @@ class Coor:
 
         return rmsd
 
-    def align_to(self, atom_sel_2, selec_dict={'name': ['CA']}, index_list=None, rot_kabsch=True):
+    def align_to(self, atom_sel_2, selec_dict={'name': ['CA']},
+                 index_list=None, rot_kabsch=True):
         """ Align structure to an Coor object.
 
         :param atom_sel_1: atom dictionnary
@@ -1880,7 +1989,8 @@ class Coor:
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file .../1jd4.pdb ,  1586 atoms found
         >>> chain_A = prot_coor.select_part_dict(selec_dict={'chain': ['A']})
         >>> chain_B = prot_coor.select_part_dict(selec_dict={'chain': ['B']})
@@ -1900,14 +2010,19 @@ class Coor:
         if index_list is None:
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
-            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(sel_1_coor.atom_dict.items())])
-            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(sel_2_coor.atom_dict.items())])
+            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
+                sel_1_coor.atom_dict.items())])
+            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(
+                sel_2_coor.atom_dict.items())])
         else:
             # print(index_list[0], index_list[1])
-            coor_array_1 = np.array([self.atom_dict[index]['xyz'] for index in index_list[0]])
-            coor_array_2 = np.array([atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
+            coor_array_1 = np.array(
+                [self.atom_dict[index]['xyz'] for index in index_list[0]])
+            coor_array_2 = np.array([
+                atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
 
-        all_coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        all_coor_array_1 = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
 
         centroid_1 = coor_array_1.mean(axis=0)
         centroid_2 = coor_array_2.mean(axis=0)
@@ -1929,7 +2044,8 @@ class Coor:
         return
 
     def align_seq_coor_to(self, atom_sel_2, chain_1=['A'], chain_2=['A']):
-        """ Align 2 strucures, using a sequence alignement to determine which residue to align.
+        """ Align 2 strucures, using a sequence alignement to determine
+        which residue to align.
         Compute RMSD between two atom_dict
         Then return the RMSD value.
 
@@ -1949,14 +2065,18 @@ class Coor:
         :Example:
 
         >>> prot_1_coor = Coor()
-        >>> prot_1_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb')) #doctest: +ELLIPSIS
+        >>> prot_1_coor.read_pdb(os.path.join(TEST_PATH, '1jd4.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file .../1jd4.pdb ,  1586 atoms found
         >>> prot_2_coor = Coor()
-        >>> prot_2_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb')) #doctest: +ELLIPSIS
+        >>> prot_2_coor.read_pdb(os.path.join(TEST_PATH, '1dpx.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file .../1dpx.pdb ,  1192 atoms found
-        >>> rmsd, align_sel = prot_1_coor.align_seq_coor_to(prot_2_coor)
+        >>> rmsd, align_sel = prot_1_coor.align_seq_coor_to(prot_2_coor)\
+        #doctest: +NORMALIZE_WHITESPACE
         ----------------------------------------NYFPQYPEYAIETARLRTFEAWPRNLKQKP--HQLAEAGF
-                                                |   |  | | | | *|  | *  *  | *  ||*||   
+                                                |   |  | | | | *|  | *  *  | \
+*  ||*||
         KVFGRCELAAAMKRHGLDNYRGYSLGNWVCAAKFESNFNTQATNRNTDGSTDYGILQINSRWWCNDGRTPGSRNLCNIPC
         <BLANKLINE>
         FYTGVGDRVRCFSCGGGLMDWNDNDEPWEQHALWLSQCRFVKLMKGQLYIDTVAAKPV
@@ -1967,8 +2087,10 @@ class Coor:
         RMSD = 12.81 Å
         """
 
-        sel_1_CA = self.select_part_dict(selec_dict={'name': ['CA'], 'chain': chain_1})
-        sel_2_CA = atom_sel_2.select_part_dict(selec_dict={'name': ['CA'], 'chain': chain_2})
+        sel_1_CA = self.select_part_dict(
+            selec_dict={'name': ['CA'], 'chain': chain_1})
+        sel_2_CA = atom_sel_2.select_part_dict(
+            selec_dict={'name': ['CA'], 'chain': chain_2})
 
         sel_1_seq = sel_1_CA.get_aa_seq()
         sel_2_seq = sel_2_CA.get_aa_seq()
@@ -1983,9 +2105,12 @@ class Coor:
         align_seq_1, align_seq_2 = Coor.align_seq(seq_1, seq_2)
         Coor.print_align_seq(align_seq_1, align_seq_2)
 
-        sel_index_1 = np.array([key for key, atom in sorted(sel_1_CA.atom_dict.items())])
-        sel_index_2 = np.array([key for key, atom in sorted(sel_2_CA.atom_dict.items())])
-        # print(len(sel_index_1), len(sel_index_2), len(seq_1), len(seq_2), sel_index_1, sel_index_2)
+        sel_index_1 = np.array(
+            [key for key, atom in sorted(sel_1_CA.atom_dict.items())])
+        sel_index_2 = np.array(
+            [key for key, atom in sorted(sel_2_CA.atom_dict.items())])
+        # print(len(sel_index_1), len(sel_index_2),
+        # len(seq_1), len(seq_2), sel_index_1, sel_index_2)
 
         align_sel_1 = []
         align_sel_2 = []
@@ -2005,7 +2130,8 @@ class Coor:
                 index_sel_2 += 1
 
         self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
-        rmsd = self.compute_rmsd_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
+        rmsd = self.compute_rmsd_to(
+            atom_sel_2, index_list=[align_sel_1, align_sel_2])
 
         return rmsd, [align_sel_1, align_sel_2]
 
@@ -2031,35 +2157,42 @@ class Coor:
         :Example:
 
 
-        >>> seq_1 = 'AQDMVSPPPPIADEPLTVNTGIYLIECYSLDDKAETFKVNAFLSLSWKDRRLAFDPVRSGVRVKTYEPEAIWIPEIRFVN\
-VENARDADVVDISVSPDGTVQYLERFSARVLSPLDFRRYPFDSQTLHIYLIVRSVDTRNIVLAVDLEKVGKNDDVFLTGW\
-DIESFTAVVKPANFALEDRLESKLDYQLRISRQYFSYIPNIILPMLFILFISWTAFWSTSYEANVTLVVSTLIAHIAFNI\
-LVETNLPKTPYMTYTGAIIFMIYLFYFVAVIEVTVQHYLKVESQPARAASITRASRIAFPVVFLLANIILAFLFFGF'
-        >>> seq_2 = 'APSEFLDKLMGKVSGYDARIRPNFKGPPVNVTCNIFINSFGSIAETTMDYRVNIFLRQQWNDPRLAYSEYPDDSLDLDPS\
-MLDSIWKPDLFFANEKGANFHEVTTDNKLLRISKNGNVLYSIRITLVLACPMDLKNFPMDVQTCIMQLESFGYTMNDLIF\
-EWDEKGAVQVADGLTLPQFILKEEKDLRYCTKHYNTGKFTCIEARFHLERQMGYYLIQMYIPSLLIVILSWVSFWINMDA\
-APARVGLGITTVLTMTTQSSGSRASLPKVSYVKAIDIWMAVCLLFVFSALLEYAAVNFIARAGTKLFISRAKRIDTVSRV\
-AFPLVFLIFNIFYWITYKLVPR'
+        >>> seq_1 = 'AQDMVSPPPPIADEPLTVNTGIYLIECYSLDDKAETFKVNAFLSLSWKDRRLAFDPV\
+RSGVRVKTYEPEAIWIPEIRFVNVENARDADVVDISVSPDGTVQYLERFSARVLSPLDFRRYPFDSQTLHIYLIVRSV\
+DTRNIVLAVDLEKVGKNDDVFLTGWDIESFTAVVKPANFALEDRLESKLDYQLRISRQYFSYIPNIILPMLFILFISW\
+TAFWSTSYEANVTLVVSTLIAHIAFNILVETNLPKTPYMTYTGAIIFMIYLFYFVAVIEVTVQHYLKVESQPARAASI\
+TRASRIAFPVVFLLANIILAFLFFGF'
+        >>> seq_2 = 'APSEFLDKLMGKVSGYDARIRPNFKGPPVNVTCNIFINSFGSIAETTMDYRVNIFLR\
+QQWNDPRLAYSEYPDDSLDLDPSMLDSIWKPDLFFANEKGANFHEVTTDNKLLRISKNGNVLYSIRITLVLACPMDLK\
+NFPMDVQTCIMQLESFGYTMNDLIFEWDEKGAVQVADGLTLPQFILKEEKDLRYCTKHYNTGKFTCIEARFHLERQMG\
+YYLIQMYIPSLLIVILSWVSFWINMDAAPARVGLGITTVLTMTTQSSGSRASLPKVSYVKAIDIWMAVCLLFVFSALL\
+EYAAVNFIARAGTKLFISRAKRIDTVSRVAFPLVFLIFNIFYWITY\
+KLVPR'
         >>> align_seq_1, align_seq_2 = Coor.align_seq(seq_1, seq_2)
-        >>> Coor.print_align_seq(align_seq_1, align_seq_2)
+        >>> Coor.print_align_seq(align_seq_1, align_seq_2)\
+        #doctest: +NORMALIZE_WHITESPACE
         -------------AQDMVSPPPPIADEPLTVNTGIYLIECYSLDDKAETFKVNAFLSLSWKDRRLAFDPVRS-GVRVKTY
-                     |   |   * |   *||*| |*|| |  *| | |  ||** **  |*|* ***||   | || |   
+                     |   |   * |   *||*| |*|| |  *| | |  ||** **  |*|* ***|\
+|   | || |
         APSEFLDKLMGKVSGYDARIRPNFKGPPVNVTCNIFINSFGSIAETTMDYRVNIFLRQQWNDPRLAYSEYPDDSLDLDPS
         <BLANKLINE>
         EPEAIWIPEIRFVNVENARDADVV----DISVSPDGTVQYLERFSARVLSPLDFRRYPFDSQTLHIYLIVRSVDTRNIVL
-          ||** *|| *|* ||*|  |*|     | |* |*|* *  *||  |  *|*||||*|* **  | *   |   |||||
+          ||** *|| *|* ||*|  |*|     | |* |*|* *  *||  |  *|*||||*|* **  | \
+*   |   |||||
         MLDSIWKPDLFFANEKGANFHEVTTDNKLLRISKNGNVLYSIRITLVLACPMDLKNFPMDVQTCIMQLESFGYTMNDLIF
         <BLANKLINE>
         AVDLEKVGKNDDVFLTGWDIESFTAVV-KPANFALEDRLESK---LDYQLRISRQYFSYIPNIILPMLFILFISWTAFW-
-          * ** *  |     *  | |*     *  ||| |    |*   || |||||**   *| || |* *|*|||**||** 
+          * ** *  |     *  | |*     *  ||| |    |*   || |||||**   *| || |* *\
+|*|||**||**
         EWD-EK-GAVQ--VADGLTLPQFILKEEKDLRYCTKHYNTGKFTCIEARFHLERQMGYYLIQMYIPSLLIVILSWVSFWI
         <BLANKLINE>
         -STSYEANVTLVVSTLIAHIAFNILVETNLPKTPYMTYTGAIIFMIYLFYFVAVIEVTVQHYL-KVESQP--ARAASITR
-           |  *|* * ||*|||  | |   |||***| *|      | |  ** * *||* || ||| || ||   |**  *  
+           |  *|* * ||*|||  | |   |||***| *|      | |  ** * *||* || ||| || |\
+|   |**  *
         NMDAAPARVGLGITTVLTMTTQSSGSRASLPKVSYVKAIDIWMAVCLLFVFSALLEYAAVNFIARAGTKLFISRAKRIDT
         <BLANKLINE>
         ASRIAFPVVFLLANII--LAFLFFGF
-        |**|***|***| **|  ||| |   
+        |**|***|***| **|  ||| |
         VSRVAFPLVFLIFNIFYWITYKLVPR
         <BLANKLINE>
         """
@@ -2092,9 +2225,11 @@ AFPLVFLIFNIFYWITYKLVPR'
                 left = score_matrix[i - 1, j] + gap_left
 
                 if (seq_1[i - 1], seq_2[j - 1]) in BLOSUM62:
-                    diag = score_matrix[i - 1, j - 1] + BLOSUM62[seq_1[i - 1], seq_2[j - 1]]
+                    diag = score_matrix[i - 1, j - 1] +\
+                        BLOSUM62[seq_1[i - 1], seq_2[j - 1]]
                 else:
-                    diag = score_matrix[i - 1, j - 1] + BLOSUM62[seq_2[j - 1], seq_1[i - 1]]
+                    diag = score_matrix[i - 1, j - 1] +\
+                        BLOSUM62[seq_2[j - 1], seq_1[i - 1]]
 
                 score_matrix[i, j] = max(top, left, diag, 0)
 
@@ -2158,21 +2293,25 @@ AFPLVFLIFNIFYWITYKLVPR'
 
     @staticmethod
     def kabsch(coor_1, coor_2):
-        """ Source: https://github.com/charnley/rmsd/blob/master/rmsd/calculate_rmsd.py
-        Using the Kabsch algorithm with two sets of paired point P and Q, centered
-        around the centroid. Each vector set is represented as an NxD
+        """ Source: https://github.com/charnley/rmsd/blob/master/rmsd/\
+        calculate_rmsd.py
+        Using the Kabsch algorithm with two sets of paired point P and Q, \
+        centered around the centroid. Each vector set is represented as an NxD
         matrix, where D is the the dimension of the space.
 
         The algorithm works in three steps:
-        - a centroid translation of P and Q (assumed done before this function call)
+        - a centroid translation of P and Q (assumed done before this
+        function call)
         - the computation of a covariance matrix C
         - computation of the optimal rotation matrix U
         For more info see http://en.wikipedia.org/wiki/Kabsch_algorithm
 
-        :param coor_1: coordinates array of size (N, D), where N is points and D is dimension.
+        :param coor_1: coordinates array of size (N, D), \
+        where N is points and D is dimension.
         :type coor_1: np.array
 
-        :param coor_2: coordinates array of size (N, D), where N is points and D is dimension.
+        :param coor_2: coordinates array of size (N, D), \
+        where N is points and D is dimension.
         :type coor_2: np.array
 
         :return: rotation matrix
@@ -2205,10 +2344,11 @@ AFPLVFLIFNIFYWITYKLVPR'
     @staticmethod
     def quaternion_transform(r):
         """
-        Source: https://github.com/charnley/rmsd/blob/master/rmsd/calculate_rmsd.py
+        Source: https://github.com/charnley/rmsd/blob/master/rmsd/\
+        calculate_rmsd.py
         Get optimal rotation
-        note: translation will be zero when the centroids of each molecule are the
-        same
+        note: translation will be zero when the centroids of each
+        molecule are the same.
         """
         Wt_r = Coor.makeW(*r).T
         Q_r = Coor.makeQ(*r)
@@ -2218,7 +2358,8 @@ AFPLVFLIFNIFYWITYKLVPR'
     @staticmethod
     def makeW(r1, r2, r3, r4=0):
         """
-        Source: https://github.com/charnley/rmsd/blob/master/rmsd/calculate_rmsd.py
+        Source: https://github.com/charnley/rmsd/blob/master/rmsd/\
+        calculate_rmsd.py
         matrix involved in quaternion rotation
         """
         W = np.asarray([
@@ -2231,7 +2372,8 @@ AFPLVFLIFNIFYWITYKLVPR'
     @staticmethod
     def makeQ(r1, r2, r3, r4=0):
         """
-        Source: https://github.com/charnley/rmsd/blob/master/rmsd/calculate_rmsd.py
+        Source: https://github.com/charnley/rmsd/blob/master/rmsd/\
+        calculate_rmsd.py
         matrix involved in quaternion rotation
         """
         Q = np.asarray([
@@ -2244,13 +2386,16 @@ AFPLVFLIFNIFYWITYKLVPR'
     @staticmethod
     def quaternion_rotate(X, Y):
         """
-        Source: https://github.com/charnley/rmsd/blob/master/rmsd/calculate_rmsd.py
+        Source: https://github.com/charnley/rmsd/blob/master/rmsd/\
+        calculate_rmsd.py
         Calculate the rotation
 
-        :param coor_1: coordinates array of size (N, D), where N is points and D is dimension.
+        :param coor_1: coordinates array of size (N, D),\
+        where N is points and D is dimension.
         :type coor_1: np.array
 
-        :param coor_2: coordinates array of size (N, D), where N is points and D is dimension.
+        :param coor_2: coordinates array of size (N, D),\
+        where N is points and D is dimension.
         :type coor_2: np.array
 
         :return: rotation matrix
@@ -2280,19 +2425,22 @@ AFPLVFLIFNIFYWITYKLVPR'
         :type tau_z: float
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
         >>> prot_coor.rotation_angle(90, 90, 90)
         >>> com_1y0m = prot_coor.center_of_mass()
-        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m)) #doctest: +ELLIPSIS
+        >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))\
+        #doctest: +ELLIPSIS
         x:9.98 y:-4.03 z:-14.63
 
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
 
         tau_x = np.degrees(tau_x)
         tau_y = np.degrees(tau_y)
@@ -2331,7 +2479,8 @@ AFPLVFLIFNIFYWITYKLVPR'
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> tensor = prot_coor.moment_inertia()
         >>> print(tensor)
@@ -2340,7 +2489,8 @@ AFPLVFLIFNIFYWITYKLVPR'
          [ 40416.71166176  -9443.32698326 413840.08602987]]
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
 
         # Convert to local coordinates
         com = self.center_of_mass()
@@ -2360,17 +2510,23 @@ AFPLVFLIFNIFYWITYKLVPR'
         # Iyz = Izy = -1*sum(m_i*y_i*z_i)
         tens = np.zeros((3, 3), dtype=np.float64)
         # xx
-        tens[0][0] = (masses * (coor_array[:, 1] ** 2 + coor_array[:, 2] ** 2)).sum()
+        tens[0][0] = (
+            masses * (coor_array[:, 1] ** 2 + coor_array[:, 2] ** 2)).sum()
         # xy & yx
-        tens[0][1] = tens[1][0] = - (masses * coor_array[:, 0] * coor_array[:, 1]).sum()
+        tens[0][1] = tens[1][0] = - (
+            masses * coor_array[:, 0] * coor_array[:, 1]).sum()
         # xz & zx
-        tens[0][2] = tens[2][0] = - (masses * coor_array[:, 0] * coor_array[:, 2]).sum()
+        tens[0][2] = tens[2][0] = - (
+            masses * coor_array[:, 0] * coor_array[:, 2]).sum()
         # yy
-        tens[1][1] = (masses * (coor_array[:, 0] ** 2 + coor_array[:, 2] ** 2)).sum()
+        tens[1][1] = (
+            masses * (coor_array[:, 0] ** 2 + coor_array[:, 2] ** 2)).sum()
         # yz + zy
-        tens[1][2] = tens[2][1] = - (masses * coor_array[:, 1] * coor_array[:, 2]).sum()
+        tens[1][2] = tens[2][1] = - (
+            masses * coor_array[:, 1] * coor_array[:, 2]).sum()
         # zz
-        tens[2][2] = (masses * (coor_array[:, 0] ** 2 + coor_array[:, 1] ** 2)).sum()
+        tens[2][2] = (
+            masses * (coor_array[:, 0] ** 2 + coor_array[:, 1] ** 2)).sum()
 
         return tens
 
@@ -2378,7 +2534,8 @@ AFPLVFLIFNIFYWITYKLVPR'
         """ Calculate the principal axes from the moment of inertia.
 
         Taken from:
-        https://github.com/MDAnalysis/mdanalysis/blob/develop/package/MDAnalysis/core/topologyattrs.py
+        https://github.com/MDAnalysis/mdanalysis/blob/develop/\
+        package/MDAnalysis/core/topologyattrs.py
 
         :return: 3 principal axis
         :rtype: list of np.array
@@ -2387,7 +2544,8 @@ AFPLVFLIFNIFYWITYKLVPR'
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> princ_axis = prot_coor.principal_axis()
         >>> print(princ_axis)
@@ -2403,11 +2561,14 @@ AFPLVFLIFNIFYWITYKLVPR'
         # Return transposed in more logical form. See Issue 33.
         return e_vec[:, indices].T
 
-    def align_principal_axis(self, axis=2, vector=[0, 0, 1], selec_dict={'name': ['CA']}):
+    def align_principal_axis(self, axis=2,
+                             vector=[0, 0, 1],
+                             selec_dict={'name': ['CA']}):
         """Align principal axis with index `axis` with `vector`.
 
         Taken from:
-        https://github.com/MDAnalysis/mdanalysis/blob/develop/package/MDAnalysis/core/topologyattrs.py
+        https://github.com/MDAnalysis/mdanalysis/blob/develop/\
+package/MDAnalysis/core/topologyattrs.py
 
 
         :param axis: principal axis to align (0, 1, or 2)
@@ -2419,20 +2580,11 @@ AFPLVFLIFNIFYWITYKLVPR'
         :param selec_dict: selection dictionnary
         :type selec_dict: dict, default={'name': ['CA']}
 
-
-        Parameters
-        ----------
-        axis : {0, 1, 2}
-            Index of the principal axis (0, 1, or 2), as produced by
-            :meth:`~principal_axes`.
-        vector : array_like
-            Vector to align principal axis with.
-
-
         :Example:
 
         >>> prot_coor = Coor()
-        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb')) #doctest: +ELLIPSIS
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.align_principal_axis()
         Do a rotation of 59.43°
@@ -2447,10 +2599,12 @@ AFPLVFLIFNIFYWITYKLVPR'
         angle = np.degrees(Coor.angle_vec(p, vector))
         print('Do a rotation of {:.2f}°'.format(angle))
 
-        r, rmsd = Rotation.align_vectors(p.reshape((1, 3)), np.array(vector).reshape((1, 3)))
+        r, rmsd = Rotation.align_vectors(
+            p.reshape((1, 3)), np.array(vector).reshape((1, 3)))
         # print(r.as_matrix())
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
         coor_array -= self.center_of_mass()
         coor_array = np.dot(coor_array, r.as_matrix())
 
@@ -2458,6 +2612,30 @@ AFPLVFLIFNIFYWITYKLVPR'
             self.atom_dict[atom_num]['xyz'] = coor_array[i]
 
         return
+
+    def get_max_size(self):
+        """Get maximum size of a molecule.
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        >>> print('Maximum size without alignment is {:.2f}'.format(
+        ... np.ceil(prot_coor.get_box_dim()).max()))
+        Maximum size without alignment is 40.00
+        >>> max_size = prot_coor.get_max_size()
+        Do a rotation of 59.43°
+        >>> print('Maximum size is {:.2f}'.format(max_size))
+        Maximum size is 42.00
+
+        """
+
+        self.align_principal_axis()
+        max_dim = np.ceil(self.get_box_dim()).max()
+
+        return(max_dim)
 
     @staticmethod
     def angle_vec(vec_a, vec_b):
@@ -2517,10 +2695,14 @@ AFPLVFLIFNIFYWITYKLVPR'
 
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
-        index_array = np.array([key for key, atom in sorted(self.atom_dict.items())])
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        index_array = np.array(
+            [key for key, atom in sorted(self.atom_dict.items())])
 
-        coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(atom_sel_2.atom_dict.items())])
+        coor_array_2 = np.array(
+            [atom['xyz'] for key, atom in sorted(
+                atom_sel_2.atom_dict.items())])
 
         # Compute distance matrix
         dist_mat = distance_matrix(coor_array, coor_array_2)
@@ -2540,8 +2722,9 @@ AFPLVFLIFNIFYWITYKLVPR'
         :param pdb_out: name of output pdb file
         :type pdb_out: str
 
-        :param check_file_out: flag to check or not if file has already been created.
-            If the file is present then the command break.
+        :param check_file_out: flag to check or not if file has
+        already been created. If the file is present then the
+        command break.
         :type check_file_out: bool, optional, default=True
 
         """
@@ -2585,7 +2768,8 @@ AFPLVFLIFNIFYWITYKLVPR'
                                 connect_index = res_name_index[connect_name]
                             else:
                                 connect_name = dist[1][1:]
-                                connect_index = prev_res_name_index[connect_name]
+                                connect_index =\
+                                    prev_res_name_index[connect_name]
                             break
                         elif atom_name == dist[1]:
                             if dist[0][0] != '-':
@@ -2593,24 +2777,30 @@ AFPLVFLIFNIFYWITYKLVPR'
                                 connect_index = res_name_index[connect_name]
                             else:
                                 connect_name = dist[0][1:]
-                                connect_index = prev_res_name_index[connect_name]
+                                connect_index =\
+                                    prev_res_name_index[connect_name]
                             break
                     # print("{} connect to {} for {}".format(
                     #    atom_name, connect_name, res_name))
-                    bond_len = Coor.find_dist(res_name, atom_name, connect_name)
+                    bond_len = Coor.find_dist(res_name,
+                                              atom_name,
+                                              connect_name)
                     # print("Bond : {}-{} = {} X".format(
                     #    atom_name, connect_name, bond_len))
 
                     if atom_num == 1:
-                        xyz = pep.atom_dict[connect_index]['xyz'] + [bond_len, 0, 0]
+                        xyz = pep.atom_dict[connect_index]['xyz'] +\
+                            [bond_len, 0, 0]
                     connect_dict[atom_num] = connect_index
 
                     if atom_num > 1:
                         connect_2_index = connect_dict[connect_index]
                         connect_2_name = pep.atom_dict[connect_2_index]['name']
-                        angle = Coor.find_angle(res_name, atom_name, connect_name, connect_2_name)
+                        angle = Coor.find_angle(res_name, atom_name,
+                                                connect_name, connect_2_name)
                         angle_rad = np.deg2rad(angle)
-                        # print("Angle: {}-{}-{} = {}°".format(atom_name, connect_name, connect_2_name, angle))
+                        # print("Angle: {}-{}-{} = {}°".format(
+                        # atom_name, connect_name, connect_2_name, angle))
                         if atom_num == 2:
                             xyz = pep.atom_dict[connect_index]['xyz'] + [
                                 -bond_len * np.cos(np.deg2rad(angle)),
@@ -2619,18 +2809,27 @@ AFPLVFLIFNIFYWITYKLVPR'
 
                     if atom_num > 2:
                         if connect_2_index not in connect_dict:
-                            xyz = pep.atom_dict[connect_index]['xyz'] + [-bond_len * np.cos(np.deg2rad(angle)),
-                                                                         -bond_len * np.sin(np.deg2rad(angle)),
-                                                                         0]
+                            xyz = pep.atom_dict[connect_index]['xyz'] +\
+                                [-bond_len * np.cos(np.deg2rad(angle)),
+                                 -bond_len * np.sin(np.deg2rad(angle)), 0]
                         else:
                             connect_3_index = connect_dict[connect_2_index]
-                            connect_3_name = pep.atom_dict[connect_3_index]['name']
-                            dihe = Coor.find_dihe_angle(res_name, atom_name, connect_name, connect_2_name, connect_3_name)
+                            connect_3_name =\
+                                pep.atom_dict[connect_3_index]['name']
+                            dihe = Coor.find_dihe_angle(res_name, atom_name,
+                                                        connect_name,
+                                                        connect_2_name,
+                                                        connect_3_name)
                             dihe_rad = np.deg2rad(dihe)
-                            # print("Dihedral Angle: {}-{}-{}-{} = {}°".format(atom_name, connect_name, connect_2_name, connect_3_name, dihe))
-                            # From https://github.com/ben-albrecht/qcl/blob/master/qcl/ccdata_xyz.py#L208
-                            vec_1 = pep.atom_dict[connect_index]['xyz'] - pep.atom_dict[connect_2_index]['xyz']
-                            vec_2 = pep.atom_dict[connect_index]['xyz'] - pep.atom_dict[connect_3_index]['xyz']
+                            # print("Dihedral Angle: {}-{}-{}-{} = {}°".format(
+                            # atom_name, connect_name, connect_2_name,
+                            # connect_3_name, dihe))
+                            # From https://github.com/ben-albrecht/qcl/blob/\
+                            # master/qcl/ccdata_xyz.py#L208
+                            vec_1 = pep.atom_dict[connect_index]['xyz'] -\
+                                pep.atom_dict[connect_2_index]['xyz']
+                            vec_2 = pep.atom_dict[connect_index]['xyz'] -\
+                                pep.atom_dict[connect_3_index]['xyz']
 
                             vec_n = np.cross(vec_1, vec_2)
                             vec_nn = np.cross(vec_1, vec_n)
@@ -2648,7 +2847,8 @@ AFPLVFLIFNIFYWITYKLVPR'
                             vec_1 /= norm(vec_1)
                             vec_1 *= bond_len * cos(angle_rad)
 
-                            xyz = pep.atom_dict[connect_index]['xyz'] + vec_3 - vec_1
+                            xyz = pep.atom_dict[connect_index]['xyz'] +\
+                                vec_3 - vec_1
                             # print(xyz)
 
                 atom = {"field": 'ATOM',
@@ -2680,21 +2880,27 @@ AFPLVFLIFNIFYWITYKLVPR'
         for dist in DIST_DICT[aa_name]:
             if dist[:2] == [name_a, name_b] or dist[:2] == [name_b, name_a]:
                 return dist[2]
-        raise ValueError('Distance param {}-{} for {} not found !!'.format(name_a, name_b, aa_name))
+        raise ValueError('Distance param {}-{} for {} not found !!'.format(
+            name_a, name_b, aa_name))
 
     @staticmethod
     def find_angle(aa_name, name_a, name_b, name_c):
         for angle in ANGLE_DICT[aa_name]:
-            if angle[:3] == [name_a, name_b, name_c] or angle[:3] == [name_c, name_b, name_a]:
+            if (angle[:3] == [name_a, name_b, name_c] or
+                    angle[:3] == [name_c, name_b, name_a]):
                 return angle[3]
-        raise ValueError('Angle param {}-{}-{} for {} not found !!'.format(name_a, name_b, name_c, aa_name))
+        raise ValueError('Angle param {}-{}-{} for {} not found !!'.format(
+            name_a, name_b, name_c, aa_name))
 
     @staticmethod
     def find_dihe_angle(aa_name, name_a, name_b, name_c, name_d):
         for angle in DIHE_DICT[aa_name]:
-            if angle[:4] == [name_a, name_b, name_c, name_d] or angle[:4] == [name_d, name_c, name_b, name_a]:
+            if (angle[:4] == [name_a, name_b, name_c, name_d] or
+                    angle[:4] == [name_d, name_c, name_b, name_a]):
                 return angle[4]
-        raise ValueError('Angle param {}-{}-{}-{} for {} not found !!'.format(name_a, name_b, name_c, name_d, aa_name))
+        raise ValueError(
+            'Angle param {}-{}-{}-{} for {} not found !!'.format(
+                name_a, name_b, name_c, name_d, aa_name))
 
     @staticmethod
     def atom_dist(atom_1, atom_2):
@@ -2738,7 +2944,8 @@ AFPLVFLIFNIFYWITYKLVPR'
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> Coor.concat_pdb(os.path.join(TEST_PATH, '1y0m.pdb'),
         ...                 os.path.join(TEST_PATH, '1rxz.pdb'),
-        ...                 pdb_out = os.path.join(TEST_OUT, 'tmp_2.pdb')) #doctest: +ELLIPSIS
+        ...                 pdb_out = os.path.join(TEST_OUT, 'tmp_2.pdb'))\
+         #doctest: +ELLIPSIS
         Succeed to save concat file: .../tmp_2.pdb
         """
 
@@ -2753,7 +2960,8 @@ AFPLVFLIFNIFYWITYKLVPR'
             # print("Concat :", os.path.relpath(pdb_in))
             with open(pdb_in) as pdbfile:
                 for line in pdbfile:
-                    if (count == 0 and line[:6] == "CRYST1") or line[:4] == 'ATOM' or line[:6] == "HETATM":
+                    if ((count == 0 and line[:6] == "CRYST1") or
+                            line[:4] == 'ATOM' or line[:6] == "HETATM"):
                         filout.write(line)
             count += 1
 
@@ -2775,7 +2983,8 @@ class Multi_Coor:
     :type crystal_pack: str
 
     .. note::
-        Files necessary for testing : ../test/input/1y0m.pdb, ../test/input/1rxz.pdb
+        Files necessary for testing :
+            ../test/input/1y0m.pdb, ../test/input/1rxz.pdb
         and ../test/input/4n1m.pdb.
         To do the unitary test, execute pdb_mani.py (-v for verbose mode)
 
@@ -2786,9 +2995,11 @@ class Multi_Coor:
         self.crystal_pack = None
 
     def read_pdb(self, pdb_in, pqr_format=False):
-        """Read a pdb file and return atom informations as a dictionnary indexed on the atom num.
-        The fonction can also read pqr files if specified with ``pqr_format = True``,
-        it will only change the column format of beta and occ factors.
+        """Read a pdb file and return atom informations as a dictionnary
+        indexed on the atom num.
+        The fonction can also read pqr files if specified with
+        ``pqr_format = True``, it will only change the column
+        format of beta and occ factors.
 
         :param pdb_in: path of the pdb file to read
         :type pdb_in: str
@@ -2799,7 +3010,8 @@ class Multi_Coor:
         :Example:
 
         >>> VIP_coor = Multi_Coor()
-        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb')) #doctest: +ELLIPSIS
+        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb'))\
+        #doctest: +ELLIPSIS
         Read 20 Model(s)
         Succeed to read file ...test/input/2rri.pdb, 479 atoms found
         """
@@ -2836,7 +3048,9 @@ class Multi_Coor:
                     chain = line[21]
                     res_num = int(line[22:26])
                     insert_res = line[26:27]
-                    xyz = np.array([float(line[30:38]), float(line[38:46]), float(line[46:54])])
+                    xyz = np.array([float(line[30:38]),
+                                    float(line[38:46]),
+                                    float(line[46:54])])
                     if pqr_format:
                         alter_loc = ""
                         res_name = line[16:20].strip()
@@ -2891,13 +3105,15 @@ class Multi_Coor:
         :type check_file_outt: bool (Default True)
 
         :Example:
-        
+
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> VIP_coor = Multi_Coor()
-        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb')) #doctest: +ELLIPSIS
+        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb'))\
+        #doctest: +ELLIPSIS
         Read 20 Model(s)
         Succeed to read file ...test/input/2rri.pdb, 479 atoms found
-        >>> VIP_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb')) #doctest: +ELLIPSIS
+        >>> VIP_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb'))\
+        #doctest: +ELLIPSIS
         Succeed to save file .../tmp.pdb
         """
 
@@ -2917,26 +3133,31 @@ class Multi_Coor:
             for atom_num, atom in sorted(model_coor.atom_dict.items()):
                 # print(pdb_dict[atom_num]["name"])
 
-                # Atom name should start a column 14, with the type of atom ex: with atom type 'C': ' CH3'
-                # for 2 letters atom type, it should start at coulumn 13 ex: with atom type 'FE': 'FE1'
+                # Atom name should start a column 14, with the type of atom ex:
+                #   - with atom type 'C': ' CH3'
+                # for 2 letters atom type, it should start at coulumn 13 ex:
+                #   - with atom type 'FE': 'FE1'
                 name = atom["name"]
-                if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
+                if len(name) <= 3 and name[0] in ['C', 'H', 'O',
+                                                  'N', 'S', 'P']:
                     name = " " + name
 
-                filout.write("{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
-                    atom["field"],
-                    atom["num"],
-                    name,
-                    atom["alter_loc"],
-                    atom["res_name"],
-                    atom["chain"],
-                    atom["res_num"],
-                    atom["insert_res"],
-                    atom["xyz"][0],
-                    atom["xyz"][1],
-                    atom["xyz"][2],
-                    atom["occ"],
-                    atom["beta"]))
+                filout.write(
+                    "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"
+                    "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
+                        atom["field"],
+                        atom["num"],
+                        name,
+                        atom["alter_loc"],
+                        atom["res_name"],
+                        atom["chain"],
+                        atom["res_num"],
+                        atom["insert_res"],
+                        atom["xyz"][0],
+                        atom["xyz"][1],
+                        atom["xyz"][2],
+                        atom["occ"],
+                        atom["beta"]))
             filout.write("ENDMDL\n".format())
 
         filout.write("TER\n")
@@ -2962,7 +3183,8 @@ class Multi_Coor:
 
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> VIP_coor = Multi_Coor()
-        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb')) #doctest: +ELLIPSIS
+        >>> VIP_coor.read_pdb(os.path.join(TEST_PATH, '2rri.pdb'))\
+        #doctest: +ELLIPSIS
         Read 20 Model(s)
         Succeed to read file ...test/input/2rri.pdb, 479 atoms found
         >>> aa_seq = VIP_coor.coor_list[0].get_aa_seq()['A']
@@ -2970,7 +3192,8 @@ class Multi_Coor:
         HSDAVFTDNYTRLRKQMAVKKYLNSILNG
         >>> linear_pep = Coor()
         >>> pep_out = os.path.join(TEST_OUT, 'tmp_pep.pdb')
-        >>> pdb_pep = linear_pep.make_peptide(aa_seq, pep_out) #doctest: +ELLIPSIS
+        >>> pdb_pep = linear_pep.make_peptide(aa_seq, pep_out)\
+        #doctest: +ELLIPSIS
         -Make peptide: HSDAVFTDNYTRLRKQMAVKKYLNSILNG
         residue name:X
         residue name:H
@@ -3008,7 +3231,9 @@ class Multi_Coor:
         >>> rmsd_list = VIP_coor.compute_rmsd_to(linear_pep)
         >>> rmsd_str = ['{:.2f}'.format(i) for i in rmsd_list]
         >>> rmsd_str
-        ['58.57', '58.40', '58.74', '58.35', '58.60', '58.53', '58.49', '58.40', '58.45', '58.27', '58.52', '58.34', '58.57', '58.33', '58.34', '58.63', '58.61', '58.40', '58.55', '58.32']
+        ['58.57', '58.40', '58.74', '58.35', '58.60', '58.53',\
+ '58.49', '58.40', '58.45', '58.27', '58.52', '58.34', '58.57',\
+ '58.33', '58.34', '58.63', '58.61', '58.40', '58.55', '58.32']
         """
 
         rmsd_list = []
@@ -3032,9 +3257,6 @@ if __name__ == "__main__":
 
     def getfixture(*args):
         return TEST_OUT
-
-    #sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-    #print(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
     print("-Test pdb_manip module:")
     print("pdb_manip:\t", doctest.testmod())
