@@ -2566,7 +2566,7 @@ KLVPR'
 
     def align_principal_axis(self, axis=2,
                              vector=[0, 0, 1],
-                             selec_dict={'name': ['CA']}):
+                             selec_dict={}):
         """Align principal axis with index `axis` with `vector`.
 
         Taken from:
@@ -2590,7 +2590,7 @@ package/MDAnalysis/core/topologyattrs.py
         #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
         >>> prot_coor.align_principal_axis()
-        Do a rotation of 59.43°
+        Do a rotation of 66.43°
         >>> prot_coor.align_principal_axis()
         Do a rotation of 0.00°
         """
@@ -2625,18 +2625,26 @@ package/MDAnalysis/core/topologyattrs.py
         >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
-        >>> print('Maximum size without alignment is {:.2f}'.format(
+        >>> print('Maximum size without alignment is {:.2f} Å'.format(
         ... np.ceil(prot_coor.get_box_dim()).max()))
-        Maximum size without alignment is 40.00
+        Maximum size without alignment is 40.00 Å
         >>> max_size = prot_coor.get_max_size()
-        Do a rotation of 59.43°
-        >>> print('Maximum size is {:.2f}'.format(max_size))
-        Maximum size is 42.00
+        Do a rotation of 66.43°
+        >>> print('Maximum size is {:.2f} Å'.format(max_size))
+        Maximum size is 43.00 Å
 
         """
 
-        self.align_principal_axis()
+        # Save initial coordinates
+        coor_array = np.array(
+            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+
+        self.align_principal_axis(selec_dict={})
         max_dim = np.ceil(self.get_box_dim()).max()
+
+        # Put back intial coordinates
+        for i, atom_num in enumerate(sorted(self.atom_dict)):
+            self.atom_dict[atom_num]['xyz'] = coor_array[i]
 
         return(max_dim)
 
