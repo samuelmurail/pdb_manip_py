@@ -664,9 +664,21 @@ class Coor:
     def num(self):
         return len(self.atom_dict)
 
-    def get_PDB(self, pdb_ID, out_file=None):
+    def get_PDB(self, pdb_ID, out_file=None, check_file_out=True):
         """Get a pdb file from the PDB using its ID
         and return a Coor object.
+
+        :param pdb_ID: Protein Data Bank structure ID
+        :type pdb_ID: str
+
+        :param out_file: path of the pdb file to save
+        :type out_file: str, optional, default=None
+
+        :param check_file_out: flag to check or not if
+            file has already been created.
+            If the file is present then the command break.
+        :type check_file_out: bool, optional, default=True
+
 
         :Example:
 
@@ -680,6 +692,10 @@ class Coor:
         # Define output file:
         if out_file is None:
             out_file = '{}.pdb'.format(pdb_ID)
+
+        if check_file_out and os_command.check_file_and_create_path(out_file):
+            print("PDB file {} already exist, file not saved".format(out_file))
+            return
 
         # Get the pdb file from the PDB:
         urllib.request.urlretrieve(
@@ -775,6 +791,11 @@ class Coor:
 
         :param pdb_out: path of the pdb file to write
         :type pdb_out: str
+
+        :param check_file_out: flag to check or not if
+            file has already been created.
+            If the file is present then the command break.
+        :type check_file_out: bool, optional, default=True
 
         :Example:
 
