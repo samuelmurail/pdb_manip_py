@@ -695,6 +695,7 @@ class Coor:
 
         if check_file_out and os_command.check_file_and_create_path(out_file):
             print("PDB file {} already exist, file not saved".format(out_file))
+            self.read_pdb(out_file)
             return
 
         # Get the pdb file from the PDB:
