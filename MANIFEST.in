@@ -3,5 +3,6 @@ include *.rst
 include LICENSE
 include pytest.ini
 recursive-include pdb_manip_py *pdb
-recursive-include pdb_manip_py *rst
 recursive-include pdb_manip_py *py
+
+recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif

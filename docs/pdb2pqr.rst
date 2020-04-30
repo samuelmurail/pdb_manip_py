@@ -1,7 +1,7 @@
-Coor class
+Pdb2Pqr Module
 =======================================
 
-.. autoclass:: pdb_manip.Coor
+.. automodule:: pdb_manip_py.pdb2pqr
     :members:
 
 

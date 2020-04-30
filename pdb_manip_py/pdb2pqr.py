@@ -59,7 +59,7 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
     :type ff: str, optional, default="CHARMM"
 
     :param check_file_out: flag to check or not if file has already
-    been created. If the file is present then the command break.
+        been created. If the file is present then the command break.
     :type check_file_out: bool, optional, default=True
 
 

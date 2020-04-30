@@ -4,14 +4,13 @@
    contain the root `toctree` directive.
 
 
-.. include:: ../../README.rst
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Table of Contents:
 
+   readme
    install
+   contributing
    pdb_manip_Coor
    pdb_manip_Multi_Coor
    pdb2pqr

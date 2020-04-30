@@ -1796,11 +1796,13 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
     def get_mass_array(self):
         """ Extract mass of each `atom_dict` and return it as an numpy array
         Avoid using atoms with 2 letters atom name like NA Cl ...
+
         :return: mass array
         :rtype: np.array
 
 
         :Example:
+
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
@@ -3021,8 +3023,9 @@ class Multi_Coor:
     :type crystal_pack: str
 
     .. note::
+
         Files necessary for testing :
-            ../test/input/1y0m.pdb, ../test/input/1rxz.pdb
+        * ../test/input/1y0m.pdb, ../test/input/1rxz.pdb\
         and ../test/input/4n1m.pdb.
         To do the unitary test, execute pdb_mani.py (-v for verbose mode)
 
