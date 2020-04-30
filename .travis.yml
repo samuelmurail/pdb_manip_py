@@ -30,8 +30,8 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - pytest --ignore ci-helpers --cov-report=xml --cov=pdb_manip_py
   # Build Doc:
-  - cd pdb_manip_py/doc
-  - sphinx-build -b html . _build
+  # - cd pdb_manip_py/doc
+  # - sphinx-build -b html . _build
 
 after_success:
   # Launch pytest for codecov
