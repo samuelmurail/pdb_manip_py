@@ -10,6 +10,7 @@
 
    readme
    install
+   usage
    contributing
    pdb_manip_Coor
    pdb_manip_Multi_Coor
