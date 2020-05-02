@@ -1326,7 +1326,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1jd4_A.pdb ,  793 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
-.../tmp_pdb2pqr.pdb .../1jd4.pqr
+...tmp_pdb2pqr.pdb ...1jd4.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'),\
 pqr_format = True)
