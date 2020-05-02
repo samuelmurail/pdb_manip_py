@@ -1,5 +1,5 @@
 {% set name = "pdb_manip_py" %}
-{% set version = "1.0.4" %}
+{% set version = "1.1.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 204d3a121c05075564d2cf08466b6acf5d6c072aab6fa03c926e97f89469ddba
+  sha256: ad53f0868fa92646f44b32ff122c7e5fe4307814f56cd7f9adb02a08567117b1
 
 build:
   number: 0
@@ -18,16 +18,12 @@ requirements:
   host:
     - pip
     - python >=3.5
-    - numpy
-    - scipy
-    - os_command_py
-    - pdb2pqr_htmd_propka30
 
   run:
     - python >=3.5
     - numpy
-    - scipy
-    - os_command_py
+    - scipy >=1.4.0
+    - os_command_py >=1.1.0
     - pdb2pqr_htmd_propka30
 
 test:
