@@ -12,7 +12,15 @@ jobs:
       os: osx
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
-
+   - name: “Python 3.7 on Windows”
+      os: windows # Windows 10.0.17134 N/A Build 17134
+      language: shell # ‘language: python’ is an error on Travis CI Windows
+      before_install:
+        - choco install python --version 3.7.0
+        - python --version
+        - python -m pip install --upgrade pip
+        - pip3 install --upgrade pytest
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 
 git:
   depth: false
@@ -24,7 +32,7 @@ branches:
 cache: pip
 
 install:
-  - pip3 install -r requirements.txt
+  - pip3 install -r requirements_dev.txt
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
