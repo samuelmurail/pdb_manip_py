@@ -69,15 +69,15 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
     >>> # Compute protonation with pdb2pqr:
     >>> compute_pdb2pqr(os.path.join(TEST_PATH,'4n1m.pdb'),
     ... os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
-    Succeed to read file ...test/input/4n1m.pdb ,  2530 atoms found
-    Succeed to save file .../tmp_pdb2pqr.pdb
+    Succeed to read file ...4n1m.pdb ,  2530 atoms found
+    Succeed to save file ...tmp_pdb2pqr.pdb
     pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
-.../tmp_pdb2pqr.pdb .../4n1m.pqr
+...tmp_pdb2pqr.pdb ...4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
-    >>> prot_coor.read_pdb(TEST_OUT+'/4n1m.pqr', pqr_format = True)\
-    #doctest: +ELLIPSIS
-    Succeed to read file .../4n1m.pqr ,  2549 atoms found
+    >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), \
+pqr_format = True) #doctest: +ELLIPSIS
+    Succeed to read file ...4n1m.pqr ,  2549 atoms found
     >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],
     ... 'name':['CA']})
     >>> print(len(HSD_index))

@@ -686,7 +686,7 @@ class Coor:
         >>> prot_coor = Coor()
         >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../3eam.pdb ,  13505 atoms found
+        Succeed to read file ...3eam.pdb ,  13505 atoms found
         """
 
         # Define output file:
@@ -721,7 +721,7 @@ class Coor:
         >>> prot_coor = Coor()
         >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
 
         """
 
@@ -803,10 +803,10 @@ class Coor:
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to save file .../tmp.pdb
+        Succeed to save file ...tmp.pdb
 
         """
 
@@ -859,7 +859,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
 
@@ -900,7 +900,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_num()
         61
 
@@ -924,7 +924,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
         >>> prot_coor.change_pdb_field(change_dict = {"chain" : "B"})\
@@ -955,7 +955,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> res_826_852 = prot_coor.get_index_selection({'res_num' :
         ... range(826,852)})
         >>> prot_coor.change_index_pdb_field(index_list = res_826_852,
@@ -989,7 +989,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_num()
         61
         >>> prot_20_coor = prot_coor.select_part_dict(selec_dict = \
@@ -1042,7 +1042,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_index_selection({'res_num' : [826,827]})
         [297, 298, 299, 300, 301, 302, 303, 304]
 
@@ -1082,7 +1082,7 @@ class Coor:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_attribute_selection({'res_num' : [826,827]},\
 attribute='uniq_resid')
         [35, 36]
@@ -1123,7 +1123,7 @@ attribute='uniq_resid')
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
         >>> res_810_852 = prot_coor.get_index_selection({'res_num' :\
@@ -1154,7 +1154,7 @@ range(810,852)})
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> res_810 = prot_coor.get_index_selection({'res_num' : [810]})
         >>> prot_coor = prot_coor.del_atom_index(index_list = res_810)
         >>> prot_coor.get_aa_seq()
@@ -1230,14 +1230,14 @@ range(810,852)})
         >>> # Compute protonation with pdb2pqr:
         >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '4n1m.pdb'),\
 os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/4n1m.pdb ,  2530 atoms found
-        Succeed to save file .../tmp_pdb2pqr.pdb
+        Succeed to read file ...4n1m.pdb ,  2530 atoms found
+        Succeed to save file ...tmp_pdb2pqr.pdb
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
---ph-calc-method=propka .../tmp_pdb2pqr.pdb .../4n1m.pqr
+--ph-calc-method=propka ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr'), pqr_format\
 = True) #doctest: +ELLIPSIS
-        Succeed to read file .../4n1m.pqr ,  2549 atoms found
+        Succeed to read file ...4n1m.pqr ,  2549 atoms found
         >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
 'name':['CA']})
         >>> print(len(HSD_index))
@@ -1313,24 +1313,24 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         >>> # Read the pdb 1jd4 and keep only chain A
         >>> input_pdb = Coor(os.path.join(TEST_PATH, '1jd4.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1jd4.pdb ,  1586 atoms found
+        Succeed to read file ...1jd4.pdb ,  1586 atoms found
         >>> chain_A = input_pdb.select_part_dict(selec_dict =\
 {'chain' : ['A']})
         >>> chain_A.write_pdb(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to save file .../1jd4_A.pdb
+        Succeed to save file ...1jd4_A.pdb
         >>>
         >>> # Compute protonation with pdb2pqr:
         >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_OUT, '1jd4_A.pdb'),\
 os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
-        Succeed to read file .../1jd4_A.pdb ,  793 atoms found
-        Succeed to save file .../tmp_pdb2pqr.pdb
+        Succeed to read file ...1jd4_A.pdb ,  793 atoms found
+        Succeed to save file ...tmp_pdb2pqr.pdb
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
 .../tmp_pdb2pqr.pdb .../1jd4.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'),\
 pqr_format = True)
-        Succeed to read file .../1jd4.pqr ,  1549 atoms found
+        Succeed to read file ...1jd4.pqr ,  1549 atoms found
         >>> prot_coor.correct_cys_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
         >>> prot_coor.correct_his_name() #doctest: +ELLIPSIS
@@ -1343,7 +1343,7 @@ pqr_format = True)
         0
         >>> prot_coor.add_zinc_finger(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../1jd4_A.pdb ,  793 atoms found
+        Succeed to read file ...1jd4_A.pdb ,  793 atoms found
         Presence of 1 Zinc detected
         change cystein residue(s) : [48, 51, 75]
         change histidine residue(s) : [68]
@@ -1439,14 +1439,14 @@ pqr_format = True)
         >>> # Compute protonation with pdb2pqr:
         >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '1dpx.pdb'),\
 os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
-        Succeed to save file .../tmp_pdb2pqr.pdb
+        Succeed to read file ...1dpx.pdb ,  1192 atoms found
+        Succeed to save file ...tmp_pdb2pqr.pdb
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method\
-=propka .../tmp_pdb2pqr.pdb .../1dpx.pqr
+=propka ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'),
         ... pqr_format = True)
-        Succeed to read file .../1dpx.pqr ,  1961 atoms found
+        Succeed to read file ...1dpx.pqr ,  1961 atoms found
         >>> Isu_index = prot_coor.get_index_selection({'res_name' : ['DISU']})
         >>> print(len(Isu_index))
         16
@@ -1489,7 +1489,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1jd4.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../1jd4.pdb ,  1586 atoms found
+        Succeed to read file ...1jd4.pdb ,  1586 atoms found
         >>> ion_index = prot_coor.get_index_selection({'res_name' : ['ZN']})
         >>> print(len(ion_index))
         2
@@ -1588,7 +1588,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Start import...
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1dpx.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
+        Succeed to read file ...1dpx.pdb ,  1192 atoms found
         >>> hetatm_index = prot_coor.get_index_selection({'field':['HETATM']})
         >>> print(len(hetatm_index))
         179
@@ -1625,24 +1625,24 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1dpx.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1dpx.pdb ,  1192 atoms found
+        Succeed to read file ...1dpx.pdb ,  1192 atoms found
         >>> prot_coor.water_to_ATOM() #doctest: +ELLIPSIS
         <...Coor object at 0x...
         >>> prot_coor.write_pdb(os.path.join(TEST_OUT, '1dpx_water.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to save file .../1dpx_water.pdb
+        Succeed to save file ...1dpx_water.pdb
         >>> # Compute protonation with pdb2pqr:
         >>> pdb2pqr.compute_pdb2pqr(
         ... os.path.join(TEST_OUT, '1dpx_water.pdb'),
         ... os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
-        Succeed to read file .../1dpx_water.pdb ,  1192 atoms found
-        Succeed to save file .../tmp_pdb2pqr.pdb
+        Succeed to read file ...1dpx_water.pdb ,  1192 atoms found
+        Succeed to save file ...tmp_pdb2pqr.pdb
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
-.../tmp_pdb2pqr.pdb .../1dpx_water.pqr
+...tmp_pdb2pqr.pdb ...1dpx_water.pqr
         0
         >>> prot_coor = Coor(os.path.join(
         ... TEST_OUT, '1dpx_water.pqr'), pqr_format = True) #doctest: +ELLIPSIS
-        Succeed to read file .../1dpx_water.pqr ,  2492 atoms found
+        Succeed to read file ...1dpx_water.pqr ,  2492 atoms found
         >>> water_index = prot_coor.get_index_selection(
         ... {'res_name':['TP3M'], 'name':['OH2']})
         >>> print(len(water_index))
@@ -1778,7 +1778,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
@@ -1805,7 +1805,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> mass_1y0m = prot_coor.get_mass_array()
         >>> print("Mass of 10 first atoms: {}".format(mass_1y0m[:10]))
         Mass of 10 first atoms: [7 6 6 8 6 8 6 7 6 6]
@@ -1840,7 +1840,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
@@ -1870,7 +1870,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.centroid()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.03 y:0.44 z:8.57
@@ -1896,7 +1896,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> box_1y0m = prot_coor.get_box_dim()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*box_1y0m))
         x:39.14 y:29.36 z:31.19
@@ -1939,7 +1939,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> res_810 = prot_coor.select_part_dict({'res_num' : [810]})
         >>> close_r810 = prot_coor.get_index_dist_between(
         ... res_810, cutoff_min = 3, cutoff_max = 5)
@@ -2028,7 +2028,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1jd4.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../1jd4.pdb ,  1586 atoms found
+        Succeed to read file ...1jd4.pdb ,  1586 atoms found
         >>> chain_A = prot_coor.select_part_dict(selec_dict={'chain': ['A']})
         >>> chain_B = prot_coor.select_part_dict(selec_dict={'chain': ['B']})
         >>> rmsd = chain_A.compute_rmsd_to(chain_B)
@@ -2103,10 +2103,10 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_1_coor = Coor(os.path.join(TEST_PATH, '1jd4.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../1jd4.pdb ,  1586 atoms found
+        Succeed to read file ...1jd4.pdb ,  1586 atoms found
         >>> prot_2_coor = Coor(os.path.join(TEST_PATH, '1dpx.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file .../1dpx.pdb ,  1192 atoms found
+        Succeed to read file ...1dpx.pdb ,  1192 atoms found
         >>> rmsd, align_sel = prot_1_coor.align_seq_coor_to(prot_2_coor)\
         #doctest: +NORMALIZE_WHITESPACE
         ----------------------------------------NYFPQYPEYAIETARLRTFEAWPRNLKQKP--HQLAEAGF
@@ -2463,7 +2463,7 @@ KLVPR'
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
@@ -2516,7 +2516,7 @@ KLVPR'
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> tensor = prot_coor.moment_inertia()
         >>> print(tensor)
         [[343695.37614973  31289.34303697  40416.71166176]
@@ -2580,7 +2580,7 @@ KLVPR'
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> princ_axis = prot_coor.principal_axis()
         >>> print(princ_axis)
         [[-0.21318784 -0.97697417  0.00850932]
@@ -2618,7 +2618,7 @@ package/MDAnalysis/core/topologyattrs.py
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.align_principal_axis()
         Do a rotation of 66.43°
         >>> prot_coor.align_principal_axis()
@@ -2653,7 +2653,7 @@ package/MDAnalysis/core/topologyattrs.py
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file ...test/input/1y0m.pdb ,  648 atoms found
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> print('Maximum size without alignment is {:.2f} Å'.format(
         ... np.ceil(prot_coor.get_box_dim()).max()))
         Maximum size without alignment is 40.00 Å
@@ -2986,7 +2986,7 @@ package/MDAnalysis/core/topologyattrs.py
         ...                 os.path.join(TEST_PATH, '1rxz.pdb'),
         ...                 pdb_out = os.path.join(TEST_OUT, 'tmp_2.pdb'))\
          #doctest: +ELLIPSIS
-        Succeed to save concat file: .../tmp_2.pdb
+        Succeed to save concat file: ...tmp_2.pdb
         """
 
         if os_command.check_file_and_create_path(pdb_out):
@@ -3056,7 +3056,7 @@ class Multi_Coor:
         >>> VIP_coor = Multi_Coor(os.path.join(TEST_PATH, '2rri.pdb'))\
         #doctest: +ELLIPSIS
         Read 20 Model(s)
-        Succeed to read file ...test/input/2rri.pdb, 479 atoms found
+        Succeed to read file ...2rri.pdb, 479 atoms found
         """
 
         atom_index = 0
@@ -3153,10 +3153,10 @@ class Multi_Coor:
         >>> VIP_coor = Multi_Coor(os.path.join(TEST_PATH, '2rri.pdb'))\
         #doctest: +ELLIPSIS
         Read 20 Model(s)
-        Succeed to read file ...test/input/2rri.pdb, 479 atoms found
+        Succeed to read file ...2rri.pdb, 479 atoms found
         >>> VIP_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to save file .../tmp.pdb
+        Succeed to save file ...tmp.pdb
         """
 
         if check_file_out and os_command.check_file_and_create_path(pdb_out):
@@ -3227,7 +3227,7 @@ class Multi_Coor:
         >>> VIP_coor = Multi_Coor(os.path.join(TEST_PATH, '2rri.pdb'))\
         #doctest: +ELLIPSIS
         Read 20 Model(s)
-        Succeed to read file ...test/input/2rri.pdb, 479 atoms found
+        Succeed to read file ...2rri.pdb, 479 atoms found
         >>> aa_seq = VIP_coor.coor_list[0].get_aa_seq()['A']
         >>> print(aa_seq)
         HSDAVFTDNYTRLRKQMAVKKYLNSILNG
