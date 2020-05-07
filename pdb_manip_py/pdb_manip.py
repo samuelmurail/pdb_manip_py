@@ -9,6 +9,7 @@
 
 # standard library
 import os
+import sys
 import time
 import urllib.request
 
@@ -651,7 +652,7 @@ class Coor:
 
 		"""
 
-		def __init__(self, pdb_in=None, pqr_format=False):
+		def __init__(self, pdb_in=None, pdb_lines=None, pqr_format=False):
 				self.atom_dict = dict()
 				self.crystal_pack = None
 				self._num = None
@@ -790,7 +791,7 @@ class Coor:
 							os.path.relpath(pdb_in), ", ", atom_index, "atoms found")
 
 
-		def parse_pdb_lines(self, pdb_lines):
+		def parse_pdb_lines(self, pdb_lines, pqr_format=False):
 				"""Parse the pdb lines and return atom informations as a dictionnary
 				indexed on the atom num. The fonction can also read pqr files if
 				specified with ``pqr_format = True``,
@@ -868,7 +869,7 @@ class Coor:
 
 								self.atom_dict[atom_index] = atom
 								atom_index += 1
-				print("Succeed to parse lines. ", atom_index, "atoms found")
+				# sys.stderr.write("Succeeded to parse lines. %d atoms found\n" % atom_index)
 
 		def write_pdb(self, pdb_out, check_file_out=True):
 				"""Write a pdb file.
@@ -2713,7 +2714,7 @@ package/MDAnalysis/core/topologyattrs.py
 				p = sele_dict.principal_axis()[axis]
 				# print(p, vector)
 				angle = np.degrees(Coor.angle_vec(p, vector))
-				print('Do a rotation of {:.2f}°'.format(angle))
+				# sys.stderr.write('Do a rotation of {:.2f}°\n'.format(angle))
 
 				r, rmsd = Rotation.align_vectors(
 						p.reshape((1, 3)), np.array(vector).reshape((1, 3)))
