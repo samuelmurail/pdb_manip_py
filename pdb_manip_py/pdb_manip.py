@@ -714,7 +714,8 @@ class Coor:
             out_file = '{}.pdb'.format(pdb_ID)
 
         if check_file_out and os_command.check_file_and_create_path(out_file):
-            logger.info("PDB file {} already exist, file not saved".format(out_file))
+            logger.info("PDB file {} already exist, file not saved".format(
+                out_file))
             self.read_pdb(out_file)
             return
 
@@ -804,8 +805,8 @@ class Coor:
 
                     self.atom_dict[atom_index] = atom
                     atom_index += 1
-        logger.info("Succeed to read file %s ,  %d atoms found" %
-              (os.path.relpath(pdb_in), atom_index))
+        logger.info("Succeed to read file %s ,  %d atoms found" % (
+            os.path.relpath(pdb_in), atom_index))
 
     def parse_pdb_lines(self, pdb_lines, pqr_format=False):
         """Parse the pdb lines and return atom informations as a dictionnary
@@ -912,7 +913,8 @@ class Coor:
         """
 
         if check_file_out and os_command.check_file_and_create_path(pdb_out):
-            logger.info("PDB file {} already exist, file not saved".format(pdb_out))
+            logger.info("PDB file {} already exist, file not saved".format(
+                pdb_out))
             return
 
         filout = open(pdb_out, 'w')
@@ -1920,7 +1922,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             if name[0] in ATOM_MASS_DIST:
                 mass_list.append(ATOM_MASS_DIST[name[0]])
             else:
-                logger.warning('Warning atom {} mass could not be founded'.format(name))
+                logger.warning('Warning atom {} mass could not be'
+                               ' founded'.format(name))
                 mass_list.append(0)
         mass_array = np.array(mass_list)
 
@@ -3259,7 +3262,8 @@ class Multi_Coor:
         """
 
         if check_file_out and os_command.check_file_and_create_path(pdb_out):
-            logger.info("PDB file {} already exist, file not saved".format(pdb_out))
+            logger.info("PDB file {} already exist, file not saved".format(
+                pdb_out))
             return
 
         filout = open(pdb_out, 'w')

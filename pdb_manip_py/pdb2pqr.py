@@ -8,7 +8,6 @@
 
 import os
 import logging
-import sys
 
 from os_command_py import os_command
 
