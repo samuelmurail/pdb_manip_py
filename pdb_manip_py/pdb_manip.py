@@ -3108,7 +3108,7 @@ package/MDAnalysis/core/topologyattrs.py
             count += 1
 
         filout.close()
-        logger.info("Succeed to save concat file: %s" % pdb_out)
+        logger.info("Succeed to save concat file:  %s" % pdb_out)
 
 
 class Multi_Coor:
