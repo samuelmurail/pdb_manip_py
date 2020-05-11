@@ -7,6 +7,8 @@
 
 
 import os
+import logging
+import sys
 
 from os_command_py import os_command
 
@@ -26,6 +28,9 @@ __version__ = "1.0.1"
 __maintainer__ = "Samuel Murail"
 __email__ = "samuel.murail@u-paris.fr"
 __status__ = "Prototype"
+
+# Logging
+logger = logging.getLogger(__name__)
 
 
 PDB2PQR_MOD_DIRNAME = os.path.dirname(os.path.abspath(__file__))
@@ -102,7 +107,7 @@ pqr_format = True) #doctest: +ELLIPSIS
 
     # Check if output files exist and create directory:
     if check_file_out and os_command.check_file_and_create_path(pdb_out):
-        # print("pdb2pqr not launched",pdb_out,"already exist")
+        logger.info("pdb2pqr not launched %s already exist" % pdb_out)
         return pdb_out
 
     out_folder = os_command.get_directory(pdb_out)
