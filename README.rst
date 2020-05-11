@@ -10,9 +10,11 @@
 .. image:: https://codecov.io/gh/samuelmurail/pdb_manip_py/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/samuelmurail/pdb_manip_py
 
-
 .. image:: https://img.shields.io/pypi/v/pdb_manip_py.svg
         :target: https://pypi.python.org/pypi/pdb_manip_py
+
+.. image:: https://img.shields.io/conda/vn/conda-forge/pdb_manip_py.svg
+        :target: https://anaconda.org/conda-forge/pdb_manip_py
 
 Pdb_Manip_py
 =======================================
@@ -49,6 +51,13 @@ Using Pypi
 .. code-block:: bash
 
    pip3 install pdb_manip_py
+
+Using Conda
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   conda install pdb_manip_py -c conda-forge
 
 
 From source code

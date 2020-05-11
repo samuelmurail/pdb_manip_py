@@ -1,6 +1,23 @@
 Installation
 =======================================
 
+Using Pypi
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   pip3 install pdb_manip_py
+
+Using Conda
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   conda install pdb_manip_py -c conda-forge
+
+
+From source code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The sources for Docking Python can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
