@@ -691,11 +691,12 @@ class Coor:
         Example:
 
         >>> import nglview as nv #doctest: +SKIP
+        >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor()
-        >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))\
+        >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
         Succeed to read file ...3eam.pdb ,  13505 atoms found
-        >>> view = nv.NGLWidget(prot_coor.txt_str)
-        >>> view
+        >>> view = nv.NGLWidget(prot_coor.txt_str) #doctest: +SKIP
+        >>> view #doctest: +SKIP
 
         """
 
