@@ -683,6 +683,26 @@ class Coor:
     def num(self):
         return len(self.atom_dict)
 
+    @property
+    def txt_str(self):
+        """ Return a TextStructure object to be view in
+        a jupyter notebook with the module ``nglview``.
+
+        Example:
+
+        >>> import nglview as nv #doctest: +SKIP
+        >>> prot_coor = Coor()
+        >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))\
+        Succeed to read file ...3eam.pdb ,  13505 atoms found
+        >>> view = nv.NGLWidget(prot_coor.txt_str)
+        >>> view
+
+        """
+
+        import nglview as nv
+        struct_str = nv.TextStructure(self.get_structure_string())
+        return struct_str
+
     def get_PDB(self, pdb_ID, out_file=None, check_file_out=True):
         """Get a pdb file from the PDB using its ID
         and return a Coor object.
@@ -746,67 +766,12 @@ class Coor:
 
         """
 
-        atom_index = 0
-        uniq_resid = -1
-        old_res_num = -1
+        file_in = open(pdb_in)
+        lines = file_in.readlines()
+        self.parse_pdb_lines(lines, pqr_format=pqr_format)
 
-        with open(pdb_in) as pdbfile:
-            for line in pdbfile:
-                if line.startswith("CRYST1"):
-                    self.crystal_pack = line
-                if line.startswith('ATOM') or line.startswith("HETATM"):
-
-                    field = line[:6].strip()
-                    atom_num = int(line[6:11])
-                    atom_name = line[12:16].strip()
-
-                    res_name = line[17:20].strip()
-                    chain = line[21]
-                    res_num = int(line[22:26])
-                    insert_res = line[26:27]
-                    xyz = np.array([float(line[30:38]),
-                                    float(line[38:46]),
-                                    float(line[46:54])])
-                    if pqr_format:
-                        alter_loc = ""
-                        res_name = line[16:20].strip()
-                        occ, beta = line[54:62].strip(), line[62:70].strip()
-                    else:
-                        alter_loc = line[16:17]
-                        res_name = line[17:20].strip()
-                        occ, beta = line[54:60].strip(), line[60:66].strip()
-
-                    if occ == "":
-                        occ = 0.0
-                    else:
-                        occ = float(occ)
-
-                    if beta == "":
-                        beta = 0.0
-                    else:
-                        beta = float(beta)
-
-                    if res_num != old_res_num:
-                        uniq_resid += 1
-                        old_res_num = res_num
-
-                    atom = {"field": field,
-                            "num": atom_num,
-                            "name": atom_name,
-                            "alter_loc": alter_loc,
-                            "res_name": res_name,
-                            "chain": chain,
-                            "res_num": res_num,
-                            "uniq_resid": uniq_resid,
-                            "insert_res": insert_res,
-                            "xyz": xyz,
-                            "occ": occ,
-                            "beta": beta}
-
-                    self.atom_dict[atom_index] = atom
-                    atom_index += 1
-        logger.info("Succeed to read file %s ,  %d atoms found" % (
-            os.path.relpath(pdb_in), atom_index))
+        logger.info("Succeed to read file {} ,  {} atoms found".format(
+            os.path.relpath(pdb_in), self.num))
 
     def parse_pdb_lines(self, pdb_lines, pqr_format=False):
         """Parse the pdb lines and return atom informations as a dictionnary
@@ -823,7 +788,8 @@ class Coor:
         >>> f = open(os.path.join(TEST_PATH, '1y0m.pdb'))
         >>> lines = f.readlines()
         >>> prot_coor.parse_pdb_lines(lines)
-        Succeeded to parse lines. 648 atoms found
+        >>> prot_coor.num
+        648
 
         """
 
@@ -832,6 +798,7 @@ class Coor:
         old_res_num = -1
 
         for line in pdb_lines:
+            # print(line)
             if line.startswith("CRYST1"):
                 self.crystal_pack = line
             if line.startswith('ATOM') or line.startswith("HETATM"):
@@ -886,8 +853,53 @@ class Coor:
                 self.atom_dict[atom_index] = atom
                 atom_index += 1
 
-        logger.info("Succeeded to parse lines. %d atoms found" % atom_index)
+        logger.debug("Succeeded to parse lines. %d atoms found" % atom_index)
         return
+
+    def get_structure_string(self):
+        """Return a coor object as a pdb string.
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> pdb_str = prot_coor.get_structure_string()
+        >>> print('Number of caracters: {}'.format(len(pdb_str)))
+        Number of caracters: 43497
+
+        """
+
+        str_out = ""
+        if self.crystal_pack is not None:
+            str_out += (self.crystal_pack)
+        for atom_num, atom in sorted(self.atom_dict.items()):
+            # Atom name should start a column 14, with the type of atom ex:
+            #   - with atom type 'C': ' CH3'
+            # for 2 letters atom type, it should start at coulumn 13 ex:
+            #   - with atom type 'FE': 'FE1'
+            name = atom["name"]
+            if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
+                name = " " + name
+
+            str_out += "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"\
+                       "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
+                        atom["field"],
+                        atom["num"],
+                        name,
+                        atom["alter_loc"],
+                        atom["res_name"],
+                        atom["chain"],
+                        atom["res_num"],
+                        atom["insert_res"],
+                        atom["xyz"][0],
+                        atom["xyz"][1],
+                        atom["xyz"][2],
+                        atom["occ"],
+                        atom["beta"])
+
+        return str_out
 
     def write_pdb(self, pdb_out, check_file_out=True):
         """Write a pdb file.
@@ -918,39 +930,11 @@ class Coor:
             return
 
         filout = open(pdb_out, 'w')
-        if self.crystal_pack is not None:
-            filout.write(self.crystal_pack)
-        for atom_num, atom in sorted(self.atom_dict.items()):
-            # print(pdb_dict[atom_num]["name"])
-
-            # Atom name should start a column 14, with the type of atom ex:
-            #   - with atom type 'C': ' CH3'
-            # for 2 letters atom type, it should start at coulumn 13 ex:
-            #   - with atom type 'FE': 'FE1'
-            name = atom["name"]
-            if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
-                name = " " + name
-
-            filout.write("{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"
-                         "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
-                            atom["field"],
-                            atom["num"],
-                            name,
-                            atom["alter_loc"],
-                            atom["res_name"],
-                            atom["chain"],
-                            atom["res_num"],
-                            atom["insert_res"],
-                            atom["xyz"][0],
-                            atom["xyz"][1],
-                            atom["xyz"][2],
-                            atom["occ"],
-                            atom["beta"]))
-        filout.write("TER\n")
-        filout.close()
+        filout.write(self.get_structure_string())
 
         logger.info("Succeed to save file %s" % os.path.relpath(pdb_out))
         return
+
 
     def get_aa_seq(self):
         """Get the amino acid sequence from a coor object.
