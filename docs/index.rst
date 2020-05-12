@@ -15,7 +15,7 @@
    pdb_manip_Coor
    pdb_manip_Multi_Coor
    pdb2pqr
-   modules
+   authors
 
 Indices and tables
 ------------------
