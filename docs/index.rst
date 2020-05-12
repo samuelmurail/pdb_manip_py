@@ -10,7 +10,7 @@
 
    readme
    install
-   usage
+   notebook/Usage.ipynb
    contributing
    pdb_manip_Coor
    pdb_manip_Multi_Coor
