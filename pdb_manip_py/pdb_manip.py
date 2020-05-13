@@ -684,9 +684,9 @@ class Coor:
         return len(self.atom_dict)
 
     @property
-    def txt_str(self):
-        """ Return a TextStructure object to be view in
-        a jupyter notebook with the module ``nglview``.
+    def view(self):
+        """ Return a `nglview` object to be view in
+        a jupyter notebook.
 
         Example:
 
@@ -695,14 +695,15 @@ class Coor:
         >>> prot_coor = Coor()
         >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
         Succeed to read file ...3eam.pdb ,  13505 atoms found
-        >>> view = nv.NGLWidget(prot_coor.txt_str) #doctest: +SKIP
+        >>> view = prot_coor.view) #doctest: +SKIP
         >>> view #doctest: +SKIP
 
         """
 
         import nglview as nv
         struct_str = nv.TextStructure(self.get_structure_string())
-        return struct_str
+        view = nv.NGLWidget(struct_str)
+        return view
 
     def get_PDB(self, pdb_ID, out_file=None, check_file_out=True):
         """Get a pdb file from the PDB using its ID
