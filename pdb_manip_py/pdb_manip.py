@@ -2095,8 +2095,30 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return rmsd
 
+    def remove_alter_position(self):
+        """ Remove alternative position.
+        
+        :Example:
+
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '4n1m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file pdb_manip_py/test/input/4n1m.pdb ,  2530 atoms found
+        >>> print('Atom num = {}'.format(prot_coor.num))
+        Atom num = 2530
+        >>> prot_coor.remove_alter_position()
+        >>> print('Atom num = {}'.format(prot_coor.num))
+        Atom num = 2475
+        """
+
+        # Remove alter_loc B, C, D
+        alter_loc_bcd = self.get_index_selection(
+            {'alter_loc': ['B', 'C', 'D']})
+        self.del_atom_index(index_list=alter_loc_bcd)
+        self.change_pdb_field(change_dict={"alter_loc": ""})
+        return
+
     def align_to(self, atom_sel_2, selec_dict={'name': ['CA']},
-                 index_list=None, rot_kabsch=True):
+                 index_list=None, rot_kabsch=True, remove_alter=True):
         """ Align structure to an Coor object.
 
         :param atom_sel_1: atom dictionnary
@@ -2131,9 +2153,15 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         RMSD after 2nd alignement is 0.06 Å
 
         """
+
         if index_list is None:
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
+
+            if remove_alter:
+                sel_1_coor.remove_alter_position()
+                sel_2_coor.remove_alter_position()
+
             coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
                 sel_1_coor.atom_dict.items())])
             coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(
