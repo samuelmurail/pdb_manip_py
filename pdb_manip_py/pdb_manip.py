@@ -2118,7 +2118,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         return
 
     def align_to(self, atom_sel_2, selec_dict={'name': ['CA']},
-                 index_list=None, rot_kabsch=True, remove_alter=True):
+                 index_list=None, rot_kabsch=True):
         """ Align structure to an Coor object.
 
         :param atom_sel_1: atom dictionnary
@@ -2157,10 +2157,6 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         if index_list is None:
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
-
-            if remove_alter:
-                sel_1_coor.remove_alter_position()
-                sel_2_coor.remove_alter_position()
 
             coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
                 sel_1_coor.atom_dict.items())])
@@ -2238,9 +2234,11 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         """
 
         sel_1_CA = self.select_part_dict(
-            selec_dict={'name': ['CA'], 'chain': chain_1})
+            selec_dict={'name': ['CA'], 'chain': chain_1,
+                        'res_name': PROTEIN_AA})
         sel_2_CA = atom_sel_2.select_part_dict(
-            selec_dict={'name': ['CA'], 'chain': chain_2})
+            selec_dict={'name': ['CA'], 'chain': chain_2,
+                        'res_name': PROTEIN_AA})
 
         sel_1_seq = sel_1_CA.get_aa_seq()
         sel_2_seq = sel_2_CA.get_aa_seq()
