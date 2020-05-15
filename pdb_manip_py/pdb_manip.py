@@ -683,8 +683,7 @@ class Coor:
     def num(self):
         return len(self.atom_dict)
 
-    @property
-    def view(self):
+    def view_rec(self):
         """ Return a `nglview` object to be view in
         a jupyter notebook.
 
@@ -701,9 +700,33 @@ class Coor:
         """
 
         import nglview as nv
-        struct_str = nv.TextStructure(self.get_structure_string())
+        coor = pdb_manip.Coor(self.rec_pdb)
+        struct_str = nv.TextStructure(coor.get_structure_string())
         view = nv.NGLWidget(struct_str)
         return view
+
+    def view_dock(self):
+        """ Return a `nglview` object to be view in
+        a jupyter notebook.
+
+        Example:
+
+        >>> import nglview as nv #doctest: +SKIP
+        >>> TEST_OUT = str(getfixture('tmpdir'))
+        >>> prot_coor = Coor()
+        >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
+        Succeed to read file ...3eam.pdb ,  13505 atoms found
+        >>> view = prot_coor.view) #doctest: +SKIP
+        >>> view #doctest: +SKIP
+
+        """
+
+        import nglview as nv
+        coor = pdb_manip.Coor(self.rec_pdb)
+        struct_str = nv.TextStructure(coor.get_structure_string())
+        view = nv.NGLWidget(struct_str)
+        return view
+
 
     def get_PDB(self, pdb_ID, out_file=None, check_file_out=True):
         """Get a pdb file from the PDB using its ID
@@ -2102,7 +2125,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '4n1m.pdb'))\
         #doctest: +ELLIPSIS
-        Succeed to read file pdb_manip_py/test/input/4n1m.pdb ,  2530 atoms found
+        Succeed to read file ...4n1m.pdb ,  2530 atoms found
         >>> print('Atom num = {}'.format(prot_coor.num))
         Atom num = 2530
         >>> prot_coor.remove_alter_position()
@@ -3274,7 +3297,7 @@ class Multi_Coor:
         """
 
         if check_file_out and os_command.check_file_and_create_path(pdb_out):
-            logger.info("PDB file {} already exist, file not saved".format(
+            logger.info("PDB file {:>4} already exist, file not saved".format(
                 pdb_out))
             return
 
@@ -3284,7 +3307,7 @@ class Multi_Coor:
 
         model = 1
         for model_coor in self.coor_list:
-            filout.write("MODEL {}\n".format(model))
+            filout.write("MODEL      {:^4}\n".format(model))
             model += 1
 
             for atom_num, atom in sorted(model_coor.atom_dict.items()):
