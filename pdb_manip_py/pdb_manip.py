@@ -683,50 +683,25 @@ class Coor:
     def num(self):
         return len(self.atom_dict)
 
-    def view_rec(self):
+    @property
+    def view(self):
         """ Return a `nglview` object to be view in
         a jupyter notebook.
 
         Example:
 
-        >>> import nglview as nv #doctest: +SKIP
-        >>> TEST_OUT = str(getfixture('tmpdir'))
         >>> prot_coor = Coor()
         >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
         Succeed to read file ...3eam.pdb ,  13505 atoms found
-        >>> view = prot_coor.view) #doctest: +SKIP
+        >>> view = prot_coor.view #doctest: +SKIP
         >>> view #doctest: +SKIP
-
         """
-
         import nglview as nv
-        coor = pdb_manip.Coor(self.rec_pdb)
-        struct_str = nv.TextStructure(coor.get_structure_string())
+
+        struct_str = nv.TextStructure(self.get_structure_string())
         view = nv.NGLWidget(struct_str)
+
         return view
-
-    def view_dock(self):
-        """ Return a `nglview` object to be view in
-        a jupyter notebook.
-
-        Example:
-
-        >>> import nglview as nv #doctest: +SKIP
-        >>> TEST_OUT = str(getfixture('tmpdir'))
-        >>> prot_coor = Coor()
-        >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
-        Succeed to read file ...3eam.pdb ,  13505 atoms found
-        >>> view = prot_coor.view) #doctest: +SKIP
-        >>> view #doctest: +SKIP
-
-        """
-
-        import nglview as nv
-        coor = pdb_manip.Coor(self.rec_pdb)
-        struct_str = nv.TextStructure(coor.get_structure_string())
-        view = nv.NGLWidget(struct_str)
-        return view
-
 
     def get_PDB(self, pdb_ID, out_file=None, check_file_out=True):
         """Get a pdb file from the PDB using its ID
