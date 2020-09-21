@@ -49,7 +49,8 @@ PQR_LIB_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_PATH = os.path.abspath(os.path.join(PQR_LIB_DIR, "test/input/"))
 
 
-def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
+def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM",
+                    method='propka', ph=7.0, check_file_out=True):
     """
     Use pdb2pqr to define protonation state of each residue of a protein.
 
@@ -61,6 +62,12 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
 
     :param ff: forcefield nomenclature for atom names
     :type ff: str, optional, default="CHARMM"
+
+    :param method:  Method used to calculate ph values (propka or pdb2pka).
+    :type method: str, optional, default="propka"
+
+    :param ph: pH value to define AA residue
+    :type ph: float, optional, default=7.0
 
     :param check_file_out: flag to check or not if file has already
         been created. If the file is present then the command break.
@@ -77,7 +84,7 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM", check_file_out=True):
     Succeed to read file ...4n1m.pdb ,  2530 atoms found
     Succeed to save file ...tmp_pdb2pqr.pdb
     pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
-...tmp_pdb2pqr.pdb ...4n1m.pqr
+--with-ph=7.00 .../tmp_pdb2pqr.pdb .../4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
     >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), \
@@ -128,7 +135,8 @@ pqr_format = True) #doctest: +ELLIPSIS
          "--ff", ff,
          "--ffout", ff,
          "--chain",
-         "--ph-calc-method=propka",
+         "--ph-calc-method={}".format(method),
+         "--with-ph={:.2f}".format(ph),
          os.path.join(out_folder + "/tmp_pdb2pqr.pdb"),
          pdb_out])
 
