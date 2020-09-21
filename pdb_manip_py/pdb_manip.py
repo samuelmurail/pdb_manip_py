@@ -3130,7 +3130,7 @@ class Multi_Coor:
 
 
     :param coor_list: list of dictionnary of atom
-    :type coor_listt: list
+    :type coor_list: list
 
     :param crystal_pack: crystal packing
     :type crystal_pack: str
