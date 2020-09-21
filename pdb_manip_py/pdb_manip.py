@@ -936,7 +936,6 @@ class Coor:
         logger.info("Succeed to save file %s" % os.path.relpath(pdb_out))
         return
 
-
     def get_aa_seq(self):
         """Get the amino acid sequence from a coor object.
 
@@ -2096,7 +2095,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
     def remove_alter_position(self):
         """ Remove alternative position.
-        
+
         :Example:
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '4n1m.pdb'))\
