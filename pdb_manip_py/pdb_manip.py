@@ -695,7 +695,7 @@ class Coor:
         >>> prot_coor = Coor()
         >>> prot_coor.get_PDB('3EAM', os.path.join(TEST_OUT, '3eam.pdb'))
         Succeed to read file ...3eam.pdb ,  13505 atoms found
-        >>> view = prot_coor.view) #doctest: +SKIP
+        >>> view = prot_coor.view #doctest: +SKIP
         >>> view #doctest: +SKIP
 
         """
