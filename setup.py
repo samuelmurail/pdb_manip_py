@@ -45,7 +45,7 @@ setup(
         "sphinx_rtd_theme",
         "sphinx-argparse",
         "nbsphinx",
-        "pytest",
+        "pytest>=4.6",
     ],
     include_package_data=True,
 )
