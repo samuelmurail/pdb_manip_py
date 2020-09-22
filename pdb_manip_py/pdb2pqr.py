@@ -84,7 +84,7 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM",
     Succeed to read file ...4n1m.pdb ,  2530 atoms found
     Succeed to save file ...tmp_pdb2pqr.pdb
     pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
---with-ph=7.00 .../tmp_pdb2pqr.pdb .../4n1m.pqr
+--with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
     >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), \
