@@ -3055,14 +3055,14 @@ package/MDAnalysis/core/topologyattrs.py
                 name_a, name_b, name_c, name_d, aa_name))
 
     @staticmethod
-    def atom_dist(atom_1, atom_2):
+    def atom_dist(atom_a, atom_b):
         """Compute the distance between 2 atoms.
 
-        :param atom_1: atom dictionnary
-        :type atom_1: dict
+        :param atom_a: atom dictionnary
+        :type atom_a: dict
 
-        :param atom_2: atom dictionnary
-        :type atom_2: dict
+        :param atom_b: atom dictionnary
+        :type atom_b: dict
 
         :return: distance
         :rtype: float
@@ -3078,8 +3078,100 @@ package/MDAnalysis/core/topologyattrs.py
         1.7320508075688772
         """
 
-        distance = np.linalg.norm(atom_1['xyz'] - atom_2['xyz'])
+        distance = np.linalg.norm(atom_a['xyz'] - atom_b['xyz'])
         return distance
+
+    @staticmethod
+    def atom_angle(atom_a, atom_b, atom_c):
+        """Compute the anlge between 3 atoms.
+
+        :param atom_a: atom dictionnary
+        :type atom_a: dict
+
+        :param atom_b: atom dictionnary
+        :type atom_b: dict
+
+        :param atom_c: atom dictionnary
+        :type atom_c: dict
+
+        :return: angle (degrees)
+        :rtype: float
+
+        :Example:
+
+        >>> atom_1 = {'xyz': np.array([0.0, 0.0, 0.0])}
+        >>> atom_2 = {'xyz': np.array([0.0, 1.0, 0.0])}
+        >>> atom_3 = {'xyz': np.array([1.0, 1.0, 1.0])}
+        >>> Coor.atom_angle(atom_1, atom_2, atom_3)
+        90.0
+        >>> print('{:.3f}'.format(Coor.atom_angle(atom_1, atom_3, atom_2)))
+        35.264
+        """
+
+        ba = atom_a['xyz'] - atom_b['xyz']
+        bc = atom_c['xyz'] - atom_b['xyz']
+        angle = Coor.angle_vec(ba, bc)
+        #cos_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+        #angle = np.arccos(cos_angle)
+
+        return np.degrees(angle)
+
+    @staticmethod
+    def atom_dihed_angle(atom_a, atom_b, atom_c, atom_d):
+        """Compute the dihedral anlge using 4 atoms.
+
+        :param atom_a: atom dictionnary
+        :type atom_a: dict
+
+        :param atom_b: atom dictionnary
+        :type atom_b: dict
+
+        :param atom_c: atom dictionnary
+        :type atom_c: dict
+
+        :param atom_d: atom dictionnary
+        :type atom_d: dict
+
+        :return: dihedral angle
+        :rtype: float
+
+        :Example:
+
+        >>> atom_1 = {'xyz': np.array([0.0, -1.0, 0.0])}
+        >>> atom_2 = {'xyz': np.array([0.0, 0.0, 0.0])}
+        >>> atom_3 = {'xyz': np.array([1.0, 0.0, 0.0])}
+        >>> atom_4 = {'xyz': np.array([1.0, 1.0, 0.0])}
+        >>> atom_5 = {'xyz': np.array([1.0, -1.0, 0.0])}
+        >>> atom_6 = {'xyz': np.array([1.0, -1.0, 1.0])}
+        >>> angle_1 = Coor.atom_dihed_angle(atom_1, atom_2, atom_3, atom_4)
+        >>> print('{:.3f}'.format(angle_1))
+        180.000
+        >>> angle_2 = Coor.atom_dihed_angle(atom_1, atom_2, atom_3, atom_5)
+        >>> print('{:.3f}'.format(angle_2))
+        0.000
+        >>> angle_3 = Coor.atom_dihed_angle(atom_1, atom_2, atom_3, atom_6)
+        >>> print('{:.3f}'.format(angle_3))
+        -45.000
+        """
+
+        ab = -1 * (atom_b['xyz'] - atom_a['xyz'])
+        bc = atom_c['xyz'] - atom_b['xyz']
+        cd = atom_d['xyz'] - atom_c['xyz']
+
+        v1 = np.cross(ab, bc)
+        #v1 /= (v1 * v1).sum(-1)**0.5
+        v2 = np.cross(cd, bc)
+        v1_x_v2 = np.cross(v1, v2)
+
+        y = np.dot(v1_x_v2, bc)*(1.0/np.linalg.norm(bc))
+        x = np.dot(v1, v2)
+        angle = np.arctan2(y, x)
+        #v2 /= (v2 * v2).sum(-1)**0.5
+        #porm = np.sign((v1 * cd).sum(-1))
+        #angle = np.arccos((v1*v2).sum(-1) / ((v1**2).sum(-1) * (v2**2).sum(-1))**0.5)
+        #if not porm == 0:
+        #    angle = angle * porm
+        return np.degrees(angle)
 
     @staticmethod
     def concat_pdb(*pdb_in_files, pdb_out):
