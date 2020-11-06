@@ -3111,8 +3111,6 @@ package/MDAnalysis/core/topologyattrs.py
         ba = atom_a['xyz'] - atom_b['xyz']
         bc = atom_c['xyz'] - atom_b['xyz']
         angle = Coor.angle_vec(ba, bc)
-        #cos_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-        #angle = np.arccos(cos_angle)
 
         return np.degrees(angle)
 
@@ -3159,18 +3157,13 @@ package/MDAnalysis/core/topologyattrs.py
         cd = atom_d['xyz'] - atom_c['xyz']
 
         v1 = np.cross(ab, bc)
-        #v1 /= (v1 * v1).sum(-1)**0.5
         v2 = np.cross(cd, bc)
         v1_x_v2 = np.cross(v1, v2)
 
         y = np.dot(v1_x_v2, bc)*(1.0/np.linalg.norm(bc))
         x = np.dot(v1, v2)
         angle = np.arctan2(y, x)
-        #v2 /= (v2 * v2).sum(-1)**0.5
-        #porm = np.sign((v1 * cd).sum(-1))
-        #angle = np.arccos((v1*v2).sum(-1) / ((v1**2).sum(-1) * (v2**2).sum(-1))**0.5)
-        #if not porm == 0:
-        #    angle = angle * porm
+
         return np.degrees(angle)
 
     @staticmethod
