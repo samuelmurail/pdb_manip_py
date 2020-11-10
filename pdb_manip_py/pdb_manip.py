@@ -668,14 +668,15 @@ class Coor:
 
     """
 
-    def __init__(self, pdb_in=None, pdb_lines=None, pqr_format=False):
+    def __init__(self, coor_in=None, pdb_lines=None):
         self.atom_dict = dict()
         self.crystal_pack = None
         self._num = None
         self.atom_dict = {}
+        self.title = None
 
-        if pdb_in is not None:
-            self.read_pdb(pdb_in, pqr_format)
+        if coor_in is not None:
+            self.read_file(coor_in)
         elif pdb_lines is not None:
             self.parse_pdb_lines(pdb_lines)
 
@@ -745,6 +746,46 @@ class Coor:
             'http://files.rcsb.org/download/{}.pdb'.format(pdb_ID), out_file)
 
         self.read_pdb(out_file)
+
+    def read_file(self, file_in):
+        """Read a pdb file and return atom informations as a dictionnary
+        indexed on the atom num. The fonction can also read pqr files if
+        specified with ``pqr_format = True``,
+        it will only change the column format of beta and occ factors.
+
+        :param pdb_in: path of the pdb file to read
+        :type pdb_in: str
+
+        :param pqr_format: Flag for .pqr file format reading.
+        :type pqr_format: bool, default=False
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_file(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> prot_coor.read_file(os.path.join(TEST_PATH, '1y0m.gro'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.gro ,  648 atoms found
+
+        """
+
+        file_lines = open(file_in)
+        lines = file_lines.readlines()
+        if str(file_in).endswith('.gro'):
+            self.parse_gro_lines(lines)
+        elif str(file_in).endswith('.pqr'):
+            self.parse_pdb_lines(lines, pqr_format=True)
+        elif str(file_in).endswith('.pdb'):
+            self.parse_pdb_lines(lines, pqr_format=False)
+        else:
+            logger.warning('File name doesn\'t finish with .pdb'
+                           'read it as .pdb anyway')
+            self.parse_pdb_lines(lines, pqr_format=False)
+
+        logger.info("Succeed to read file {} ,  {} atoms found".format(
+            os.path.relpath(file_in), self.num))
 
     def read_pdb(self, pdb_in, pqr_format=False):
         """Read a pdb file and return atom informations as a dictionnary
@@ -857,6 +898,85 @@ class Coor:
         logger.debug("Succeeded to parse lines. %d atoms found" % atom_index)
         return
 
+    def parse_gro_lines(self, gro_lines):
+        """Parse a gro file and return atom informations as a dictionnary
+        indexed on the atom num. 
+
+        :param gro_in: lines to parse
+        :type gro_in: list of str
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> f = open(os.path.join(TEST_PATH, '1y0m.gro'))
+        >>> lines = f.readlines()
+        >>> prot_coor.parse_gro_lines(lines)
+        >>> prot_coor.num
+        648
+
+        """
+
+        line_len = len(gro_lines)
+
+        atom_index = 0
+        uniq_resid = -1
+        old_res_num = -1
+
+        for i, line in enumerate(gro_lines):
+            #print(line)
+            if i == 0:
+                self.title = line
+            elif i ==1:
+                num = int(line.strip())
+            elif i == line_len - 1:
+                self.crystal_pack = line
+            elif i>= 2:
+                # "%5d%-5s%5s%5d%8.3f%8.3f%8.3f%8.4f%8.4f%8.4f"
+
+                res_num = int(line[:5])
+                res_name = line[5:10].strip()
+                atom_name = line[10:15].strip()
+                atom_num = int(line[15:20])
+
+
+
+                xyz = np.array([float(line[20:28]),
+                                float(line[28:36]),
+                                float(line[36:44])])
+
+                occ = 0.0
+                beta = 0.0
+                field = 'ATOM'
+                alter_loc = ''
+                chain = ''
+                insert_res = ''
+
+                if res_num != old_res_num:
+                    uniq_resid += 1
+                    old_res_num = res_num
+
+                atom = {"field": field,
+                        "num": atom_num,
+                        "name": atom_name,
+                        "alter_loc": alter_loc,
+                        "res_name": res_name,
+                        "chain": chain,
+                        "res_num": res_num,
+                        "uniq_resid": uniq_resid,
+                        "insert_res": insert_res,
+                        "xyz": xyz,
+                        "occ": occ,
+                        "beta": beta}
+
+                self.atom_dict[atom_index] = atom
+                atom_index += 1
+
+        if num != len(self.atom_dict):
+            logger.warning('Mismatch with atom number in gro file')
+
+        logger.debug(f"Succeeded to parse lines. {atom_index} atoms found")
+        return
+
     def get_structure_string(self):
         """Return a coor object as a pdb string.
 
@@ -868,13 +988,14 @@ class Coor:
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> pdb_str = prot_coor.get_structure_string()
         >>> print('Number of caracters: {}'.format(len(pdb_str)))
-        Number of caracters: 43497
+        Number of caracters: 43488
 
         """
 
         str_out = ""
         if self.crystal_pack is not None:
-            str_out += (self.crystal_pack)
+            str_out += self.cryst_convert(format_out='pdb')
+
         for atom_num, atom in sorted(self.atom_dict.items()):
             # Atom name should start a column 14, with the type of atom ex:
             #   - with atom type 'C': ' CH3'
@@ -886,20 +1007,137 @@ class Coor:
 
             str_out += "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"\
                        "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
-                        atom["field"],
-                        atom["num"],
-                        name,
-                        atom["alter_loc"],
-                        atom["res_name"],
-                        atom["chain"],
-                        atom["res_num"],
-                        atom["insert_res"],
-                        atom["xyz"][0],
-                        atom["xyz"][1],
-                        atom["xyz"][2],
-                        atom["occ"],
-                        atom["beta"])
+                            atom["field"],
+                            atom["num"],
+                            name,
+                            atom["alter_loc"],
+                            atom["res_name"],
+                            atom["chain"],
+                            atom["res_num"],
+                            atom["insert_res"],
+                            atom["xyz"][0],
+                            atom["xyz"][1],
+                            atom["xyz"][2],
+                            atom["occ"],
+                            atom["beta"])
 
+        return str_out
+
+    def cryst_convert(self, format_out='pdb'):
+        """
+        PDB format:
+        https://www.wwpdb.org/documentation/file-format-content/format33/sect8.html
+
+        Gro to pdb:
+        https://mailman-1.sys.kth.se/pipermail/gromacs.org_gmx-users/2008-May/033944.html
+
+        https://en.wikipedia.org/wiki/Fractional_coordinates
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_file(os.path.join(TEST_PATH, '1y0m.gro'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.gro ,  648 atoms found
+        >>> prot_coor.cryst_convert(format_out='pdb')
+        'CRYST1   28.748   30.978   29.753  90.00  92.12  90.00 P 1           1\\n'
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_file(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> prot_coor.cryst_convert(format_out='gro')
+        '   2.87480   3.09780   2.97326   0.00000   0.00000   0.00000   0.00000  -0.11006   0.00000\\n'
+        """
+        line = self.crystal_pack
+        if line.startswith("CRYST1"):
+            format_in = 'pdb'
+            a = float(line[6:15])
+            b = float(line[15:24])
+            c = float(line[24:33])
+            alpha = float(line[33:40])
+            beta = float(line[40:47])
+            gamma = float(line[47:54])
+            sGroup = line[56:66]
+            z = int(line[67:70])
+        else:
+            format_in = 'gro'
+            line_split = line.split()
+            #  v1(x) v2(y) v3(z) v1(y) v1(z) v2(x) v2(z) v3(x) v3(y)
+            if len(line_split) == 3:
+                v1 = np.array([float(line_split[0]), 0., 0.])
+                v2 = np.array([0., float(line_split[1]), 0.])
+                v3 = np.array([0., 0., float(line_split[2])])
+            elif len(line_split) == 9:
+                v1 = np.array([float(line_split[0]), float(line_split[3]), float(line_split[4])])
+                v2 = np.array([float(line_split[5]), float(line_split[1]), float(line_split[6])])
+                v3 = np.array([float(line_split[7]), float(line_split[8]), float(line_split[2])])
+
+        # Convert:
+        if format_out == 'pdb':
+            if format_in == 'gro':
+                a = sum(v1**2)**0.5 * 10
+                b = sum(v2**2)**0.5 * 10
+                c = sum(v3**2)**0.5 * 10
+                alpha = np.rad2deg(Coor.angle_vec(v2, v3))
+                beta = np.rad2deg(Coor.angle_vec(v1, v3))
+                gamma = np.rad2deg(Coor.angle_vec(v1, v2))
+                # Following is wrong, to check !!!
+                sGroup = '1'
+                z = 1
+            new_line = "CRYST1{:9.3f}{:9.3f}{:9.3f}{:7.2f}{:7.2f}{:7.2f} P {:9} {:3d}\n".format(
+                    a, b, c, alpha, beta, gamma, sGroup, z)
+        elif format_out == 'gro':
+            if format_in == 'pdb':
+                alpha = np.deg2rad(alpha)
+                beta = np.deg2rad(beta)
+                gamma = np.deg2rad(gamma)
+                v1 = [a/10, 0., 0.]
+                v2 = [b * cos(gamma) / 10, b * sin(gamma) / 10, 0.]
+                v = (1.0 - cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2 +
+                    2.0 * cos(alpha) * cos(beta) * cos(gamma))**0.5 *\
+                    a * b * c
+                v3 = [c * cos(beta) / 10,
+                      (c / sin(gamma)) * (cos(alpha) - cos(beta) * cos(gamma)) / 10,
+                      v / (a * b * sin(gamma)) /10]
+
+            new_line = "{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}\n".format(
+                    v1[0],v2[1],v3[2],v1[1],v1[2],v2[0],v2[2],v3[0],v3[1])
+
+        return(new_line)
+
+    def get_gro_structure_string(self):
+        """Return a coor object as a pdb string.
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> gro_str = prot_coor.get_gro_structure_string()
+        >>> print('Number of caracters: {}'.format(len(gro_str)))
+        Number of caracters: 29283
+
+        """
+
+        str_out = ""
+        if self.title is not None:
+            str_out += self.title
+        else:
+            str_out += "Create with pdb_manip_py\n"
+        str_out += f"{self.num:6}\n"
+        for atom_num, atom in sorted(self.atom_dict.items()):
+
+            str_out += "{:5d}{:5s}{:>5s}{:5d}"\
+                       "{:8.3f}{:8.3f}{:8.3f}\n".format(
+                            atom["res_num"],
+                            atom["res_name"],
+                            atom["name"],
+                            atom["num"],
+                            atom["xyz"][0]/10,
+                            atom["xyz"][1]/10,
+                            atom["xyz"][2]/10)
+        if self.crystal_pack is not None:
+            str_out += self.cryst_convert(format_out='gro')
+        #print(str_out)
         return str_out
 
     def write_pdb(self, pdb_out, check_file_out=True):
@@ -999,6 +1237,39 @@ class Coor:
         CA_index_list = self.get_index_selection({"name": ["CA"]})
 
         return len(CA_index_list)
+
+    def get_array(self, field='xyz', index_list=None):
+        """ Convert atom dict as a numpy array.
+
+        :param field: field to extract
+        :type field: str (Default='xyz')
+
+        :param index_list: list of index to extract
+        :type index_list: list (Default=None)
+
+        :return: coordinates array
+        :rtype: np.array
+
+        :Example:
+
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> coor_array = prot_coor.get_array()
+        >>> print(coor_array[1:4])
+        [[-0.971  9.213 12.734]
+         [-0.185  7.901 12.631]
+         [ 0.456  7.524 13.61 ]]
+        >>> coor_array = prot_coor.get_array(field='name')
+        >>> print(coor_array[1:4])
+        ['CA' 'C' 'O']
+        """
+
+        if index_list is None:
+            return(np.array([atom[field] for key, atom in sorted(
+                self.atom_dict.items())]))
+        else:
+            return(np.array([self.atom_dict[index][field] for index in index_list]))
 
     def change_pdb_field(self, change_dict):
         """Change all atom field of a coor object,
@@ -1153,6 +1424,39 @@ class Coor:
                 index_list.append(atom_num)
 
         return index_list
+
+    def select_from_index(self, index_list):
+        """Select atom of a coor object from an atom index
+        list.
+        Return a new coor object.
+
+        :param index_list: list of index eg. [0, 4]
+        :type index_list: list
+
+        :return: a new coor object
+        :rtype: coor
+
+        :Example:
+
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> index_list = prot_coor.get_index_selection({'res_num' : [826,827]})
+        >>> index_list
+        [297, 298, 299, 300, 301, 302, 303, 304]
+        >>> prot_sel = prot_coor.select_from_index(index_list)
+        >>> len(prot_sel.atom_dict) == len(index_list)
+        True
+
+        """
+
+        coor_out = Coor()
+
+        for atom_num, atom in self.atom_dict.items():
+            if atom_num in index_list:
+                coor_out.atom_dict[atom_num] = atom
+
+        return coor_out
 
     def get_attribute_selection(self, selec_dict={}, attribute='uniq_resid',
                                 index_list=None):
@@ -1319,8 +1623,8 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
 --ph-calc-method=propka ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
-        >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr'), pqr_format\
-= True) #doctest: +ELLIPSIS
+        >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
+#doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pqr ,  2549 atoms found
         >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
 'name':['CA']})
@@ -1412,8 +1716,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
 ...tmp_pdb2pqr.pdb ...1jd4.pqr
         0
-        >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'),\
-pqr_format = True)
+        >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'))
         Succeed to read file ...1jd4.pqr ,  1549 atoms found
         >>> prot_coor.correct_cys_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
@@ -1528,8 +1831,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method\
 =propka ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
-        >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'),
-        ... pqr_format = True)
+        >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
         Succeed to read file ...1dpx.pqr ,  1961 atoms found
         >>> Isu_index = prot_coor.get_index_selection({'res_name' : ['DISU']})
         >>> print(len(Isu_index))
@@ -1725,7 +2027,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 ...tmp_pdb2pqr.pdb ...1dpx_water.pqr
         0
         >>> prot_coor = Coor(os.path.join(
-        ... TEST_OUT, '1dpx_water.pqr'), pqr_format = True) #doctest: +ELLIPSIS
+        ... TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx_water.pqr ,  2492 atoms found
         >>> water_index = prot_coor.get_index_selection(
         ... {'res_name':['TP3M'], 'name':['OH2']})
@@ -1752,7 +2054,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return self
 
-    def insert_mol(self, pdb_out, out_folder, mol_chain, check_file_out=True):
+    def insert_mol(self, pdb_out, out_folder, mol_chain, mol_num,
+                   check_file_out=True, prot_atom_name=['CA'],
+                   sol_res_name=['SOL'], sol_atom_name=['OW']):
         """
         Insert molecules defined by chain ID ``mol_chain`` in a water solvant.
         Check which water molecules are within ``cutoff_prot_off=12.0`` X
@@ -1770,6 +2074,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         :param mol_chain: chain ID of the molecule to be inserted,
         :type mol_chain: str
 
+        :param mol_num: Number of molecule to be inserted,
+        :type mol_num: int
+
         :param check_file_out: flag to check or not if
             file has already been created.
             If the file is present then the command break.
@@ -1779,6 +2086,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             self.atom_dict file must contain alredy a concatenated
             system with a ligand (chain: ``mol_chain``) and a
             solvated system.
+            Molecules to insert should have different residue number
+            or at least non consecutive.
         """
 
         # Create the out_folder:
@@ -1789,6 +2098,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         cutoff_water_clash = 1.2
         cutoff_prot_off = 12.0
         cutoff_prot_in = 15.0
+        cutoff_mol_off = 5.0
 
         logger.info("Insert mol in system")
 
@@ -1798,21 +2108,31 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             return None
 
         # Select protein, water and molecule atoms :
-        prot_insert_CA = self.select_part_dict(selec_dict={'name': ['CA']})
-        water = self.select_part_dict(selec_dict={'res_name': ['SOL']})
+        prot_insert_CA = self.select_part_dict(selec_dict={'name': prot_atom_name})
+        water = self.select_part_dict(selec_dict={'res_name': sol_res_name})
         water_O = self.select_part_dict(
-            selec_dict={'res_name': ['SOL'], 'name': ['OW']})
+            selec_dict={'res_name': sol_res_name, 'name': sol_atom_name})
         insert = self.select_part_dict(selec_dict={'chain': [mol_chain]})
-        insert_ACE_C = self.select_part_dict(
-            selec_dict={'chain': [mol_chain], 'name': ['C'],
-                        'res_name': ['ACE']})
+        #insert_index_list = self.get_index_selection(
+        #  selec_dict={'chain': [mol_chain]})
+        #lig_res_name = insert.atom_dict[insert_index_list[0]]['res_name']
+        #lig_atom_name = insert.atom_dict[insert_index_list[0]]['name']
+        # print(insert.atom_dict[insert_index_list[0]])
+        #lig_res_num = insert.atom_dict[insert_index_list[0]]['res_num']
 
-        mol_num = insert_ACE_C.num
-        res_insert_list = insert.get_attribute_selection(
-            attribute='uniq_resid')
+        #insert_first_atom = self.select_part_dict(
+        #    selec_dict={'chain': [mol_chain], 'name': [lig_atom_name],
+        #                'res_name': [lig_res_name],
+        #                'res_num': [lig_res_num]})
+
+        #mol_num = insert_first_atom.num
+        #print(insert.atom_dict)
+        res_insert_list = list(set(insert.get_attribute_selection(
+            attribute='uniq_resid')))
         # Need to sort the resid, to have consecutive residues
         res_insert_list.sort()
-        # print("Residue list = ", res_insert_list)
+        # print(res_insert_list)
+        logger.info("Residue list = {}".format(res_insert_list))
         mol_len = int(len(res_insert_list) / mol_num)
 
         logger.info("Insert {} mol of {:d} residues each".format(
@@ -1821,9 +2141,16 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         # Insert one molecule at a time:
         for i in range(mol_num):
             start_time = time.time()
-            water_good_index = water_O.get_index_dist_between(
+            # Get water not too close and too far from the protein
+            water_prot_index = water_O.get_index_dist_between(
                 prot_insert_CA, cutoff_max=cutoff_prot_in,
                 cutoff_min=cutoff_prot_off)
+            # Get water not close from ligand:
+            water_ligand_index = water_O.get_index_dist_between(
+                insert, cutoff_max=1e10,
+                cutoff_min=cutoff_mol_off)
+            water_good_index = [value for value in water_prot_index
+                                if value in water_ligand_index]
             logger.info('insert mol {:3}, water mol {:5}, time={:.2f}'.format(
                 i + 1, len(water_good_index), time.time() - start_time))
             insert_unique = insert.select_part_dict(
@@ -1831,6 +2158,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
                             'uniq_resid': res_insert_list[
                             (mol_len * i):(mol_len * (i + 1))]})
             com_insert = insert_unique.center_of_mass()
+            # print(self.atom_dict[water_good_index[0]]['uniq_resid'])
             trans_vector = self.atom_dict[water_good_index[0]]['xyz'] -\
                 com_insert
 
@@ -1899,8 +2227,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Mass of 10 first atoms: [6 6 6 6 6 6 6 6 6 6]
         """
 
-        name_array = np.array([atom['name'] for key, atom in sorted(
-            self.atom_dict.items())])
+        name_array = self.get_array(field='name')
         mass_list = []
         for name in name_array:
             if name[0] in ATOM_MASS_DIST:
@@ -1938,8 +2265,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         """
 
         local_select = self.select_part_dict(selec_dict=selec_dict)
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(
-            local_select.atom_dict.items())])
+        coor_array = local_select.get_array()
         mass_array = local_select.get_mass_array()
 
         return (coor_array.T * mass_array).sum(axis=1) / sum(mass_array)
@@ -1966,8 +2292,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         """
 
-        coor_array = np.array([atom['xyz'] for key, atom in sorted(
-            self.select_part_dict(selec_dict=selec_dict).atom_dict.items())])
+        coor_array = self.select_part_dict(selec_dict=selec_dict).get_array()
 
         return coor_array.mean(axis=0)
 
@@ -1992,11 +2317,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         if len(selec_dict) > 0:
             sel_coor = self.select_part_dict(selec_dict=selec_dict)
-            coor_array = np.array([atom['xyz'] for key, atom in sorted(
-                sel_coor.atom_dict.items())])
+            coor_array = sel_coor.get_array()
         else:
-            coor_array = np.array([atom['xyz'] for key, atom in sorted(
-                self.atom_dict.items())])
+            coor_array = self.get_array()
 
         min_val = np.amin(coor_array, axis=0)
         max_val = np.amax(coor_array, axis=0)
@@ -2033,13 +2356,11 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         """
 
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in self.atom_dict.items()])
+        coor_array = self.get_array()
         index_array = np.array(
             [key for key, atom in self.atom_dict.items()])
 
-        coor_array_2 = np.array(
-            [atom['xyz'] for key, atom in atom_sel_2.atom_dict.items()])
+        coor_array_2 = atom_sel_2.get_array()
 
         # Compute distance matrix
         dist_mat = distance_matrix(coor_array, coor_array_2)
@@ -2076,15 +2397,11 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         if index_list is None:
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
-            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
-                sel_1_coor.atom_dict.items())])
-            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(
-                sel_2_coor.atom_dict.items())])
+            coor_array_1 = sel_1_coor.get_array()
+            coor_array_2 = sel_2_coor.get_array()
         else:
-            coor_array_1 = np.array(
-                [self.atom_dict[index]['xyz'] for index in index_list[0]])
-            coor_array_2 = np.array([
-                atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
+            coor_array_1 = self.get_array(index_list=index_list[0])
+            coor_array_2 = atom_sel_2.get_array(index_list=index_list[1])
 
         diff = coor_array_1 - coor_array_2
         N = len(coor_array_1)
@@ -2156,19 +2473,14 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
             sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
 
-            coor_array_1 = np.array([atom['xyz'] for key, atom in sorted(
-                sel_1_coor.atom_dict.items())])
-            coor_array_2 = np.array([atom['xyz'] for key, atom in sorted(
-                sel_2_coor.atom_dict.items())])
+            coor_array_1 = sel_1_coor.get_array()
+            coor_array_2 = sel_2_coor.get_array()
         else:
             # print(index_list[0], index_list[1])
-            coor_array_1 = np.array(
-                [self.atom_dict[index]['xyz'] for index in index_list[0]])
-            coor_array_2 = np.array([
-                atom_sel_2.atom_dict[index]['xyz'] for index in index_list[1]])
+            coor_array_1 = self.get_array(index_list=index_list[0])
+            coor_array_2 = atom_sel_2.get_array(index_list=index_list[1])
 
-        all_coor_array_1 = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        all_coor_array_1 = self.get_array()
 
         centroid_1 = coor_array_1.mean(axis=0)
         centroid_2 = coor_array_2.mean(axis=0)
@@ -2586,8 +2898,7 @@ KLVPR'
 
         """
 
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = self.get_array()
 
         tau_x = np.degrees(tau_x)
         tau_y = np.degrees(tau_y)
@@ -2635,8 +2946,7 @@ KLVPR'
          [ 40416.71166176  -9443.32698326 413840.08602987]]
         """
 
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = self.get_array()
 
         # Convert to local coordinates
         com = self.center_of_mass()
@@ -2748,8 +3058,7 @@ package/MDAnalysis/core/topologyattrs.py
             p.reshape((1, 3)), np.array(vector).reshape((1, 3)))
         # print(r.as_matrix())
 
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = self.get_array()
         coor_array -= self.center_of_mass()
         coor_array = np.dot(coor_array, r.as_matrix())
 
@@ -2777,8 +3086,7 @@ package/MDAnalysis/core/topologyattrs.py
         """
 
         # Save initial coordinates
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = self.get_array()
 
         self.align_principal_axis(selec_dict={})
         max_dim = np.ceil(self.get_box_dim()).max()
@@ -2847,14 +3155,11 @@ package/MDAnalysis/core/topologyattrs.py
 
         """
 
-        coor_array = np.array(
-            [atom['xyz'] for key, atom in sorted(self.atom_dict.items())])
+        coor_array = self.get_array()
         index_array = np.array(
             [key for key, atom in sorted(self.atom_dict.items())])
 
-        coor_array_2 = np.array(
-            [atom['xyz'] for key, atom in sorted(
-                atom_sel_2.atom_dict.items())])
+        coor_array_2 = atom_sel_2.get_array()
 
         # Compute distance matrix
         dist_mat = distance_matrix(coor_array, coor_array_2)
