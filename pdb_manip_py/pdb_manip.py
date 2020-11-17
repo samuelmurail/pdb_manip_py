@@ -932,18 +932,13 @@ class Coor:
                 self.crystal_pack = line
             elif i>= 2:
                 # "%5d%-5s%5s%5d%8.3f%8.3f%8.3f%8.4f%8.4f%8.4f"
-
                 res_num = int(line[:5])
                 res_name = line[5:10].strip()
                 atom_name = line[10:15].strip()
                 atom_num = int(line[15:20])
-
-
-
-                xyz = np.array([float(line[20:28]),
-                                float(line[28:36]),
-                                float(line[36:44])])
-
+                xyz = np.array([float(line[20:28]) * 10,
+                                float(line[28:36]) * 10,
+                                float(line[36:44]) * 10])
                 occ = 0.0
                 beta = 0.0
                 field = 'ATOM'
