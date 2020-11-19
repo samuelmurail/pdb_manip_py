@@ -903,7 +903,7 @@ class Coor:
 
     def parse_gro_lines(self, gro_lines):
         """Parse a gro file and return atom informations as a dictionnary
-        indexed on the atom num. 
+        indexed on the atom num.
 
         :param gro_in: lines to parse
         :type gro_in: list of str
@@ -926,14 +926,13 @@ class Coor:
         old_res_num = -1
 
         for i, line in enumerate(gro_lines):
-            #print(line)
             if i == 0:
                 self.title = line
-            elif i ==1:
+            elif i == 1:
                 num = int(line.strip())
             elif i == line_len - 1:
                 self.crystal_pack = line
-            elif i>= 2:
+            elif i >= 2:
                 # "%5d%-5s%5s%5d%8.3f%8.3f%8.3f%8.4f%8.4f%8.4f"
                 res_num = int(line[:5])
                 res_name = line[5:10].strip()
@@ -1040,13 +1039,15 @@ class Coor:
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.gro ,  648 atoms found
         >>> prot_coor.cryst_convert(format_out='pdb')
-        'CRYST1   28.748   30.978   29.753  90.00  92.12  90.00 P 1           1\\n'
+        'CRYST1   28.748   30.978   29.753  90.00  92.12  90.00 P \
+1           1\\n'
         >>> prot_coor = Coor()
         >>> prot_coor.read_file(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.cryst_convert(format_out='gro')
-        '   2.87480   3.09780   2.97326   0.00000   0.00000   0.00000   0.00000  -0.11006   0.00000\\n'
+        '   2.87480   3.09780   2.97326   0.00000   0.00000   \
+0.00000   0.00000  -0.11006   0.00000\\n'
         """
         line = self.crystal_pack
         if line.startswith("CRYST1"):
@@ -1068,9 +1069,15 @@ class Coor:
                 v2 = np.array([0., float(line_split[1]), 0.])
                 v3 = np.array([0., 0., float(line_split[2])])
             elif len(line_split) == 9:
-                v1 = np.array([float(line_split[0]), float(line_split[3]), float(line_split[4])])
-                v2 = np.array([float(line_split[5]), float(line_split[1]), float(line_split[6])])
-                v3 = np.array([float(line_split[7]), float(line_split[8]), float(line_split[2])])
+                v1 = np.array([float(line_split[0]),
+                               float(line_split[3]),
+                               float(line_split[4])])
+                v2 = np.array([float(line_split[5]),
+                               float(line_split[1]),
+                               float(line_split[6])])
+                v3 = np.array([float(line_split[7]),
+                               float(line_split[8]),
+                               float(line_split[2])])
 
         # Convert:
         if format_out == 'pdb':
@@ -1084,8 +1091,9 @@ class Coor:
                 # Following is wrong, to check !!!
                 sGroup = '1'
                 z = 1
-            new_line = "CRYST1{:9.3f}{:9.3f}{:9.3f}{:7.2f}{:7.2f}{:7.2f} P {:9} {:3d}\n".format(
-                    a, b, c, alpha, beta, gamma, sGroup, z)
+            new_line = "CRYST1{:9.3f}{:9.3f}{:9.3f}{:7.2f}{:7.2f}"\
+                       "{:7.2f} P {:9} {:3d}\n".format(
+                        a, b, c, alpha, beta, gamma, sGroup, z)
         elif format_out == 'gro':
             if format_in == 'pdb':
                 alpha = np.deg2rad(alpha)
@@ -1094,14 +1102,18 @@ class Coor:
                 v1 = [a / 10, 0., 0.]
                 v2 = [b * cos(gamma) / 10, b * sin(gamma) / 10, 0.]
                 v = (1.0 - cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2 +
-                    2.0 * cos(alpha) * cos(beta) * cos(gamma))**0.5 *\
+                     2.0 * cos(alpha) * cos(beta) * cos(gamma))**0.5 *\
                     a * b * c
                 v3 = [c * cos(beta) / 10,
-                      (c / sin(gamma)) * (cos(alpha) - cos(beta) * cos(gamma)) / 10,
-                      v / (a * b * sin(gamma)) /10]
+                      (c / sin(gamma)) * (cos(alpha) -
+                      cos(beta) * cos(gamma)) / 10,
+                      v / (a * b * sin(gamma)) / 10]
 
-            new_line = "{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}\n".format(
-                    v1[0],v2[1],v3[2],v1[1],v1[2],v2[0],v2[2],v3[0],v3[1])
+            new_line = "{:10.5f}{:10.5f}{:10.5f}{:10.5f}{:10.5f}"\
+                       "{:10.5f}{:10.5f}{:10.5f}{:10.5f}\n".format(
+                            v1[0], v2[1], v3[2],
+                            v1[1], v1[2], v2[0],
+                            v2[2], v3[0], v3[1])
 
         return(new_line)
 
@@ -1134,12 +1146,12 @@ class Coor:
                             atom["res_name"],
                             atom["name"],
                             atom["num"],
-                            atom["xyz"][0]/10,
-                            atom["xyz"][1]/10,
-                            atom["xyz"][2]/10)
+                            atom["xyz"][0] / 10,
+                            atom["xyz"][1] / 10,
+                            atom["xyz"][2] / 10)
         if self.crystal_pack is not None:
             str_out += self.cryst_convert(format_out='gro')
-        #print(str_out)
+
         return str_out
 
     def write_pdb(self, pdb_out, check_file_out=True):
@@ -1271,7 +1283,8 @@ class Coor:
             return(np.array([atom[field] for key, atom in sorted(
                 self.atom_dict.items())]))
         else:
-            return(np.array([self.atom_dict[index][field] for index in index_list]))
+            return(np.array(
+                [self.atom_dict[index][field] for index in index_list]))
 
     def change_pdb_field(self, change_dict):
         """Change all atom field of a coor object,
@@ -2110,25 +2123,13 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             return None
 
         # Select protein, water and molecule atoms :
-        prot_insert_CA = self.select_part_dict(selec_dict={'name': prot_atom_name})
+        prot_insert_CA = self.select_part_dict(
+          selec_dict={'name': prot_atom_name})
         water = self.select_part_dict(selec_dict={'res_name': sol_res_name})
         water_O = self.select_part_dict(
             selec_dict={'res_name': sol_res_name, 'name': sol_atom_name})
         insert = self.select_part_dict(selec_dict={'chain': [mol_chain]})
-        #insert_index_list = self.get_index_selection(
-        #  selec_dict={'chain': [mol_chain]})
-        #lig_res_name = insert.atom_dict[insert_index_list[0]]['res_name']
-        #lig_atom_name = insert.atom_dict[insert_index_list[0]]['name']
-        # print(insert.atom_dict[insert_index_list[0]])
-        #lig_res_num = insert.atom_dict[insert_index_list[0]]['res_num']
 
-        #insert_first_atom = self.select_part_dict(
-        #    selec_dict={'chain': [mol_chain], 'name': [lig_atom_name],
-        #                'res_name': [lig_res_name],
-        #                'res_num': [lig_res_num]})
-
-        #mol_num = insert_first_atom.num
-        #print(insert.atom_dict)
         res_insert_list = list(set(insert.get_attribute_selection(
             attribute='uniq_resid')))
         # Need to sort the resid, to have consecutive residues
@@ -3522,7 +3523,7 @@ class Multi_Coor:
 
 
     :param coor_list: list of dictionnary of atom
-    :type coor_list: list
+    :type coor_listt: list
 
     :param crystal_pack: crystal packing
     :type crystal_pack: str
@@ -3695,7 +3696,8 @@ class Multi_Coor:
 
                 filout.write(
                     "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"
-                    "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
+                    "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}"
+                    "          {:2s}\n".format(
                         atom["field"],
                         atom["num"],
                         name,
