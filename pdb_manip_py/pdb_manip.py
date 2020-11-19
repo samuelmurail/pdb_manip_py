@@ -860,10 +860,12 @@ class Coor:
                     alter_loc = ""
                     res_name = line[16:20].strip()
                     occ, beta = line[54:62].strip(), line[62:70].strip()
+                    elem_symbol = ''
                 else:
                     alter_loc = line[16:17]
                     res_name = line[17:20].strip()
                     occ, beta = line[54:60].strip(), line[60:66].strip()
+                    elem_symbol = line[76:78]
 
                 if occ == "":
                     occ = 0.0
@@ -890,7 +892,8 @@ class Coor:
                         "insert_res": insert_res,
                         "xyz": xyz,
                         "occ": occ,
-                        "beta": beta}
+                        "beta": beta,
+                        "elem": elem_symbol}
 
                 self.atom_dict[atom_index] = atom
                 atom_index += 1
@@ -945,6 +948,7 @@ class Coor:
                 alter_loc = ''
                 chain = ''
                 insert_res = ''
+                elem_symbol = ''
 
                 if res_num != old_res_num:
                     uniq_resid += 1
@@ -961,7 +965,8 @@ class Coor:
                         "insert_res": insert_res,
                         "xyz": xyz,
                         "occ": occ,
-                        "beta": beta}
+                        "beta": beta,
+                        "elem": elem_symbol}
 
                 self.atom_dict[atom_index] = atom
                 atom_index += 1
@@ -983,7 +988,7 @@ class Coor:
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> pdb_str = prot_coor.get_structure_string()
         >>> print('Number of caracters: {}'.format(len(pdb_str)))
-        Number of caracters: 43488
+        Number of caracters: 51264
 
         """
 
@@ -1001,7 +1006,8 @@ class Coor:
                 name = " " + name
 
             str_out += "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"\
-                       "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}\n".format(
+                       "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}"\
+                       "          {:2s}\n".format(
                             atom["field"],
                             atom["num"],
                             name,
@@ -1014,7 +1020,8 @@ class Coor:
                             atom["xyz"][1],
                             atom["xyz"][2],
                             atom["occ"],
-                            atom["beta"])
+                            atom["beta"],
+                            atom['elem'])
 
         return str_out
 
@@ -1084,7 +1091,7 @@ class Coor:
                 alpha = np.deg2rad(alpha)
                 beta = np.deg2rad(beta)
                 gamma = np.deg2rad(gamma)
-                v1 = [a/10, 0., 0.]
+                v1 = [a / 10, 0., 0.]
                 v2 = [b * cos(gamma) / 10, b * sin(gamma) / 10, 0.]
                 v = (1.0 - cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2 +
                     2.0 * cos(alpha) * cos(beta) * cos(gamma))**0.5 *\
@@ -3314,7 +3321,8 @@ package/MDAnalysis/core/topologyattrs.py
                         "insert_res": "",
                         "xyz": xyz,
                         "occ": 0.0,
-                        "beta": 0.0}
+                        "beta": 0.0,
+                        "elem": ''}
                 res_name_index[atom_name] = atom_num
                 # print(atom)
                 pep.atom_dict[atom_num] = atom
@@ -3595,10 +3603,12 @@ class Multi_Coor:
                         alter_loc = ""
                         res_name = line[16:20].strip()
                         occ, beta = line[54:62].strip(), line[62:70].strip()
+                        elem_symbol = ""
                     else:
                         alter_loc = line[16:17]
                         res_name = line[17:20].strip()
                         occ, beta = line[54:60].strip(), line[60:66].strip()
+                        elem_symbol = line[76:78]
 
                     if occ == "":
                         occ = 0.0
@@ -3625,7 +3635,8 @@ class Multi_Coor:
                             "insert_res": insert_res,
                             "xyz": xyz,
                             "occ": occ,
-                            "beta": beta}
+                            "beta": beta,
+                            "elem": elem_symbol}
 
                     model_coor.atom_dict[atom_index] = atom
                     atom_index += 1
@@ -3697,7 +3708,8 @@ class Multi_Coor:
                         atom["xyz"][1],
                         atom["xyz"][2],
                         atom["occ"],
-                        atom["beta"]))
+                        atom["beta"],
+                        atom["elem"]))
             filout.write("ENDMDL\n".format())
 
         filout.write("TER\n")
