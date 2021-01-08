@@ -1291,7 +1291,7 @@ class Coor:
         """Change all atom field of a coor object,
         the change is based on the change_dict dictionnary.
 
-        :param change_dict: change ditionnay eg. {"chain" : "A"}
+        :param change_dict: change ditionnay eg. {"chain": "A"}
         :type change_dict: dict
 
         :Example:
@@ -1301,7 +1301,7 @@ class Coor:
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
-        >>> prot_coor.change_pdb_field(change_dict = {"chain" : "B"})\
+        >>> prot_coor.change_pdb_field(change_dict = {"chain": "B"})\
         #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_coor.get_aa_seq()
@@ -1332,8 +1332,8 @@ class Coor:
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> res_826_852 = prot_coor.get_index_selection({'res_num' :
         ... range(826,852)})
-        >>> prot_coor.change_index_pdb_field(index_list = res_826_852,
-        ... change_dict = {"chain" : "B"}) #doctest: +ELLIPSIS
+        >>> prot_coor.change_index_pdb_field(index_list=res_826_852,
+        ... change_dict={"chain" : "B"}) #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_seq = prot_coor.get_aa_seq()
         >>> prot_seq == {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQD',
@@ -1366,22 +1366,22 @@ class Coor:
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_num()
         61
-        >>> prot_20_coor = prot_coor.select_part_dict(selec_dict = \
+        >>> prot_20_coor = prot_coor.select_part_dict(selec_dict=\
 {'res_num': list(range(791,800))})
         >>> prot_20_coor.get_aa_seq()
         {'A': 'TFKSAVKAL'}
         >>> prot_20_coor.get_aa_num()
         9
-        >>> prot_N_atom = prot_coor.select_part_dict(selec_dict = {'name'\
+        >>> prot_N_atom = prot_coor.select_part_dict(selec_dict={'name'\
 : ['ZN']})
-        >>> # WARNING using selec_dict = {'name' : 'ZN'} will
+        >>> # WARNING using selec_dict = {'name': 'ZN'} will
         >>> # give you 61 residues !!
         >>> print(prot_N_atom.num)
         0
         >>> # Select only protein atoms
         >>> print(prot_coor.num)
         648
-        >>> prot_only = prot_coor.select_part_dict(selec_dict = \
+        >>> prot_only = prot_coor.select_part_dict(selec_dict=\
 {'res_name': PROTEIN_AA})
         >>> print(prot_only.num)
         526
@@ -1406,7 +1406,7 @@ class Coor:
         """Select atom of a coor object based on the change_dict dictionnary.
         Return the list of index of selected atoms.
 
-        :param selec_dict: select ditionnay eg. {"chain" : ["A","G"]}
+        :param selec_dict: select ditionnay eg. {"chain": ["A","G"]}
         :type selec_dict: dict
 
         :return: list of atom index
@@ -1417,7 +1417,7 @@ class Coor:
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
-        >>> prot_coor.get_index_selection({'res_num' : [826,827]})
+        >>> prot_coor.get_index_selection({'res_num': [826,827]})
         [297, 298, 299, 300, 301, 302, 303, 304]
 
         """
@@ -1457,7 +1457,7 @@ class Coor:
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
-        >>> index_list = prot_coor.get_index_selection({'res_num' : [826,827]})
+        >>> index_list = prot_coor.get_index_selection({'res_num': [826,827]})
         >>> index_list
         [297, 298, 299, 300, 301, 302, 303, 304]
         >>> prot_sel = prot_coor.select_from_index(index_list)
@@ -1479,7 +1479,7 @@ class Coor:
         """Select atom of a coor object based on the change_dict dictionnary.
         Return the list of unique attribute of the selected atoms.
 
-        :param selec_dict: select ditionnay eg. {"chain" : ["A","G"]}
+        :param selec_dict: select ditionnay eg. {"chain": ["A","G"]}
         :type selec_dict: dict
 
         :return: list of atom index
@@ -1490,7 +1490,7 @@ class Coor:
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
-        >>> prot_coor.get_attribute_selection({'res_num' : [826,827]},\
+        >>> prot_coor.get_attribute_selection({'res_num': [826,827]},\
 attribute='uniq_resid')
         [35, 36]
 
@@ -1533,9 +1533,9 @@ attribute='uniq_resid')
         Succeed to read file ...1y0m.pdb ,  648 atoms found
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
-        >>> res_810_852 = prot_coor.get_index_selection({'res_num' :\
-range(810,852)})
-        >>> prot_coor.del_atom_index(index_list = res_810_852)\
+        >>> res_810_852 = prot_coor.get_index_selection({'res_num':\
+ range(810,852)})
+        >>> prot_coor.del_atom_index(index_list=res_810_852)\
         #doctest: +ELLIPSIS
         <...Coor object at ...>
         >>> prot_coor.get_aa_seq()
@@ -1562,8 +1562,8 @@ range(810,852)})
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
-        >>> res_810 = prot_coor.get_index_selection({'res_num' : [810]})
-        >>> prot_coor = prot_coor.del_atom_index(index_list = res_810)
+        >>> res_810 = prot_coor.get_index_selection({'res_num': [810]})
+        >>> prot_coor = prot_coor.del_atom_index(index_list=res_810)
         >>> prot_coor.get_aa_seq()
         {'A': 'TFKSAVKALFDYKAQREDETFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
         >>> prot_coor.correct_chain() #doctest: +ELLIPSIS
@@ -1642,22 +1642,22 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pqr ,  2549 atoms found
-        >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
-'name':['CA']})
+        >>> HSD_index = prot_coor.get_index_selection({'res_name': ['HSD'],\
+'name': ['CA']})
         >>> print(len(HSD_index))
         4
-        >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'],\
-'name':['CA']})
+        >>> HSE_index = prot_coor.get_index_selection({'res_name': ['HSE'],\
+'name': ['CA']})
         >>> print(len(HSE_index))
         0
-        >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'],\
-'name':['CA']})
+        >>> HSP_index = prot_coor.get_index_selection({'res_name': ['HSP'],\
+'name': ['CA']})
         >>> print(len(HSP_index))
         1
         >>> prot_coor.correct_his_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> HIS_index = prot_coor.get_index_selection({'res_name' : ['HIS'],\
-'name':['CA']})
+        >>> HIS_index = prot_coor.get_index_selection({'res_name': ['HIS'],\
+'name': ['CA']})
         >>> print(len(HIS_index))
         0
 
@@ -1723,42 +1723,42 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pqr ,  2567 atoms found
-        >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
-'name':['CA']})
+        >>> HSD_index = prot_coor.get_index_selection({'res_name': ['HSD'],\
+'name': ['CA']})
         >>> print(len(HSD_index))
         0
-        >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'],\
-'name':['CA']})
+        >>> HSE_index = prot_coor.get_index_selection({'res_name': ['HSE'],\
+'name': ['CA']})
         >>> print(len(HSE_index))
         0
-        >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'],\
-'name':['CA']})
+        >>> HSP_index = prot_coor.get_index_selection({'res_name': ['HSP'],\
+'name': ['CA']})
         >>> print(len(HSP_index))
         5
         >>> GLUP_index = prot_coor.get_index_selection({'res_name' : ['GLUP'],\
-'name':['CA']})
+'name': ['CA']})
         >>> print(len(GLUP_index))
         0
-        >>> ASPP_index = prot_coor.get_index_selection({'res_name' : ['ASPP'],\
-'name':['CA']})
+        >>> ASPP_index = prot_coor.get_index_selection({'res_name': ['ASPP'],\
+'name': ['CA']})
         >>> print(len(GLUP_index))
         0
         >>> prot_coor.correct_protonated_res() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> GLUP_index = prot_coor.get_index_selection({'res_name' : ['GLUP'],\
-'name':['CA']})
+        >>> GLUP_index = prot_coor.get_index_selection({'res_name': ['GLUP'],\
+'name': ['CA']})
         >>> print(len(GLUP_index))
         9
-        >>> GLU_index = prot_coor.get_index_selection({'res_name' : ['GLU'],\
-'name':['CA']})
+        >>> GLU_index = prot_coor.get_index_selection({'res_name': ['GLU'],\
+'name': ['CA']})
         >>> print(len(GLU_index))
         3
-        >>> ASPP_index = prot_coor.get_index_selection({'res_name' : ['ASPP'],\
-'name':['CA']})
+        >>> ASPP_index = prot_coor.get_index_selection({'res_name': ['ASPP'],\
+'name': ['CA']})
         >>> print(len(ASPP_index))
         4
-        >>> ASP_index = prot_coor.get_index_selection({'res_name' : ['ASP'],\
-'name':['CA']})
+        >>> ASP_index = prot_coor.get_index_selection({'res_name': ['ASP'],\
+'name': ['CA']})
         >>> print(len(ASP_index))
         3
 
@@ -1804,8 +1804,8 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         >>> input_pdb = Coor(os.path.join(TEST_PATH, '1jd4.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1jd4.pdb ,  1586 atoms found
-        >>> chain_A = input_pdb.select_part_dict(selec_dict =\
-{'chain' : ['A']})
+        >>> chain_A = input_pdb.select_part_dict(selec_dict=\
+{'chain': ['A']})
         >>> chain_A.write_pdb(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to save file ...1jd4_A.pdb
@@ -1827,7 +1827,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         >>> prot_coor.correct_chain() #doctest: +ELLIPSIS
         Chain: A  Residue: 0 to 95
         <...Coor object at 0x...
-        >>> ZN_index = prot_coor.get_index_selection({'name':['ZN']})
+        >>> ZN_index = prot_coor.get_index_selection({'name': ['ZN']})
         >>> print(len(ZN_index))
         0
         >>> prot_coor.add_zinc_finger(os.path.join(TEST_OUT, '1jd4_A.pdb'))\
@@ -1837,7 +1837,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         change cystein residue(s) : [48, 51, 75]
         change histidine residue(s) : [68]
         True
-        >>> ZN_index = prot_coor.get_index_selection({'name':['ZN']})
+        >>> ZN_index = prot_coor.get_index_selection({'name': ['ZN']})
         >>> print(len(ZN_index))
         1
 
@@ -1935,12 +1935,12 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
         Succeed to read file ...1dpx.pqr ,  1961 atoms found
-        >>> Isu_index = prot_coor.get_index_selection({'res_name' : ['DISU']})
+        >>> Isu_index = prot_coor.get_index_selection({'res_name': ['DISU']})
         >>> print(len(Isu_index))
         16
         >>> prot_coor.correct_cys_name() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> Isu_index = prot_coor.get_index_selection({'res_name' : ['DISU']})
+        >>> Isu_index = prot_coor.get_index_selection({'res_name': ['DISU']})
         >>> print(len(Isu_index))
         0
         """
@@ -2077,15 +2077,15 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1dpx.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1dpx.pdb ,  1192 atoms found
-        >>> hetatm_index = prot_coor.get_index_selection({'field':['HETATM']})
+        >>> hetatm_index = prot_coor.get_index_selection({'field': ['HETATM']})
         >>> print(len(hetatm_index))
         179
         >>> prot_coor.water_to_ATOM() #doctest: +ELLIPSIS
         <...Coor object at 0x...
-        >>> hetatm_index = prot_coor.get_index_selection({'field':['HETATM']})
+        >>> hetatm_index = prot_coor.get_index_selection({'field': ['HETATM']})
         >>> print(len(hetatm_index))
         2
-        >>> water_index = prot_coor.get_index_selection({'res_name':['HOH']})
+        >>> water_index = prot_coor.get_index_selection({'res_name': ['HOH']})
         >>> print(len(water_index))
         177
         """
@@ -2132,7 +2132,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         ... TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx_water.pqr ,  2492 atoms found
         >>> water_index = prot_coor.get_index_selection(
-        ... {'res_name':['TP3M'], 'name':['OH2']})
+        ... {'res_name': ['TP3M'], 'name': ['OH2']})
         >>> print(len(water_index))
         177
         """
@@ -2311,7 +2311,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> mass_1y0m = prot_coor.get_mass_array()
         >>> print("Mass of 10 first atoms: {}".format(mass_1y0m[:10]))
         Mass of 10 first atoms: [7 6 6 8 6 8 6 7 6 6]
-        >>> prot_coor_ca = prot_coor.select_part_dict({'name':['CA']})
+        >>> prot_coor_ca = prot_coor.select_part_dict({'name': ['CA']})
         >>> mass_1y0m_ca = prot_coor_ca.get_mass_array()
         >>> print("Mass of 10 first atoms: {}".format(mass_1y0m_ca[:10]))
         Mass of 10 first atoms: [6 6 6 6 6 6 6 6 6 6]
@@ -2346,7 +2346,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> com_1y0m = prot_coor.center_of_mass()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.01 y:0.45 z:8.57
-        >>> com_1y0m_ca = prot_coor.center_of_mass({'name':['CA']})
+        >>> com_1y0m_ca = prot_coor.center_of_mass({'name': ['CA']})
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m_ca))
         x:15.95 y:0.72 z:8.96
 
@@ -2375,7 +2375,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> com_1y0m = prot_coor.centroid()
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m))
         x:16.03 y:0.44 z:8.57
-        >>> com_1y0m_ca = prot_coor.centroid(selec_dict={'name':['CA']})
+        >>> com_1y0m_ca = prot_coor.centroid(selec_dict={'name': ['CA']})
         >>> print("x:{:.2f} y:{:.2f} z:{:.2f}".format(*com_1y0m_ca))
         x:15.95 y:0.72 z:8.96
 
@@ -2438,9 +2438,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
         Succeed to read file ...1y0m.pdb ,  648 atoms found
-        >>> res_810 = prot_coor.select_part_dict({'res_num' : [810]})
+        >>> res_810 = prot_coor.select_part_dict({'res_num': [810]})
         >>> close_r810 = prot_coor.get_index_dist_between(
-        ... res_810, cutoff_min = 3, cutoff_max = 5)
+        ... res_810, cutoff_min=3, cutoff_max=5)
         >>> print(len(close_r810))
         65
 
