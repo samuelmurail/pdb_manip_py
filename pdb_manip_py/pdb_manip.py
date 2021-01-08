@@ -1698,6 +1698,92 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
 
         return self
 
+    def correct_protonated_res(self):
+        """ Correct protonated residues names, to avoid a mix of residue names
+        from pdb2pqr, like GLUP and GLU or ASPP and ASP.
+        To do after pdb2pqr, in order that protonation is recognize by pdb2gmx.
+
+        :Example:
+
+        >>> try: #doctest: +ELLIPSIS
+        ...   print("Start import")
+        ...   from . import pdb2pqr
+        ... except ImportError:
+        ...   import pdb2pqr
+        Start import...
+        >>> TEST_OUT = str(getfixture('tmpdir'))
+        >>> # Compute protonation with pdb2pqr:
+        >>> pdb2pqr.compute_pdb2pqr(os.path.join(TEST_PATH, '4n1m.pdb'),\
+os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
+        Succeed to read file ...4n1m.pdb ,  2530 atoms found
+        Succeed to save file ...tmp_pdb2pqr.pdb
+        pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
+--ph-calc-method=propka ...tmp_pdb2pqr.pdb ...4n1m.pqr
+        0
+        >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
+#doctest: +ELLIPSIS
+        Succeed to read file ...4n1m.pqr ,  2567 atoms found
+        >>> HSD_index = prot_coor.get_index_selection({'res_name' : ['HSD'],\
+'name':['CA']})
+        >>> print(len(HSD_index))
+        0
+        >>> HSE_index = prot_coor.get_index_selection({'res_name' : ['HSE'],\
+'name':['CA']})
+        >>> print(len(HSE_index))
+        0
+        >>> HSP_index = prot_coor.get_index_selection({'res_name' : ['HSP'],\
+'name':['CA']})
+        >>> print(len(HSP_index))
+        5
+        >>> GLUP_index = prot_coor.get_index_selection({'res_name' : ['GLUP'],\
+'name':['CA']})
+        >>> print(len(GLUP_index))
+        0
+        >>> ASPP_index = prot_coor.get_index_selection({'res_name' : ['ASPP'],\
+'name':['CA']})
+        >>> print(len(GLUP_index))
+        0
+        >>> prot_coor.correct_protonated_res() #doctest: +ELLIPSIS
+        <...Coor object at 0x...
+        >>> GLUP_index = prot_coor.get_index_selection({'res_name' : ['GLUP'],\
+'name':['CA']})
+        >>> print(len(GLUP_index))
+        9
+        >>> GLU_index = prot_coor.get_index_selection({'res_name' : ['GLU'],\
+'name':['CA']})
+        >>> print(len(GLU_index))
+        3
+        >>> ASPP_index = prot_coor.get_index_selection({'res_name' : ['ASPP'],\
+'name':['CA']})
+        >>> print(len(ASPP_index))
+        4
+        >>> ASP_index = prot_coor.get_index_selection({'res_name' : ['ASP'],\
+'name':['CA']})
+        >>> print(len(ASP_index))
+        3
+
+
+        """
+
+        # FIND HISTIDINE res
+
+        # ASPP:
+        aspp_uniq_res = self.get_attribute_selection({"res_name": ["ASPP"]},
+                                                     attribute='uniq_resid')
+        aspp_uniq_res = list(set(aspp_uniq_res))
+        # GLUP:
+        glup_uniq_res = self.get_attribute_selection({"res_name": ["GLUP"]},
+                                                     attribute='uniq_resid')
+        glup_uniq_res = list(set(glup_uniq_res))
+
+        for atom_num, atom in self.atom_dict.items():
+            if atom["uniq_resid"] in aspp_uniq_res:
+                atom["res_name"] = "ASPP"
+            elif atom["uniq_resid"] in glup_uniq_res:
+                atom["res_name"] = "GLUP"
+
+        return self
+
     def add_zinc_finger(self, ZN_pdb, cutoff=3.2):
         """ Change protonation state of cysteins and histidine coordinating
         Zinc atoms.
