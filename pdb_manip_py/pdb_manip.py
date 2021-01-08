@@ -863,7 +863,7 @@ class Coor:
                     elem_symbol = ''
                 else:
                     alter_loc = line[16:17]
-                    res_name = line[17:20].strip()
+                    res_name = line[17:21].strip()
                     occ, beta = line[54:60].strip(), line[60:66].strip()
                     elem_symbol = line[76:78]
 
@@ -1004,7 +1004,8 @@ class Coor:
             if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
                 name = " " + name
 
-            str_out += "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"\
+            # Note : Here we use 4 letter residue name.
+            str_out += "{:6s}{:5d} {:4s}{:1s}{:4s}{:1s}{:4d}{:1s}"\
                        "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}"\
                        "          {:2s}\n".format(
                             atom["field"],
@@ -3607,7 +3608,7 @@ class Multi_Coor:
                         elem_symbol = ""
                     else:
                         alter_loc = line[16:17]
-                        res_name = line[17:20].strip()
+                        res_name = line[17:21].strip()
                         occ, beta = line[54:60].strip(), line[60:66].strip()
                         elem_symbol = line[76:78]
 
@@ -3695,7 +3696,7 @@ class Multi_Coor:
                     name = " " + name
 
                 filout.write(
-                    "{:6s}{:5d} {:4s}{:1s}{:3s} {:1s}{:4d}{:1s}"
+                    "{:6s}{:5d} {:4s}{:1s}{:4s}{:1s}{:4d}{:1s}"
                     "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}"
                     "          {:2s}\n".format(
                         atom["field"],
