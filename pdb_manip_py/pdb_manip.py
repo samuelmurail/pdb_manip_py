@@ -1060,7 +1060,10 @@ class Coor:
             beta = float(line[40:47])
             gamma = float(line[47:54])
             sGroup = line[56:66]
-            z = int(line[67:70])
+            try:
+                z = int(line[67:70])
+            except ValueError:
+                z = 1
         else:
             format_in = 'gro'
             line_split = line.split()
@@ -1858,10 +1861,9 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
             logger.info("Presence of {} Zinc detected".format(Zinc_num))
 
         # Add the Zinc atoms:
-        for key, val in Zinc_sel.atom_dict.items():
-            atom = val
+        for key, atom in Zinc_sel.atom_dict.items():
             atom['chain'] = 'Z'
-            self.atom_dict[self.num] = val
+            self.atom_dict[self.num] = atom
 
         # Check cystein and histidine atoms close to ZN:
         close_atom = self.dist_under_index(Zinc_sel, cutoff=cutoff)
@@ -1962,7 +1964,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return self
 
-    def correct_ion_octa(self, ion_name):
+    def correct_ion_octa(self, ion_name, dist=0.9):
         """ For specified ion, create an octahedral dummy model described
         by a set of 6 cationic dummy atoms connected around a central metal
         atom.
@@ -1981,7 +1983,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         >>> ion_index = prot_coor.get_index_selection({'res_name' : ['ZN']})
         >>> print(len(ion_index))
         2
-        >>> prot_coor.correct_ion_octa('ZN') #doctest: +ELLIPSIS
+        >>> prot_coor.correct_ion_octa(['ZN']) #doctest: +ELLIPSIS
         <...Coor object at 0x...
         >>> ion_index = prot_coor.get_index_selection({'res_name' : ['ZN']})
         >>> print(len(ion_index))
@@ -1993,66 +1995,27 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         new_atom_dict = dict()
 
         for atom_num, atom in sorted(self.atom_dict.items()):
-            if ion_name in atom["name"]:
+            if atom["name"] in ion_name:
 
                 ion_atom = atom.copy()
                 ion_atom["num"] = index
                 new_atom_dict[index] = ion_atom
                 index += 1
 
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D1"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0] + float(0.9),
-                                            ion_atom["xyz"][1],
-                                            ion_atom["xyz"][2]])
-                new_atom_dict[index] = ion_atom
-                index += 1
+                gap_array = np.array([[dist, 0, 0],
+                                      [-dist, 0, 0],
+                                      [0, dist, 0],
+                                      [0, -dist, 0],
+                                      [0.9, 0, dist],
+                                      [0.9, 0, -dist]])
 
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D2"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0] - float(0.9),
-                                            ion_atom["xyz"][1],
-                                            ion_atom["xyz"][2]])
-                new_atom_dict[index] = ion_atom
-                index += 1
-
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D3"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0],
-                                            ion_atom["xyz"][1] + float(0.9),
-                                            ion_atom["xyz"][2]])
-                new_atom_dict[index] = ion_atom
-                index += 1
-
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D4"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0],
-                                            ion_atom["xyz"][1] - float(0.9),
-                                            ion_atom["xyz"][2]])
-                new_atom_dict[index] = ion_atom
-                index += 1
-
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D5"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0],
-                                            ion_atom["xyz"][1],
-                                            ion_atom["xyz"][2] + float(0.9)])
-                new_atom_dict[index] = ion_atom
-                index += 1
-
-                ion_atom = atom.copy()
-                ion_atom["name"] = "D6"
-                ion_atom["num"] = index
-                ion_atom["xyz"] = np.array([ion_atom["xyz"][0],
-                                            ion_atom["xyz"][1],
-                                            ion_atom["xyz"][2] - float(0.9)])
-                new_atom_dict[index] = ion_atom
-                index += 1
+                for i, gap in enumerate(gap_array):
+                    ion_atom = atom.copy()
+                    ion_atom["name"] = "D{}".format(i+1)
+                    ion_atom["num"] = index
+                    ion_atom["xyz"] = ion_atom["xyz"]+gap
+                    new_atom_dict[index] = ion_atom
+                    index += 1
 
             else:
                 atom["num"] = index
