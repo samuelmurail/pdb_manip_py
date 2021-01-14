@@ -66,13 +66,20 @@ ATOM_MASS_DIST = {'H': 1,
 
 AA_DICT = {'GLY': 'G',
            'HIS': 'H',
+           'HSP': 'H',
            'HSE': 'H',
            'HSD': 'H',
-           'HSP': 'H',
+           'HIP': 'H',
+           'HIE': 'H',
+           'HID': 'H',
            'ARG': 'R',
            'LYS': 'K',
            'ASP': 'D',
+           'ASPP': 'D',
+           'ASN': 'D',
            'GLU': 'E',
+           'GLUP': 'E',
+           'GLN': 'E',
            'SER': 'S',
            'THR': 'T',
            'ASN': 'N',
@@ -2348,6 +2355,47 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         coor_array = self.select_part_dict(selec_dict=selec_dict).get_array()
 
         return coor_array.mean(axis=0)
+
+
+    def get_center_residue(self, selec_dict={'res_name': PROTEIN_AA}, field='res_num'):
+        """ Find the closet residue to protein center of mass.
+        Return the residue index.
+
+        :param selec_res_list: selection residue
+        :type selec_res_list: list, default={'res_name': PROTEIN_AA}
+
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> center_res = prot_coor.get_center_residue()
+        Minimal distance to protein COM is 3.00 Å with residue "res_num": 841
+        >>> print("Center residue is {:d}".format(center_res))
+        Center residue is 841
+
+        """
+
+        local_select = self.select_part_dict(selec_dict=selec_dict)
+        center_coor = {'xyz': local_select.center_of_mass()}
+
+        residue_num_list = list(set(local_select.get_attribute_selection(attribute=field)))
+
+        dist_min = Coor.atom_dist(center_coor, list(local_select.atom_dict.values())[0])
+        res_ix_min = list(local_select.atom_dict.values())[0][field]
+
+        for res_num in residue_num_list:
+            res_sel = local_select.select_part_dict(selec_dict={field: [res_num]})
+            res_com = {'xyz': res_sel.center_of_mass()}
+            dist = Coor.atom_dist(center_coor, res_com)
+            if dist < dist_min:
+                dist_min = dist
+                res_ix_min = res_num
+                # res_min = residue
+
+        logger.info('Minimal distance to protein COM is {:.2f} Å with residue'
+                    ' \"{}\": {}'.format(dist_min, field, res_ix_min))
+
+        return(res_ix_min)
+
 
     def get_box_dim(self, selec_dict={}):
         """ Compute the x, y, z dimension of a selection
