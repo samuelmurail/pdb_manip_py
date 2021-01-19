@@ -1780,11 +1780,9 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         # ASPP:
         aspp_uniq_res = self.get_attribute_selection({"res_name": ["ASPP"]},
                                                      attribute='uniq_resid')
-        aspp_uniq_res = list(set(aspp_uniq_res))
         # GLUP:
         glup_uniq_res = self.get_attribute_selection({"res_name": ["GLUP"]},
                                                      attribute='uniq_resid')
-        glup_uniq_res = list(set(glup_uniq_res))
 
         for atom_num, atom in self.atom_dict.items():
             if atom["uniq_resid"] in aspp_uniq_res:
@@ -2187,8 +2185,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             selec_dict={'res_name': sol_res_name, 'name': sol_atom_name})
         insert = self.select_part_dict(selec_dict={'chain': [mol_chain]})
 
-        res_insert_list = list(set(insert.get_attribute_selection(
-            attribute='uniq_resid')))
+        res_insert_list = insert.get_attribute_selection(
+            attribute='uniq_resid')
         # Need to sort the resid, to have consecutive residues
         res_insert_list.sort()
         # print(res_insert_list)
@@ -2377,7 +2375,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         local_select = self.select_part_dict(selec_dict=selec_dict)
         center_coor = {'xyz': local_select.center_of_mass()}
 
-        residue_num_list = list(set(local_select.get_attribute_selection(attribute=field)))
+        residue_num_list = local_select.get_attribute_selection(attribute=field)
 
         dist_min = Coor.atom_dist(center_coor, list(local_select.atom_dict.values())[0])
         res_ix_min = list(local_select.atom_dict.values())[0][field]
