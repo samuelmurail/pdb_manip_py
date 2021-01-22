@@ -1867,7 +1867,8 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
 
         # Add the Zinc atoms:
         for key, atom in Zinc_sel.atom_dict.items():
-            atom['chain'] = 'Z'
+            #atom['chain'] = 'Z'
+            print(atom)
             self.atom_dict[self.num] = atom
 
         # Check cystein and histidine atoms close to ZN:
@@ -2007,12 +2008,12 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
                 new_atom_dict[index] = ion_atom
                 index += 1
 
-                gap_array = np.array([[dist, 0, 0],
-                                      [-dist, 0, 0],
+                gap_array = np.array([[-dist, 0, 0],
                                       [0, dist, 0],
+                                      [dist, 0, 0],
                                       [0, -dist, 0],
-                                      [0.9, 0, dist],
-                                      [0.9, 0, -dist]])
+                                      [0, 0, dist],
+                                      [0, 0, -dist]])
 
                 for i, gap in enumerate(gap_array):
                     ion_atom = atom.copy()
