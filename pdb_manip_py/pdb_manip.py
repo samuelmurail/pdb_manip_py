@@ -1868,7 +1868,6 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         # Add the Zinc atoms:
         for key, atom in Zinc_sel.atom_dict.items():
             #atom['chain'] = 'Z'
-            print(atom)
             self.atom_dict[self.num] = atom
 
         # Check cystein and histidine atoms close to ZN:
@@ -1970,7 +1969,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return self
 
-    def correct_ion_octa(self, ion_name, dist=0.9):
+    def correct_ion_octa(self, ion_name_list, dist=0.9):
         """ For specified ion, create an octahedral dummy model described
         by a set of 6 cationic dummy atoms connected around a central metal
         atom.
@@ -2001,7 +2000,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         new_atom_dict = dict()
 
         for atom_num, atom in sorted(self.atom_dict.items()):
-            if atom["name"] in ion_name:
+            if atom["name"] in ion_name_list:
 
                 ion_atom = atom.copy()
                 ion_atom["num"] = index
