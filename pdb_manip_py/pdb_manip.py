@@ -1195,6 +1195,7 @@ class Coor:
 
         filout = open(pdb_out, 'w')
         filout.write(self.get_structure_string())
+        filout.close()
 
         logger.info("Succeed to save file %s" % os.path.relpath(pdb_out))
         return
