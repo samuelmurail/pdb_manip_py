@@ -17,7 +17,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pdb_manip_py',
-    version='1.3.7',
+    version='1.3.8',
     packages=find_packages(),
     description='Pdb_Manip_py is a python library allowing simple operations on pdb coor files.',
     long_description=open('README.rst', encoding='utf-8').read(),
