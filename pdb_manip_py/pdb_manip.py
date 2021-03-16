@@ -96,7 +96,42 @@ AA_DICT = {'GLY': 'G',
            'LEU': 'L',
            'MET': 'M'}
 
-PROTEIN_AA = AA_DICT.keys()
+PROTEIN_RES = list(AA_DICT.keys())
+
+NA_DICT = {'DA5': 'A',
+           'DA3': 'A',
+           'DAN': 'A',
+           'DA': 'A',
+           'DT5': 'T',
+           'DT3': 'T',
+           'DTN': 'T',
+           'DT': 'T',
+           'DC5': 'C',
+           'DC3': 'C',
+           'DCN': 'C',
+           'DC': 'C',
+           'DG5': 'G',
+           'DG3': 'G',
+           'DGN': 'G',
+           'DG': 'G',
+           'RA5': 'A',
+           'RA3': 'A',
+           'RAN': 'A',
+           'RA': 'A',
+           'RU5': 'U',
+           'RU3': 'U',
+           'RUN': 'U',
+           'RU': 'U',
+           'RC5': 'C',
+           'RC3': 'C',
+           'RCN': 'C',
+           'RC': 'C',
+           'RG5': 'G',
+           'RG3': 'G',
+           'RGN': 'G',
+           'RG': 'G'}
+
+DNARNA_RES = list(NA_DICT.keys())
 
 AA_1_TO_3_DICT = {'G': 'GLY',
                   'H': 'HIS',
@@ -1393,7 +1428,7 @@ class Coor:
         >>> print(prot_coor.num)
         648
         >>> prot_only = prot_coor.select_part_dict(selec_dict=\
-{'res_name': PROTEIN_AA})
+{'res_name': PROTEIN_RES})
         >>> print(prot_only.num)
         526
         """
@@ -1529,7 +1564,9 @@ attribute='uniq_resid')
                 # print(atom)
                 attr_list.append(atom[attribute])
 
-        return list(set(attr_list))
+        # To keep order:
+        return list(dict.fromkeys(attr_list))
+        # return list(set(attr_list))
 
     def del_atom_index(self, index_list):
         """Delete atoms of a coor object defined by their ``index``.
@@ -1882,8 +1919,10 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
             if local_atom['res_name'] in ['HIS', 'HSD', 'HSE', 'HSP']:
                 his_uniq_res_list.append(local_atom['uniq_resid'])
 
-        cys_uniq_res_list = list(set(cys_uniq_res_list))
-        his_uniq_res_list = list(set(his_uniq_res_list))
+        # cys_uniq_res_list = list(set(cys_uniq_res_list)) 
+        # his_uniq_res_list = list(set(his_uniq_res_list)) 
+        cys_uniq_res_list = list(dict.fromkeys(cys_uniq_res_list))
+        his_uniq_res_list = list(dict.fromkeys(his_uniq_res_list))
 
         # Change CYS to CYN:
         logger.info("change cystein residue(s) : {}".format(
@@ -2356,12 +2395,12 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         return coor_array.mean(axis=0)
 
 
-    def get_center_residue(self, selec_dict={'res_name': PROTEIN_AA}, field='res_num'):
+    def get_center_residue(self, selec_dict={'res_name': PROTEIN_RES+DNARNA_RES}, field='res_num'):
         """ Find the closet residue to protein center of mass.
         Return the residue index.
 
         :param selec_res_list: selection residue
-        :type selec_res_list: list, default={'res_name': PROTEIN_AA}
+        :type selec_res_list: list, default={'res_name': PROTEIN_RES}
 
         >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
         #doctest: +ELLIPSIS
@@ -2645,10 +2684,10 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         sel_1_CA = self.select_part_dict(
             selec_dict={'name': ['CA'], 'chain': chain_1,
-                        'res_name': PROTEIN_AA})
+                        'res_name': PROTEIN_RES})
         sel_2_CA = atom_sel_2.select_part_dict(
             selec_dict={'name': ['CA'], 'chain': chain_2,
-                        'res_name': PROTEIN_AA})
+                        'res_name': PROTEIN_RES})
 
         sel_1_seq = sel_1_CA.get_aa_seq()
         sel_2_seq = sel_2_CA.get_aa_seq()
