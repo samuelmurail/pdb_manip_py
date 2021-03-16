@@ -823,7 +823,7 @@ class Coor:
             self.parse_pdb_lines(lines, pqr_format=False)
         else:
             logger.warning('File name doesn\'t finish with .pdb'
-                           'read it as .pdb anyway')
+                           ' read it as .pdb anyway')
             self.parse_pdb_lines(lines, pqr_format=False)
 
         logger.info("Succeed to read file {} ,  {} atoms found".format(
