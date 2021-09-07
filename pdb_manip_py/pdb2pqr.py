@@ -83,7 +83,7 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM",
     ... os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
     Succeed to read file ...4n1m.pdb ,  2530 atoms found
     Succeed to save file ...tmp_pdb2pqr.pdb
-    pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+    pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=7.00 \
 ...tmp_pdb2pqr.pdb ...4n1m.pqr
     0

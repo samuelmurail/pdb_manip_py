@@ -1682,7 +1682,7 @@ attribute='uniq_resid')
 os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
@@ -1763,7 +1763,7 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=3.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
@@ -1859,7 +1859,7 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1jd4_A.pdb ,  793 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1jd4.pqr
         0
@@ -1976,7 +1976,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
@@ -2132,7 +2132,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         ... os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx_water.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
 --titration-state-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1dpx_water.pqr
         0
