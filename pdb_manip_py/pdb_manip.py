@@ -76,10 +76,8 @@ AA_DICT = {'GLY': 'G',
            'LYS': 'K',
            'ASP': 'D',
            'ASPP': 'D',
-           'ASN': 'D',
            'GLU': 'E',
            'GLUP': 'E',
-           'GLN': 'E',
            'SER': 'S',
            'THR': 'T',
            'ASN': 'N',
@@ -1684,8 +1682,8 @@ attribute='uniq_resid')
 os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
---ph-calc-method=propka ...tmp_pdb2pqr.pdb ...4n1m.pqr
+        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
@@ -1765,8 +1763,8 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain \
---ph-calc-method=propka ...tmp_pdb2pqr.pdb ...4n1m.pqr
+        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=3.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
@@ -1861,7 +1859,8 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1jd4_A.pdb ,  793 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
+        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1jd4.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'))
@@ -1905,7 +1904,7 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
 
         # Add the Zinc atoms:
         for key, atom in Zinc_sel.atom_dict.items():
-            #atom['chain'] = 'Z'
+            # atom['chain'] = 'Z'
             self.atom_dict[self.num] = atom
 
         # Check cystein and histidine atoms close to ZN:
@@ -1919,8 +1918,8 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
             if local_atom['res_name'] in ['HIS', 'HSD', 'HSE', 'HSP']:
                 his_uniq_res_list.append(local_atom['uniq_resid'])
 
-        # cys_uniq_res_list = list(set(cys_uniq_res_list)) 
-        # his_uniq_res_list = list(set(his_uniq_res_list)) 
+        # cys_uniq_res_list = list(set(cys_uniq_res_list))
+        # his_uniq_res_list = list(set(his_uniq_res_list))
         cys_uniq_res_list = list(dict.fromkeys(cys_uniq_res_list))
         his_uniq_res_list = list(dict.fromkeys(his_uniq_res_list))
 
@@ -1977,8 +1976,8 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method\
-=propka ...tmp_pdb2pqr.pdb ...1dpx.pqr
+        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
         Succeed to read file ...1dpx.pqr ,  1961 atoms found
@@ -2133,7 +2132,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         ... os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx_water.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
+        pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1dpx_water.pqr
         0
         >>> prot_coor = Coor(os.path.join(
@@ -2394,8 +2394,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return coor_array.mean(axis=0)
 
-
-    def get_center_residue(self, selec_dict={'res_name': PROTEIN_RES+DNARNA_RES}, field='res_num'):
+    def get_center_residue(self,
+                           selec_dict={'res_name': PROTEIN_RES+DNARNA_RES},
+                           field='res_num'):
         """ Find the closet residue to protein center of mass.
         Return the residue index.
 
@@ -2415,13 +2416,16 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         local_select = self.select_part_dict(selec_dict=selec_dict)
         center_coor = {'xyz': local_select.center_of_mass()}
 
-        residue_num_list = local_select.get_attribute_selection(attribute=field)
+        residue_num_list = local_select.get_attribute_selection(
+            attribute=field)
 
-        dist_min = Coor.atom_dist(center_coor, list(local_select.atom_dict.values())[0])
+        dist_min = Coor.atom_dist(center_coor,
+                                  list(local_select.atom_dict.values())[0])
         res_ix_min = list(local_select.atom_dict.values())[0][field]
 
         for res_num in residue_num_list:
-            res_sel = local_select.select_part_dict(selec_dict={field: [res_num]})
+            res_sel = local_select.select_part_dict(
+                selec_dict={field: [res_num]})
             res_com = {'xyz': res_sel.center_of_mass()}
             dist = Coor.atom_dist(center_coor, res_com)
             if dist < dist_min:
@@ -2433,7 +2437,6 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
                     ' \"{}\": {}'.format(dist_min, field, res_ix_min))
 
         return(res_ix_min)
-
 
     def get_box_dim(self, selec_dict={}):
         """ Compute the x, y, z dimension of a selection

@@ -41,7 +41,7 @@ if on_rtd:
     PDB2PQR_BIN = ""
 else:
     # Add 'pdb2pqr_cli' in case it is installed with conda
-    PDB2PQR_BIN = os_command.which('pdb2pqr.py', 'pdb2pqr_cli')
+    PDB2PQR_BIN = os_command.which('pdb2pqr30')
     # PDB2PQR_BIN = os_command.which('pdb2pqr_cli')
 
 # Test folder path
@@ -83,8 +83,9 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM",
     ... os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
     Succeed to read file ...4n1m.pdb ,  2530 atoms found
     Succeed to save file ...tmp_pdb2pqr.pdb
-    pdb2pqr... --ff CHARMM --ffout CHARMM --chain --ph-calc-method=propka \
---with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
+    pdb2pqr30 --ff CHARMM --ffout CHARMM --keep-chain \
+--titration-state-method=propka --with-ph=7.00 \
+...tmp_pdb2pqr.pdb ...4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
     >>> prot_coor.read_pdb(os.path.join(TEST_OUT, '4n1m.pqr'), \
@@ -134,8 +135,8 @@ pqr_format = True) #doctest: +ELLIPSIS
         [PDB2PQR_BIN,
          "--ff", ff,
          "--ffout", ff,
-         "--chain",
-         "--ph-calc-method={}".format(method),
+         "--keep-chain",
+         "--titration-state-method={}".format(method),
          "--with-ph={:.2f}".format(ph),
          os.path.join(out_folder + "/tmp_pdb2pqr.pdb"),
          pdb_out])

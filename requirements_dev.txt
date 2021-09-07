@@ -4,4 +4,4 @@ pytest-cov
 numpy
 scipy>=1.4.0
 os_command_py
-pdb2pqr_htmd_propka30
+pdb2pqr
