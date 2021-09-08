@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # Autorship information
-__author__ = "Samuel Murail"
+__author__ = "Samuel Murail, Pierre Tuffery"
 __copyright__ = "Copyright 2020, RPBS"
 __credits__ = ["Samuel Murail"]
 __license__ = "GNU General Public License v2.0"

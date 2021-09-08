@@ -24,14 +24,14 @@ from os_command_py import os_command
 
 
 # Autorship information
-__author__ = "Samuel Murail, Damien Espana, Pierre Tuffery"
+__author__ = "Samuel Murail, Pierre Tuffery"
 __copyright__ = "Copyright 2020, RPBS"
 __credits__ = ["Samuel Murail"]
 __license__ = "GNU General Public License v2.0"
 __version__ = "1.0.1"
 __maintainer__ = "Samuel Murail"
 __email__ = "samuel.murail@u-paris.fr"
-__status__ = "Prototype"
+__status__ = "Production"
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -1198,6 +1198,51 @@ class Coor:
 
         return str_out
 
+    def get_pqr_structure_string(self):
+        """Return a coor object as a pqr string.
+
+        :Example:
+
+        >>> prot_coor = Coor()
+        >>> prot_coor.read_pdb(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> pqr_str = prot_coor.get_pqr_structure_string()
+        >>> print('Number of caracters: {}'.format(len(pqr_str)))
+        Number of caracters: 46728
+
+        """
+
+        str_out = ""
+        if self.crystal_pack is not None:
+            str_out += self.cryst_convert(format_out='pdb')
+
+        for atom_num, atom in sorted(self.atom_dict.items()):
+            # Atom name should start a column 14, with the type of atom ex:
+            #   - with atom type 'C': ' CH3'
+            # for 2 letters atom type, it should start at coulumn 13 ex:
+            #   - with atom type 'FE': 'FE1'
+            name = atom["name"]
+            if len(name) <= 3 and name[0] in ['C', 'H', 'O', 'N', 'S', 'P']:
+                name = " " + name
+
+            # Note : Here we use 4 letter residue name.
+            str_out += "{:6s} {:4d} {:4s}  {:3s}{:1s}{:4d} "\
+                       "    {:7.3f} {:7.3f} {:7.3f} {:7.4f} {:7.4f}"\
+                       " \n".format(
+                            atom["field"],
+                            atom["num"],
+                            name,
+                            atom["res_name"],
+                            atom["chain"],
+                            atom["res_num"],
+                            atom["xyz"][0],
+                            atom["xyz"][1],
+                            atom["xyz"][2],
+                            atom["occ"],
+                            atom["beta"])
+        return str_out
+
     def write_pdb(self, pdb_out, check_file_out=True):
         """Write a pdb file.
 
@@ -1231,6 +1276,41 @@ class Coor:
         filout.close()
 
         logger.info("Succeed to save file %s" % os.path.relpath(pdb_out))
+        return
+
+    def write_pqr(self, pqr_out, check_file_out=True):
+        """Write a pdb file.
+
+        :param pdb_out: path of the pdb file to write
+        :type pdb_out: str
+
+        :param check_file_out: flag to check or not if
+            file has already been created.
+            If the file is present then the command break.
+        :type check_file_out: bool, optional, default=True
+
+        :Example:
+
+        >>> TEST_OUT = str(getfixture('tmpdir'))
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> prot_coor.write_pdb(os.path.join(TEST_OUT, 'tmp.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to save file ...tmp.pdb
+
+        """
+
+        if check_file_out and os_command.check_file_and_create_path(pqr_out):
+            logger.info("PQR file {} already exist, file not saved".format(
+                pqr_out))
+            return
+
+        filout = open(pqr_out, 'w')
+        filout.write(self.get_pqr_structure_string())
+        filout.close()
+
+        logger.info("Succeed to save file %s" % os.path.relpath(pqr_out))
         return
 
     def get_aa_seq(self):

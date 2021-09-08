@@ -19,14 +19,14 @@ except ImportError:
     import pdb_manip
 
 # Autorship information
-__author__ = "Samuel Murail, Damien Espana, Pierre Tuffery"
+__author__ = "Samuel Murail, Pierre Tuffery"
 __copyright__ = "Copyright 2020, RPBS"
 __credits__ = ["Samuel Murail"]
 __license__ = "GNU General Public License v2.0"
 __version__ = "1.0.1"
 __maintainer__ = "Samuel Murail"
 __email__ = "samuel.murail@u-paris.fr"
-__status__ = "Prototype"
+__status__ = "Production"
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -127,8 +127,24 @@ pqr_format = True) #doctest: +ELLIPSIS
     tmp_coor = pdb_manip.Coor()
     tmp_coor.read_pdb(pdb_in)
 
+    # Remove Nucleic acids:
+    # WARNING, that part might be removed, as pdb2pqr could compute
+    # protonation on nucleic acid in a near future
+    na_index = tmp_coor.get_index_selection({'res_name': pdb_manip.NA_DICT})
+    tmp_coor.del_atom_index(index_list=na_index)
+
     # Remove HETATM
     no_hetatm_pdb = tmp_coor.select_part_dict({'field': 'ATOM'})
+    if no_hetatm_pdb.num == 0:
+        logger.warning('No amino acids present in pdb file'
+                       ', no PD2PQR calculation')
+        tmp_coor = pdb_manip.Coor()
+        tmp_coor.read_pdb(pdb_in)
+        # To be coherent with the pdb2pqr calc., remove HETATOM :
+        no_hetatm_pdb = tmp_coor.select_part_dict({'field': 'ATOM'})
+        no_hetatm_pdb.write_pqr(pdb_out)
+        return
+
     no_hetatm_pdb.write_pdb(os.path.join(out_folder + "/tmp_pdb2pqr.pdb"))
 
     cmd_pdb2pqr = os_command.Command(
