@@ -1,7 +1,10 @@
-sphinx-argparse
-sphinx_rtd_theme
-nbsphinx
+sphinx>=3.0
+sphinx-argparse>=0.2.5
+sphinx_rtd_theme>=0.5
+nbsphinx>=0.8.7
+pygments>=2.4.1
 numpy
 scipy>=1.4.0
 os_command_py
-pdb2pqr_htmd_propka30
+pdb2pqr
+ipython
