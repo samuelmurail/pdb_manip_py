@@ -1342,15 +1342,16 @@ class Coor:
 
         for index in sorted(CA_index_list):
             loop_atom = self.atom_dict[index]
-
-            if loop_atom['chain'] != chain_first:
-                seq_dict[chain_first] = seq
-                seq = ""
-                chain_first = loop_atom['chain']
-
-            seq = seq + AA_DICT[loop_atom['res_name']]
-
-        seq_dict[chain_first] = seq
+            chain = loop_atom['chain']
+            res_name = loop_atom['res_name']
+            
+            if chain not in seq_dict:
+                seq_dict[chain] = ""
+                    
+            if loop_atom['res_name'] in AA_DICT:
+                seq_dict[chain] = seq_dict[chain] + AA_DICT[res_name]
+            else:
+                logger.warning(f"Residue {res_name} in chain {chain} not recognized")
 
         return seq_dict
 
