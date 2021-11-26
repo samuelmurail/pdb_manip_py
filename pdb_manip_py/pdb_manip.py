@@ -1338,18 +1338,31 @@ class Coor:
 
         seq = ""
         seq_dict = {}
+        aa_num_dict = {}
         chain_first = self.atom_dict[CA_index_list[0]]['chain']
+
+        alter_loc_bcd = self.get_index_selection(
+            {'alter_loc': ['B', 'C', 'D']})
+
+        CA_index_list = [i for i in CA_index_list if i not in alter_loc_bcd]
 
         for index in sorted(CA_index_list):
             loop_atom = self.atom_dict[index]
             chain = loop_atom['chain']
             res_name = loop_atom['res_name']
+            resnum = loop_atom['res_num']
             
             if chain not in seq_dict:
                 seq_dict[chain] = ""
+                aa_num_dict[chain] = resnum
                     
             if loop_atom['res_name'] in AA_DICT:
-                seq_dict[chain] = seq_dict[chain] + AA_DICT[res_name]
+                if resnum != aa_num_dict[chain] + 1 and len(seq_dict[chain]) != 0:
+                    logger.warning(f"Residue {chain}:{res_name}:{resnum} is "
+                                   "not consecutive, there might be missing residues")
+                    seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
+                seq_dict[chain] += AA_DICT[res_name]
+                aa_num_dict[chain] = resnum
             else:
                 logger.warning(f"Residue {res_name} in chain {chain} not recognized")
 
@@ -1692,7 +1705,8 @@ attribute='uniq_resid')
         >>> res_810 = prot_coor.get_index_selection({'res_num': [810]})
         >>> prot_coor = prot_coor.del_atom_index(index_list=res_810)
         >>> prot_coor.get_aa_seq()
-        {'A': 'TFKSAVKALFDYKAQREDETFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
+        Residue A:THR:811 is not consecutive, there might be missing residues
+        {'A': 'TFKSAVKALFDYKAQREDE-TFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
         >>> prot_coor.correct_chain() #doctest: +ELLIPSIS
         Chain: A  Residue: 0 to 18
         Chain: B  Residue: 20 to 60
