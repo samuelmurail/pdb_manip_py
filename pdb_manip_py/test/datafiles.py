@@ -27,3 +27,4 @@ TEST_FILE_PATH = os.path.join(PYTEST_DIR, "input/")
 
 PDB_1D30 = os.path.join(TEST_FILE_PATH, '1D30.pdb')
 PDB_4N1M = os.path.join(TEST_FILE_PATH, '4n1m.pdb')
+PDB_1JD4 = os.path.join(TEST_FILE_PATH, '1jd4.pdb')

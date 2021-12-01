@@ -39,7 +39,7 @@ def test_pdb2pqr_ph4_7_12_charmm(tmp_path):
     pdb2pqr.compute_pdb2pqr(os.path.join(PDB_4N1M),
                             out_file, ff=ff, ph=4.0)
     prot_coor = pdb_manip.Coor(out_file)
-    assert prot_coor.num == 2560
+    assert prot_coor.num == 2559
 
     HSD_index = prot_coor.get_index_selection(
         {'res_name': ['HSD'], 'name': ['CA']})
