@@ -1336,10 +1336,8 @@ class Coor:
         # Get CA atoms
         CA_index_list = self.get_index_selection({"name": ["CA"]})
 
-        seq = ""
         seq_dict = {}
         aa_num_dict = {}
-        chain_first = self.atom_dict[CA_index_list[0]]['chain']
 
         alter_loc_bcd = self.get_index_selection(
             {'alter_loc': ['B', 'C', 'D']})
@@ -1351,20 +1349,23 @@ class Coor:
             chain = loop_atom['chain']
             res_name = loop_atom['res_name']
             resnum = loop_atom['res_num']
-            
+
             if chain not in seq_dict:
                 seq_dict[chain] = ""
                 aa_num_dict[chain] = resnum
-                    
+
             if loop_atom['res_name'] in AA_DICT:
-                if resnum != aa_num_dict[chain] + 1 and len(seq_dict[chain]) != 0:
+                if (resnum != aa_num_dict[chain] + 1
+                        and len(seq_dict[chain]) != 0):
                     logger.warning(f"Residue {chain}:{res_name}:{resnum} is "
-                                   "not consecutive, there might be missing residues")
+                                   "not consecutive, there might be missing "
+                                   "residues")
                     seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
                 seq_dict[chain] += AA_DICT[res_name]
                 aa_num_dict[chain] = resnum
             else:
-                logger.warning(f"Residue {res_name} in chain {chain} not recognized")
+                logger.warning(f"Residue {res_name} in chain {chain} not "
+                               "recognized")
 
         return seq_dict
 
@@ -1388,6 +1389,11 @@ class Coor:
         """
 
         CA_index_list = self.get_index_selection({"name": ["CA"]})
+
+        # Remove alternative location
+        alter_loc_bcd = self.get_index_selection(
+            {'alter_loc': ['B', 'C', 'D']})
+        CA_index_list = [i for i in CA_index_list if i not in alter_loc_bcd]
 
         return len(CA_index_list)
 
@@ -1424,6 +1430,136 @@ class Coor:
         else:
             return(np.array(
                 [self.atom_dict[index][field] for index in index_list]))
+
+    def plot_pseudo_3D(self, c_field=None, cmap="gist_rainbow",
+                       line_w=1.5, chainbreak=5.0,
+                       sel={'name': ['CA']},
+                       fig_size=(7, 7)):
+        """ Plot alpha Carbon trace of protein in pseudo 3D.
+
+        Inspired from Colab fold plot_pseudo_3D() function from sokrypton
+        https://github.com/sokrypton/ColabFold
+
+        :param c_field: field used to color figure
+        :type c_field: str (Default=None or 'index')
+
+        :param cmap: Color map
+        :type cmap: str (Default="gist_rainbow")
+
+        :param line_w: Line width
+        :type line_w: flt (Default=1.5)
+
+        :param chainbreak: Distance for chain break (in Å)
+        :type chainbreak: flt (Default=5.0)
+
+        :param sel: selection to plot
+        :type sel: dict (Default={'name': ['CA']})
+
+        :param fig_size: Figure size
+        :type fig_size: tupple (Default=(7, 7))
+
+        :return: matplotlib ax
+        :rtype: ax
+
+        :Example:
+
+        """
+
+        import matplotlib
+        import matplotlib.pyplot
+        import matplotlib.patheffects
+
+        fig, ax = matplotlib.pyplot.subplots(figsize=fig_size)
+
+        # extract Ca atoms
+        if sel is not None:
+            ca_atoms = self.select_part_dict(sel)
+        else:
+            ca_atoms = self
+
+        xyz_ca = ca_atoms.get_array()
+        xyz_ca = ca_atoms.get_array()
+        xy_ca = xyz_ca[:, :2]
+
+        x_size = xy_ca[:, 0].max() - xy_ca[:, 0].min() + 2 * line_w
+        y_size = xy_ca[:, 1].max() - xy_ca[:, 1].min() + 2 * line_w
+
+        size = np.max([x_size, y_size])/2
+        center = xy_ca[:, :2].mean(-2)
+
+        ax.set_xlim(center[0] - size,
+                    center[0] + size)
+        ax.set_ylim(center[1] - size,
+                    center[1] + size)
+        ax.axis('off')
+
+        # determine linewidths
+        width = fig.bbox_inches.width * ax.get_position().width
+        linewidths = line_w * 72 * width / np.diff(ax.get_xlim())
+
+        # Create segments
+        seg = np.concatenate([xyz_ca[:-1, None, :], xyz_ca[1:, None, :]],
+                             axis=-2)
+        seg_xy = seg[..., :2]
+        seg_z = seg[..., 2].mean(-1)
+        # Create order to plot segments in the good order
+        order = seg_z.argsort()
+
+        # Colors
+        if c_field is None or c_field == 'index':
+            c = np.arange(len(seg))[::-1]
+            c_label = c
+            c_field = 'index'
+        else:
+            field = ca_atoms.get_array(c_field)
+            c_label, c = np.unique(field, return_inverse=True)
+            c = c[:-1]
+
+        c = (c - c.min())/(c.max() - c.min())
+        colors = matplotlib.cm.get_cmap(cmap)(c)
+
+        if chainbreak is not None:
+            dist = np.linalg.norm(xyz_ca[:-1] - xyz_ca[1:], axis=-1)
+            colors[..., 3] = (dist < chainbreak).astype(np.float32)
+
+        # Add shade and tint on colors:
+        a = np.copy(seg_z)
+        a = (a - a.min()) / (a.max() - a.min())
+        z = a[:, None]
+        tint, shade = z/3, (z+2)/3
+
+        _, index = np.unique(colors[:, :3], axis=0, return_index=True)
+        uniq_color = colors[:, :3][np.sort(index)]
+
+        colors[:, :3] = colors[:, :3] + (1 - colors[:, :3]) * tint
+        colors[:, :3] = colors[:, :3] * shade
+
+        # Plot
+        lines = matplotlib.collections.LineCollection(
+            seg_xy[order], linewidths=linewidths, colors=colors[order],
+            path_effects=[matplotlib.patheffects.Stroke(capstyle="round")])
+
+        if c_label.dtype.type is np.str_:
+            from matplotlib.lines import Line2D
+            custom_lines = []
+            for color in uniq_color:
+                custom_lines.append(
+                    Line2D([0], [0],
+                           color=color, lw=linewidths))
+            ax.legend(custom_lines, c_label, frameon=False)
+        else:
+            ax2 = fig.add_axes([0.9, 0.2, 0.02, 0.6])
+            cmap = matplotlib.cm.get_cmap(cmap)
+            norm = matplotlib.colors.Normalize(vmin=c_label.min(),
+                                               vmax=c_label.max())
+
+            cb = matplotlib.colorbar.ColorbarBase(ax2, cmap=cmap,
+                                                  norm=norm,
+                                                  orientation='vertical')
+            cb.set_label(c_field)
+            cb.outline.set_linewidth(0)
+
+        return ax.add_collection(lines)
 
     def change_pdb_field(self, change_dict):
         """Change all atom field of a coor object,
