@@ -5,3 +5,4 @@ numpy
 scipy>=1.4.0
 os_command_py
 pdb2pqr
+matplotlib
