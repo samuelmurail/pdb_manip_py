@@ -1478,14 +1478,14 @@ class Coor:
             ca_atoms = self
 
         xyz_ca = ca_atoms.get_array()
-        xyz_ca = ca_atoms.get_array()
         xy_ca = xyz_ca[:, :2]
 
-        x_size = xy_ca[:, 0].max() - xy_ca[:, 0].min() + 2 * line_w
-        y_size = xy_ca[:, 1].max() - xy_ca[:, 1].min() + 2 * line_w
+        x_size = xy_ca[:, 0].max() - xy_ca[:, 0].min()
+        y_size = xy_ca[:, 1].max() - xy_ca[:, 1].min()
 
-        size = np.max([x_size, y_size])/2
-        center = xy_ca[:, :2].mean(-2)
+        size = np.max([x_size, y_size])/2 + line_w
+        center = [(xy_ca[:, 0].max() + xy_ca[:, 0].min()) / 2,
+                  (xy_ca[:, 1].max() + xy_ca[:, 1].min()) / 2]
 
         ax.set_xlim(center[0] - size,
                     center[0] + size)
