@@ -877,7 +877,8 @@ class Coor:
 
         atom_index = 0
         uniq_resid = -1
-        old_res_num = -1
+        old_res_num = -1e10
+        old_insert_res = ' '
 
         for line in pdb_lines:
             # print(line)
@@ -917,9 +918,10 @@ class Coor:
                 else:
                     beta = float(beta)
 
-                if res_num != old_res_num:
+                if res_num != old_res_num or insert_res != old_insert_res:
                     uniq_resid += 1
                     old_res_num = res_num
+                    old_insert_res = insert_res
 
                 atom = {"field": field,
                         "num": atom_num,
