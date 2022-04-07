@@ -1,4 +1,4 @@
 numpy
 scipy>=1.4.0
-os_command_py
-pdb2pqr
+os_command_py==1.1.0
+pdb2pqr==3.5.2

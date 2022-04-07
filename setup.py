@@ -40,12 +40,8 @@ setup(
     install_requires=[
         "numpy",
         "scipy>=1.4.0",
-        "pdb2pqr",
-        "os_command_py",
-        "sphinx_rtd_theme",
-        "sphinx-argparse",
-        "nbsphinx",
-        "pytest>=4.6",
+        "pdb2pqr==3.5.2",
+        "os_command_py==1.1.0",
     ],
     include_package_data=True,
 )

@@ -2001,7 +2001,7 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
-        Succeed to read file ...4n1m.pqr ,  2567 atoms found
+        Succeed to read file ...4n1m.pqr ,  2564 atoms found
         >>> HSD_index = prot_coor.get_index_selection({'res_name': ['HSD'],\
 'name': ['CA']})
         >>> print(len(HSD_index))
@@ -2020,7 +2020,7 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         0
         >>> ASPP_index = prot_coor.get_index_selection({'res_name': ['ASPP'],\
 'name': ['CA']})
-        >>> print(len(GLUP_index))
+        >>> print(len(ASPP_index))
         0
         >>> prot_coor.correct_protonated_res() #doctest: +ELLIPSIS
         <...Coor object at 0x...
@@ -2035,11 +2035,11 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         >>> ASPP_index = prot_coor.get_index_selection({'res_name': ['ASPP'],\
 'name': ['CA']})
         >>> print(len(ASPP_index))
-        4
+        2
         >>> ASP_index = prot_coor.get_index_selection({'res_name': ['ASP'],\
 'name': ['CA']})
         >>> print(len(ASP_index))
-        3
+        5
 
 
         """
@@ -2213,7 +2213,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 --titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
-        Succeed to read file ...1dpx.pqr ,  1961 atoms found
+        Succeed to read file ...1dpx.pqr ,  1960 atoms found
         >>> Isu_index = prot_coor.get_index_selection({'res_name': ['DISU']})
         >>> print(len(Isu_index))
         16
