@@ -5,7 +5,6 @@
 Tests for PDB2PQR functions
 """
 
-import os
 import numpy as np
 
 from pdb_manip_py import pdb_manip
@@ -30,7 +29,6 @@ def test_plot_3D(tmp_path):
 
     prot_coor = pdb_manip.Coor(PDB_1JD4)
 
-
     plot_chain = prot_coor.plot_pseudo_3D('chain')
 
     plot_properties = plot_chain.properties()
@@ -42,8 +40,7 @@ def test_plot_3D(tmp_path):
         [0.66666667, 0., 0.10666667, 1.], rtol=1e-06)
     np.testing.assert_allclose(
         plot_properties['color'][-1],
-        [1. , 0.33333333, 0.83333333, 1.], rtol=1e-06)
-
+        [1., 0.33333333, 0.83333333, 1.], rtol=1e-06)
 
     plot_beta = prot_coor.plot_pseudo_3D('beta')
 
