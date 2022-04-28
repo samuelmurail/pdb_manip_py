@@ -4,8 +4,8 @@
     :target: https://pdb-manip-py.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://travis-ci.org/samuelmurail/pdb_manip_py.svg?branch=master
-    :target: https://travis-ci.org/samuelmurail/pdb_manip_py
+.. image:: https://app.travis-ci.com/samuelmurail/pdb_manip_py.svg?branch=master
+    :target: https://app.travis-ci.com/samuelmurail/pdb_manip_py
 
 .. image:: https://codecov.io/gh/samuelmurail/pdb_manip_py/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/samuelmurail/pdb_manip_py
