@@ -83,8 +83,8 @@ def compute_pdb2pqr(pdb_in, pdb_out, ff="CHARMM",
     ... os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
     Succeed to read file ...4n1m.pdb ,  2530 atoms found
     Succeed to save file ...tmp_pdb2pqr.pdb
-    pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=7.00 \
+    pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=7.00 \
 ...tmp_pdb2pqr.pdb ...4n1m.pqr
     0
     >>> prot_coor = pdb_manip.Coor()
@@ -151,8 +151,7 @@ pqr_format = True) #doctest: +ELLIPSIS
         [PDB2PQR_BIN,
          "--ff", ff,
          "--ffout", ff,
-         "--keep-chain",
-         "--titration-state-method={}".format(method),
+         "--ph-calc-method={}".format(method),
          "--with-ph={:.2f}".format(ph),
          os.path.join(out_folder + "/tmp_pdb2pqr.pdb"),
          pdb_out])

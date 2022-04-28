@@ -1915,8 +1915,8 @@ attribute='uniq_resid')
 os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
+        pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
@@ -1996,12 +1996,12 @@ os.path.join(TEST_OUT, '4n1m.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         Succeed to read file ...4n1m.pdb ,  2530 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=3.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
+        pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=3.00 ...tmp_pdb2pqr.pdb ...4n1m.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '4n1m.pqr')) \
 #doctest: +ELLIPSIS
-        Succeed to read file ...4n1m.pqr ,  2564 atoms found
+        Succeed to read file ...4n1m.pqr ,  2567 atoms found
         >>> HSD_index = prot_coor.get_index_selection({'res_name': ['HSD'],\
 'name': ['CA']})
         >>> print(len(HSD_index))
@@ -2035,11 +2035,11 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
         >>> ASPP_index = prot_coor.get_index_selection({'res_name': ['ASPP'],\
 'name': ['CA']})
         >>> print(len(ASPP_index))
-        2
+        4
         >>> ASP_index = prot_coor.get_index_selection({'res_name': ['ASP'],\
 'name': ['CA']})
         >>> print(len(ASP_index))
-        5
+        3
 
 
         """
@@ -2092,8 +2092,8 @@ os.path.join(TEST_OUT, '4n1m.pqr'), ph=3.0) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1jd4_A.pdb ,  793 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=7.00\
+        pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1jd4.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1jd4.pqr'))
@@ -2209,11 +2209,11 @@ os.path.join(TEST_OUT, '1jd4.pqr')) #doctest: +ELLIPSIS
 os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...1dpx.pqr
+        pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=7.00 ...tmp_pdb2pqr.pdb ...1dpx.pqr
         0
         >>> prot_coor = Coor(os.path.join(TEST_OUT, '1dpx.pqr'))
-        Succeed to read file ...1dpx.pqr ,  1960 atoms found
+        Succeed to read file ...1dpx.pqr ,  1961 atoms found
         >>> Isu_index = prot_coor.get_index_selection({'res_name': ['DISU']})
         >>> print(len(Isu_index))
         16
@@ -2365,8 +2365,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         ... os.path.join(TEST_OUT, '1dpx_water.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx_water.pdb ,  1192 atoms found
         Succeed to save file ...tmp_pdb2pqr.pdb
-        pdb2pqr30... --ff CHARMM --ffout CHARMM --keep-chain \
---titration-state-method=propka --with-ph=7.00\
+        pdb2pqr30... --ff CHARMM --ffout CHARMM \
+--ph-calc-method=propka --with-ph=7.00\
 ...tmp_pdb2pqr.pdb ...1dpx_water.pqr
         0
         >>> prot_coor = Coor(os.path.join(
