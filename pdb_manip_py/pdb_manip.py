@@ -2224,6 +2224,11 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         0
         """
 
+        # Change CYX residues to CYS
+        cyx_index_list = self.get_index_selection({"res_name": ["CYX"]})
+        for atom_num in cyx_index_list:
+            self.atom_dict[atom_num]["res_name"] = "CYS"
+
         # FIND ISU res
         isu_index_list = self.get_index_selection({"res_name": ["DISU"]})
         if not isu_index_list:
