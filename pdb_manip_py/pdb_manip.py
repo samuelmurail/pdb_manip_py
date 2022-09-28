@@ -2881,7 +2881,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return
 
-    def align_seq_coor_to(self, atom_sel_2, chain_1=['A'], chain_2=['A']):
+    def align_seq_coor_to(self, atom_sel_2, chain_1=['A'], chain_2=['A'], align=True):
         """ Align 2 strucures, using a sequence alignement to determine
         which residue to align.
         Compute RMSD between two atom_dict
@@ -2966,8 +2966,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
                 index_sel_1 += 1
             else:
                 index_sel_2 += 1
-
-        self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
+        if align:
+            self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
         rmsd = self.compute_rmsd_to(
             atom_sel_2, index_list=[align_sel_1, align_sel_2])
 
@@ -3034,6 +3034,9 @@ KLVPR'
         VSRVAFPLVFLIFNIFYWITYKLVPR
         <BLANKLINE>
         """
+
+        seq_1 = seq_1.replace('-', '')
+        seq_2 = seq_2.replace('-', '')
 
         seq_1_len = len(seq_1)
         seq_2_len = len(seq_2)
