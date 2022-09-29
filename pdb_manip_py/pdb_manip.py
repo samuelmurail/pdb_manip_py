@@ -3856,7 +3856,7 @@ package/MDAnalysis/core/topologyattrs.py
         return np.degrees(angle)
 
     @staticmethod
-    def concat_pdb(*pdb_in_files, pdb_out):
+    def concat_pdb(*pdb_in_files, pdb_out, check_file_out=True):
         """Concat a list of pdb files in one.
 
         :param pdb_in_files: list of pdb files
@@ -3875,9 +3875,11 @@ package/MDAnalysis/core/topologyattrs.py
         Succeed to save concat file: ...tmp_2.pdb
         """
 
-        if os_command.check_file_and_create_path(pdb_out):
-            logger.info("File  %s  already exist" % pdb_out)
+        if check_file_out and os_command.check_file_and_create_path(pdb_out):
+            logger.info("PDB file {:>4} already exist, file not saved".format(
+                pdb_out))
             return
+
 
         filout = open(pdb_out, 'w')
         count = 0
