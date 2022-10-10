@@ -29,7 +29,7 @@ __email__ = "samuel.murail@u-paris.fr"
 __status__ = "Production"
 
 # Logging
-logger = logging.getLogger(__name__)
+logger = pdb_manip.logger
 
 
 PDB2PQR_MOD_DIRNAME = os.path.dirname(os.path.abspath(__file__))

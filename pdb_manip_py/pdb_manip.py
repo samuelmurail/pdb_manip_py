@@ -2881,7 +2881,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return
 
-    def align_seq_coor_to(self, atom_sel_2, chain_1=['A'], chain_2=['A'], align=True):
+    def align_seq_coor_to(self, atom_sel_2,
+            chain_1=['A'], chain_2=['A'], back_names=['CA'],
+            align=True):
         """ Align 2 strucures, using a sequence alignement to determine
         which residue to align.
         Compute RMSD between two atom_dict
@@ -2923,15 +2925,31 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         RMSD = 12.81 Å
         """
 
-        sel_1_CA = self.select_part_dict(
-            selec_dict={'name': ['CA'], 'chain': chain_1,
+        align_sel_1, align_sel_2 = self.get_common_atom(atom_sel_2, 
+            chain_1, chain_2, back_names)
+
+        if align:
+            self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
+        rmsd = self.compute_rmsd_to(
+            atom_sel_2, index_list=[align_sel_1, align_sel_2])
+
+        return rmsd, [align_sel_1, align_sel_2]
+
+    def get_common_atom(self, atom_sel_2, 
+            chain_1=['A'], chain_2=['A'], back_names=['C', 'N', 'O', 'CA']):
+        """ Get atom selection in common for two atom_dict based on sequence
+        alignement.
+        """
+
+        sel_1_back = self.select_part_dict(
+            selec_dict={'name': back_names, 'chain': chain_1,
                         'res_name': PROTEIN_RES})
-        sel_2_CA = atom_sel_2.select_part_dict(
-            selec_dict={'name': ['CA'], 'chain': chain_2,
+        sel_2_back = atom_sel_2.select_part_dict(
+            selec_dict={'name': back_names, 'chain': chain_2,
                         'res_name': PROTEIN_RES})
 
-        sel_1_seq = sel_1_CA.get_aa_seq()
-        sel_2_seq = sel_2_CA.get_aa_seq()
+        sel_1_seq = sel_1_back.get_aa_seq()
+        sel_2_seq = sel_2_back.get_aa_seq()
 
         seq_1 = ''
         for chain in chain_1:
@@ -2944,9 +2962,9 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Coor.print_align_seq(align_seq_1, align_seq_2)
 
         sel_index_1 = np.array(
-            [key for key, atom in sorted(sel_1_CA.atom_dict.items())])
+            [key for key, atom in sorted(sel_1_back.atom_dict.items())])
         sel_index_2 = np.array(
-            [key for key, atom in sorted(sel_2_CA.atom_dict.items())])
+            [key for key, atom in sorted(sel_2_back.atom_dict.items())])
         # print(len(sel_index_1), len(sel_index_2),
         # len(seq_1), len(seq_2), sel_index_1, sel_index_2)
 
@@ -2954,24 +2972,24 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         align_sel_2 = []
         index_sel_1 = 0
         index_sel_2 = 0
+        back_num = len(back_names)
 
         for i in range(len(align_seq_1)):
             # print(i, index_sel_1, index_sel_2)
             if align_seq_1[i] != '-' and align_seq_2[i] != '-':
-                align_sel_1.append(sel_index_1[index_sel_1])
-                align_sel_2.append(sel_index_2[index_sel_2])
-                index_sel_1 += 1
-                index_sel_2 += 1
+                align_sel_1 = np.append(align_sel_1, sel_index_1[index_sel_1:index_sel_1+back_num])
+                align_sel_2 = np.append(align_sel_2, sel_index_2[index_sel_2:index_sel_2+back_num])
+                index_sel_1 += back_num
+                index_sel_2 += back_num
             elif align_seq_1[i] != '-':
-                index_sel_1 += 1
+                index_sel_1 += back_num
             else:
-                index_sel_2 += 1
-        if align:
-            self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
-        rmsd = self.compute_rmsd_to(
-            atom_sel_2, index_list=[align_sel_1, align_sel_2])
+                index_sel_2 += back_num
 
-        return rmsd, [align_sel_1, align_sel_2]
+        #print(align_sel_1, align_sel_2)
+        assert len(align_sel_1) == len(align_sel_2), "Two selection don't have the same atom number"
+        return align_sel_1, align_sel_2
+
 
     @staticmethod
     def align_seq(seq_1, seq_2, gap_cost=-8, gap_extension=-2):
