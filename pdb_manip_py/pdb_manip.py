@@ -156,6 +156,13 @@ AA_1_TO_3_DICT = {'G': 'GLY',
 
 # Atom names for each residues
 BACK_ATOM = ['N', 'CA', 'C', 'O']
+HEAVY_ATOM = BACK_ATOM + [
+    'CB', 'CB1',
+    'CG', 'OG', 'SG', 'OG1', 'CG1', 'CG2',
+    'CD', 'CD1', 'CD2', 'ND1', 'ND2', 'OD1', 'OD2', 'SD',
+    'CE', 'CE1', 'CE2', 'CE3', 'NE1', 'NE2', 'OE1', 'OE2', 'CE', 'NE',
+    'CZ', 'NZ', 'CZ2', 'CZ3',
+    'NH1', 'NH2', 'OH', 'CH2', 'OXT']
 
 AA_ATOM_DICT = {'X': ['CH3', 'O', 'C'],  # X:ACE
                 'G': BACK_ATOM,
@@ -903,7 +910,7 @@ class Coor:
                     occ, beta = line[54:62].strip(), line[62:70].strip()
                     elem_symbol = ''
                 else:
-                    alter_loc = line[16:17]
+                    alter_loc = line[16:17].strip()
                     res_name = line[17:21].strip()
                     occ, beta = line[54:60].strip(), line[60:66].strip()
                     elem_symbol = line[76:78]
@@ -2953,20 +2960,16 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         seq_1 = ''
         for chain in chain_1:
-            seq_1 += sel_1_seq[chain]
+            seq_1 += sel_1_seq[chain].replace('-', '')
         seq_2 = ''
         for chain in chain_2:
-            seq_2 += sel_2_seq[chain]
+            seq_2 += sel_2_seq[chain].replace('-', '')
 
         align_seq_1, align_seq_2 = Coor.align_seq(seq_1, seq_2)
         Coor.print_align_seq(align_seq_1, align_seq_2)
 
-        sel_index_1 = np.array(
-            [key for key, atom in sorted(sel_1_back.atom_dict.items())])
-        sel_index_2 = np.array(
-            [key for key, atom in sorted(sel_2_back.atom_dict.items())])
-        # print(len(sel_index_1), len(sel_index_2),
-        # len(seq_1), len(seq_2), sel_index_1, sel_index_2)
+        sel_index_1 = [key for key, atom in sorted(sel_1_back.atom_dict.items())]
+        sel_index_2 = [key for key, atom in sorted(sel_2_back.atom_dict.items())]
 
         align_sel_1 = []
         align_sel_2 = []
@@ -2977,8 +2980,8 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         for i in range(len(align_seq_1)):
             # print(i, index_sel_1, index_sel_2)
             if align_seq_1[i] != '-' and align_seq_2[i] != '-':
-                align_sel_1 = np.append(align_sel_1, sel_index_1[index_sel_1:index_sel_1+back_num])
-                align_sel_2 = np.append(align_sel_2, sel_index_2[index_sel_2:index_sel_2+back_num])
+                align_sel_1 += sel_index_1[index_sel_1:index_sel_1+back_num]
+                align_sel_2 += sel_index_2[index_sel_2:index_sel_2+back_num]
                 index_sel_1 += back_num
                 index_sel_2 += back_num
             elif align_seq_1[i] != '-':
@@ -2986,7 +2989,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
             else:
                 index_sel_2 += back_num
 
-        #print(align_sel_1, align_sel_2)
+
         assert len(align_sel_1) == len(align_sel_2), "Two selection don't have the same atom number"
         return align_sel_1, align_sel_2
 
