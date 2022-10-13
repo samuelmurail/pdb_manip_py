@@ -2834,8 +2834,15 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         diff = coor_array_1 - coor_array_2
         N = len(coor_array_1)
 
+
         dist2 = np.sum(diff**2, axis=1)
-        d02 = (1.24 * (ltarget - 15)**(1/3) - 1.8)**2
+
+        if ltarget > 26:
+            d02 = (1.24 * (ltarget - 15)**(1/3) - 1.8)**2
+        else:
+            d02 = 1.0
+            logger.warning(
+                'Residue number <= 26, set d0 to 1A')
 
         tmscore = (1/ltarget) * np.sum(1/(1 + dist2/d02))
 
@@ -2988,8 +2995,10 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
                 atom_sel_2, index_list=[align_sel_1, align_sel_2])
             result.append(rmsd)
         if tmscore_flag:
+            aa_num = self.select_part_dict(selec_dict={'chain': chain_1}).get_aa_num()
+            print(aa_num)
             tmscore = self.compute_TMscore_to(
-                atom_sel_2, self.get_aa_num(),
+                atom_sel_2, aa_num,
                 index_list=[align_sel_1, align_sel_2])
             result.append(tmscore)
 

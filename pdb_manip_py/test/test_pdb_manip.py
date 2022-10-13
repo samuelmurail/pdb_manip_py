@@ -84,7 +84,15 @@ def test_RMSD_Score_good(tmp_path):
     assert pytest.approx(rmsd, 0.001) == 0.702
     assert pytest.approx(tmscore, 0.001) == 0.9864
     assert len(index[0]) == 256
-    assert len(index[1]) == 256
+
+    # Test TM score with small peptide
+    rmsd, tmscore, index = model_coor.align_seq_coor_to(
+        native_coor, chain_1=['C'], chain_2=['B'],
+        tmscore_flag=True)
+
+    assert pytest.approx(rmsd, 0.001) == 0.432
+    assert pytest.approx(tmscore, 0.01) == 0.86
+    assert len(index[0]) == 11
 
 def test_RMSD_Score_bad(tmp_path):
 
@@ -98,4 +106,3 @@ def test_RMSD_Score_bad(tmp_path):
     assert pytest.approx(rmsd, 0.001) == 18.157
     assert pytest.approx(tmscore, 0.001) == 0.1608
     assert len(index[0]) == 187
-    assert len(index[1]) == 187
