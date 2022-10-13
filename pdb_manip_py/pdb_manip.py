@@ -2775,10 +2775,6 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         :return: RMSD
         :rtype: float
 
-        :Example:
-
-        >>> prot_coor = Coor()
-
         """
 
         if index_list is None:
@@ -2797,6 +2793,55 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         return rmsd
 
+    def compute_TMscore_to(self, atom_sel_2, ltarget, 
+            index_list=None):
+        """ Compute TMscore between two atom_dict
+        Then return the TMscore.
+
+        :param atom_sel_1: atom dictionnary
+        :type atom_sel_1: dict
+
+        :param atom_sel_2: atom dictionnary
+        :type atom_sel_2: dict
+
+        :param selec_dict: selection dictionnary
+        :type selec_dict: dict, default={}
+
+        :return: TMscore
+        :rtype: float
+
+        Ref: Y. Zhang, J. Skolnick, Scoring function for automated assessment
+        of protein structure template quality, Proteins, 57: 702-710 (2004)
+
+        TMscore = max( 1/Ltarget * Sum(1/(1 + (di/do(Ltarget))**2 )) )
+
+        with Ltarget is length of model protein and:
+        d0(Ltarget) = 1.24 * (Ltarget-15)**(1/3) - 1.8
+
+        """
+
+        selec_dict={'name': ['CA']}
+
+        if index_list is None:
+            sel_1_coor = self.select_part_dict(selec_dict=selec_dict)
+            sel_2_coor = atom_sel_2.select_part_dict(selec_dict=selec_dict)
+            coor_array_1 = sel_1_coor.get_array()
+            coor_array_2 = sel_2_coor.get_array()
+        else:
+            coor_array_1 = self.get_array(index_list=index_list[0])
+            coor_array_2 = atom_sel_2.get_array(index_list=index_list[1])
+
+        diff = coor_array_1 - coor_array_2
+        N = len(coor_array_1)
+
+        dist2 = np.sum(diff**2, axis=1)
+        d02 = (1.24 * (ltarget - 15)**(1/3) - 1.8)**2
+
+        tmscore = (1/ltarget) * np.sum(1/(1 + dist2/d02))
+
+        return tmscore
+
+
     def remove_alter_position(self):
         """ Remove alternative position.
 
@@ -2814,7 +2859,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         # Remove alter_loc B, C, D
         alter_loc_bcd = self.get_index_selection(
-            {'alter_loc': ['B', 'C', 'D']})
+            {'alter_loc': ['B', 'C', 'D', 'E', 'F']})
         self.del_atom_index(index_list=alter_loc_bcd)
         self.change_pdb_field(change_dict={"alter_loc": ""})
         return
@@ -2890,7 +2935,7 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
     def align_seq_coor_to(self, atom_sel_2,
             chain_1=['A'], chain_2=['A'], back_names=['CA'],
-            align=True):
+            align=True, rmsd_flag=True, tmscore_flag=False):
         """ Align 2 strucures, using a sequence alignement to determine
         which residue to align.
         Compute RMSD between two atom_dict
@@ -2937,10 +2982,18 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
 
         if align:
             self.align_to(atom_sel_2, index_list=[align_sel_1, align_sel_2])
-        rmsd = self.compute_rmsd_to(
-            atom_sel_2, index_list=[align_sel_1, align_sel_2])
+        result = []
+        if rmsd_flag:
+            rmsd = self.compute_rmsd_to(
+                atom_sel_2, index_list=[align_sel_1, align_sel_2])
+            result.append(rmsd)
+        if tmscore_flag:
+            tmscore = self.compute_TMscore_to(
+                atom_sel_2, self.get_aa_num(),
+                index_list=[align_sel_1, align_sel_2])
+            result.append(tmscore)
 
-        return rmsd, [align_sel_1, align_sel_2]
+        return result + [[align_sel_1, align_sel_2]]
 
     def get_common_atom(self, atom_sel_2, 
             chain_1=['A'], chain_2=['A'], back_names=['C', 'N', 'O', 'CA']):
