@@ -1044,7 +1044,9 @@ class Coor:
         if self.crystal_pack is not None:
             str_out += self.cryst_convert(format_out='pdb')
 
+        atom_index = 0
         for atom_num, atom in sorted(self.atom_dict.items()):
+            atom_index += 1
             # Atom name should start a column 14, with the type of atom ex:
             #   - with atom type 'C': ' CH3'
             # for 2 letters atom type, it should start at coulumn 13 ex:
@@ -1058,7 +1060,7 @@ class Coor:
                        "   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}"\
                        "          {:2s}\n".format(
                             atom["field"],
-                            atom["num"],
+                            atom_index,
                             name,
                             atom["alter_loc"],
                             atom["res_name"],
@@ -1322,7 +1324,7 @@ class Coor:
         logger.info("Succeed to save file %s" % os.path.relpath(pqr_out))
         return
 
-    def get_aa_seq(self):
+    def get_aa_seq(self, gap_in_seq=True):
         """Get the amino acid sequence from a coor object.
 
         :return: dictionnary of sequence indexed by the chain ID
@@ -1369,7 +1371,8 @@ class Coor:
                     logger.warning(f"Residue {chain}:{res_name}:{resnum} is "
                                    "not consecutive, there might be missing "
                                    "residues")
-                    seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
+                    if gap_in_seq:
+                        seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
                 seq_dict[chain] += AA_DICT[res_name]
                 aa_num_dict[chain] = resnum
             else:
@@ -1377,6 +1380,91 @@ class Coor:
                                "recognized")
 
         return seq_dict
+
+
+    def get_aa_DL_seq(self, gap_in_seq=True):
+        """Get the amino acid sequence from a coor object.
+        if amino acid is in D form it will be in lower case.
+
+        :return: dictionnary of sequence indexed by the chain ID
+        :rtype: dict
+
+        :Example:
+
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '1y0m.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...1y0m.pdb ,  648 atoms found
+        >>> prot_coor.get_aa_DL_seq()
+        {'A': 'TFKSAVKALFDYKAQREDELTFTKSAIIQNVEKQDGGWWRGDYGGKKQLWFPSNYVEEMIN'}
+        >>> prot_coor = Coor(os.path.join(TEST_PATH, '6be9_frame_0.pdb'))\
+        #doctest: +ELLIPSIS
+        Succeed to read file ...6be9_frame_0.pdb ,  104 atoms found
+        >>> prot_coor.get_aa_DL_seq()
+        Residue K2 is in D form
+        Residue N6 is in D form
+        Residue P7 is in D form
+        {'A': 'TkNDTnp'}
+
+        .. warning::
+            If atom chains are not arranged sequentialy (A,A,A,B,B,A,A,A ...),
+            the first atom seq will be overwritten by the last one.
+
+        """
+
+        # Get CA atoms
+        CA_index_list = self.get_index_selection({"name": ["CA"]})
+
+        seq_dict = {}
+        aa_num_dict = {}
+
+        alter_loc_bcd = self.get_index_selection(
+            {'alter_loc': ['B', 'C', 'D']})
+
+        CA_index_list = [i for i in CA_index_list if i not in alter_loc_bcd]
+
+        for i, index in enumerate(CA_index_list):
+            loop_atom = self.atom_dict[index]
+            chain = loop_atom['chain']
+            res_name = loop_atom['res_name']
+            resnum = loop_atom['res_num']
+            uniq_resid = loop_atom['uniq_resid']
+
+            if chain not in seq_dict:
+                seq_dict[chain] = ""
+                aa_num_dict[chain] = resnum
+
+            if loop_atom['res_name'] in AA_DICT:
+                if (resnum != aa_num_dict[chain] + 1
+                        and len(seq_dict[chain]) != 0):
+                    logger.warning(f"Residue {chain}:{res_name}:{resnum} is "
+                                   "not consecutive, there might be missing "
+                                   "residues")
+                    if gap_in_seq:
+                        seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
+                if res_name == 'GLY':
+                    seq_dict[chain] += 'G'
+                else:
+                    res = self.select_part_dict({'uniq_resid': [uniq_resid]})
+                    N_index = res.get_index_selection({'name': ['N']})[0]
+                    C_index = res.get_index_selection({'name': ['C']})[0]
+                    CB_index = res.get_index_selection({'name': ['CB']})[0]
+                    dihed = Coor.atom_dihed_angle(
+                        self.atom_dict[index],
+                        self.atom_dict[N_index],
+                        self.atom_dict[C_index],
+                        self.atom_dict[CB_index])
+                    if dihed > 0:
+                        seq_dict[chain] += AA_DICT[res_name]
+                    else:
+                        logger.warning(f'Residue {AA_DICT[res_name]}{resnum} is in D form')
+                        seq_dict[chain] += AA_DICT[res_name].lower()
+                aa_num_dict[chain] = resnum
+            else:
+                logger.warning(f"Residue {res_name} in chain {chain} not "
+                               "recognized")
+
+        return seq_dict
+
 
     def get_aa_num(self):
         """Get the amino acid number of a coor object.
