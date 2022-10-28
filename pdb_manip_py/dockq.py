@@ -435,11 +435,11 @@ def compute_pdockQ(self, rec_chain=None, lig_chain=None, cutoff=8.00):
     if contact_num == 0:
         return 0
 
-    print(contact_num, rec_contact.shape[0], lig_contact.shape[0])
-    print(rec_plddt, lig_plddt)
+    # print(contact_num, rec_contact.shape[0], lig_contact.shape[0])
+    # print(rec_plddt, lig_plddt)
 
     avg_plddt = np.average(rec_plddt + lig_plddt)
-    print(avg_plddt)
+    # print(avg_plddt)
 
     x = avg_plddt*np.log10(contact_num)
     pdockq = 0.724 / (1 + np.exp(-0.052*(x-152.611)))+0.018
