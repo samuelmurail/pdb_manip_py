@@ -1386,6 +1386,14 @@ class Coor:
         """Get the amino acid sequence from a coor object.
         if amino acid is in D form it will be in lower case.
 
+        L or D form is determined using CA-N-C-CB angle
+        Angle should take values around +34° and −34° for
+        L- and D-amino acid residues.
+        
+        Reference:
+        https://onlinelibrary.wiley.com/doi/full/10.1002/prot.10320
+
+
         :return: dictionnary of sequence indexed by the chain ID
         :rtype: dict
 
@@ -3059,17 +3067,16 @@ os.path.join(TEST_OUT, '1dpx.pqr')) #doctest: +ELLIPSIS
         Succeed to read file ...1dpx.pdb ,  1192 atoms found
         >>> rmsd, align_sel = prot_1_coor.align_seq_coor_to(prot_2_coor)\
         #doctest: +NORMALIZE_WHITESPACE
-        ----------------------------------------NYFPQYPEYAIETARLRTFEAWPRNLKQKP--HQLAEAGF
-                                                |   |  | | | | *|  | *  *  | \
-*  ||*||
-        KVFGRCELAAAMKRHGLDNYRGYSLGNWVCAAKFESNFNTQATNRNTDGSTDYGILQINSRWWCNDGRTPGSRNLCNIPC
+        ------NYFPQYPEYAIETARLRTFEAWPRNLKQKPHQLAEAGFFYTGVGDRVRCFSCGGGLMDW-NDNDEPWEQHALWL
+              |      |||||| *  ||  *      * ||  ||     ||   |       |   * **|  * ||| *  
+        KVFGRCELAAAMKRHGLDNYRGYSLGNW--VCAAKFESNFNTQATNRNTDGSTDYGILQINSRWWCNDGRTPGSRN-LCN
         <BLANKLINE>
-        FYTGVGDRVRCFSCGGGLMDWNDNDEPWEQHALWLSQCRFVKLMKGQLYIDTVAAKPV
-             |* |   |*|  ||| ||| | *   | * ||*| | |   * |*    |  |
-        SALLSSDITASVNCAKKIVSDGNGMNAW---VAWRNRCKGTDV---QAWI---RGCRL
+        SQCRFVKLMKGQLYIDTVAAKPV-------------------------------
+          *    *|||||  || |** |                               
+        IPCS--ALLSSDITASVNCAKKIVSDGNGMNAWVAWRNRCKGTDVQAWIRGCRL
         <BLANKLINE>
         >>> print('RMSD = {:.2f} Å'.format(rmsd))
-        RMSD = 12.81 Å
+        RMSD = 12.63 Å
         """
 
         align_sel_1, align_sel_2 = self.get_common_atom(atom_sel_2, 
@@ -3200,9 +3207,9 @@ KLVPR'
 |   |**  *
         NMDAAPARVGLGITTVLTMTTQSSGSRASLPKVSYVKAIDIWMAVCLLFVFSALLEYAAVNFIARAGTKLFISRAKRIDT
         <BLANKLINE>
-        ASRIAFPVVFLLANII--LAFLFFGF
-        |**|***|***| **|  ||| |
-        VSRVAFPLVFLIFNIFYWITYKLVPR
+        ASRIAFPVVFLLANIILAFLFFGF-----
+        |**|***|***| **   * || |     
+        VSRVAFPLVFLIFNI---FYWITYKLVPR
         <BLANKLINE>
         """
 
@@ -3254,13 +3261,36 @@ KLVPR'
                     direction_matrix[i, j] = 3
 
         # Compute the sequence alignement from the direction matrix.
-        i = seq_1_len
-        j = seq_2_len
+        min_seq = min(seq_1_len, seq_2_len)
+        
+        max_score = np.max(score_matrix[min_seq:, min_seq:])
+
+        max_index = np.where(score_matrix == max_score)
+        
+        index_list = []
+        for i in range(len(max_index[0])):
+            if max_index[0][i] >= min_seq and max_index[1][i] >= min_seq:
+                index_list.append([max_index[0][i], max_index[1][i]])
+        
+        if len(index_list) > 1:
+            print('Ambigous alignement, several solution exists')
+        
+        i = index_list[0][0]
+        j = index_list[0][1]
 
         seq_1_align = ''
-        seq_2_align = ''
-
-        while i != 0 or j != 0:
+        seq_2_align = '' 
+        
+        if i != seq_1_len:
+            seq_2_align = (seq_i_len - i) * '-'
+        
+        if j != seq_2_len:
+            seq_1_align = (seq_2_len - j) * '-'
+        
+        seq_1_align += seq_1[i:]
+        seq_2_align += seq_2[j:]
+        
+        while i != 0 and j != 0:
             if direction_matrix[i, j] == 3:
                 seq_1_align = seq_1[i - 1] + seq_1_align
                 seq_2_align = seq_2[j - 1] + seq_2_align
@@ -3275,6 +3305,17 @@ KLVPR'
                 seq_2_align = '-' + seq_2_align
                 i -= 1
 
+        seq_1_align = seq_1[:i] + seq_1_align
+        seq_2_align = seq_2[:j] + seq_2_align
+        
+        if i != 0:
+            seq_2_align = i * '-' + seq_2_align
+        elif j != 0:
+            seq_1_align = j * '-' + seq_1_align
+        
+        assert len(seq_1_align) == len(seq_2_align)
+        
+        #print(seq_1_align, seq_2_align)
         return seq_1_align, seq_2_align
 
     @staticmethod
