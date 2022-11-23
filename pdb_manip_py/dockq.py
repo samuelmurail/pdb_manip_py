@@ -136,14 +136,18 @@ def remove_incomplete_backbone_residues(self, back_atom=pdb_manip.BACK_ATOM):
     """ Remove residue with non all backbone atoms
     """
 
-    first_atom_index = list(self.atom_dict.keys())[0]
-    uniq_resid = self.atom_dict[first_atom_index]['uniq_resid']
+    no_alter_loc = self.select_part_dict(
+            {'alter_loc': ['A', '']})
+
+    first_atom_index = list(no_alter_loc.atom_dict.keys())[0]
+    uniq_resid = no_alter_loc.atom_dict[first_atom_index]['uniq_resid']
     back_num = 0
     uniq_res_to_del = []
     index_del_list = []
     local_del_list = []
 
-    for atom_num, atom in self.atom_dict.items():
+    
+    for atom_num, atom in no_alter_loc.atom_dict.items():
 
 
         if uniq_resid != atom['uniq_resid']:
