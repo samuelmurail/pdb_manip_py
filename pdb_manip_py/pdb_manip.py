@@ -898,9 +898,9 @@ class Coor:
                 atom_name = line[12:16].strip()
 
                 res_name = line[17:20].strip()
-                chain = line[21]
+                chain = line[21].strip()
                 res_num = int(line[22:26])
-                insert_res = line[26:27]
+                insert_res = line[26:27].strip()
                 xyz = np.array([float(line[30:38]),
                                 float(line[38:46]),
                                 float(line[46:54])])
@@ -913,7 +913,7 @@ class Coor:
                     alter_loc = line[16:17].strip()
                     res_name = line[17:21].strip()
                     occ, beta = line[54:60].strip(), line[60:66].strip()
-                    elem_symbol = line[76:78]
+                    elem_symbol = line[76:78].strip()
 
                 if occ == "":
                     occ = 0.0
@@ -1345,15 +1345,12 @@ class Coor:
         """
 
         # Get CA atoms
-        CA_index_list = self.get_index_selection({"name": ["CA"]})
+        CA_index_list = self.get_index_selection(
+            {"name": ["CA"],
+             'alter_loc': ['', 'A']})
 
         seq_dict = {}
         aa_num_dict = {}
-
-        alter_loc_bcd = self.get_index_selection(
-            {'alter_loc': ['B', 'C', 'D']})
-
-        CA_index_list = [i for i in CA_index_list if i not in alter_loc_bcd]
 
         for index in sorted(CA_index_list):
             loop_atom = self.atom_dict[index]
@@ -1369,8 +1366,8 @@ class Coor:
                 if (resnum != aa_num_dict[chain] + 1
                         and len(seq_dict[chain]) != 0):
                     logger.warning(f"Residue {chain}:{res_name}:{resnum} is "
-                                   "not consecutive, there might be missing "
-                                   "residues")
+                                   f"not consecutive, there might be missing "
+                                   f"residues")
                     if gap_in_seq:
                         seq_dict[chain] += "-" * (resnum - aa_num_dict[chain] - 1)
                 seq_dict[chain] += AA_DICT[res_name]
@@ -3273,7 +3270,7 @@ KLVPR'
                 index_list.append([max_index[0][i], max_index[1][i]])
         
         if len(index_list) > 1:
-            print('Ambigous alignement, several solution exists')
+            logger.warning('Ambigous alignement, several solution exists')
         
         i = index_list[0][0]
         j = index_list[0][1]
@@ -4188,9 +4185,9 @@ class Multi_Coor:
                     atom_name = line[12:16].strip()
 
                     res_name = line[17:20].strip()
-                    chain = line[21]
+                    chain = line[21].strip()
                     res_num = int(line[22:26])
-                    insert_res = line[26:27]
+                    insert_res = line[26:27].strip()
                     xyz = np.array([float(line[30:38]),
                                     float(line[38:46]),
                                     float(line[46:54])])
@@ -4200,10 +4197,10 @@ class Multi_Coor:
                         occ, beta = line[54:62].strip(), line[62:70].strip()
                         elem_symbol = ""
                     else:
-                        alter_loc = line[16:17]
+                        alter_loc = line[16:17].strip()
                         res_name = line[17:21].strip()
                         occ, beta = line[54:60].strip(), line[60:66].strip()
-                        elem_symbol = line[76:78]
+                        elem_symbol = line[76:78].strip()
 
                     if occ == "":
                         occ = 0.0
