@@ -3282,7 +3282,7 @@ KLVPR'
         seq_2_align = '' 
         
         if i != seq_1_len:
-            seq_2_align = (seq_i_len - i) * '-'
+            seq_2_align = (seq_1_len - i) * '-'
         
         if j != seq_2_len:
             seq_1_align = (seq_2_len - j) * '-'
