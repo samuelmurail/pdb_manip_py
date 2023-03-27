@@ -404,20 +404,22 @@ def compute_pdockQ(self, rec_chain=None, lig_chain=None, cutoff=8.00):
     logger.info(f'Model receptor chain : {" ".join(rec_chain)}')
 
     rec_index = self.get_index_selection(
-        {'name': 'CB',
+        {'name': ['CB'],
          'chain': rec_chain})
     rec_index += self.get_index_selection(
-        {'name': 'CA',
-         'res_name': 'GLY',
+        {'name': ['CA'],
+         'res_name': ['GLY'],
          'chain': rec_chain})
     rec = self.select_from_index(rec_index)
 
     lig_index = self.get_index_selection(
-        {'name': 'CB',
+        {'name': ['CB'],
          'chain': lig_chain})
+    print(lig_index)
+
     lig_index += self.get_index_selection(
-        {'name': 'CA',
-         'res_name': 'GLY',
+        {'name': ['CA'],
+         'res_name': ['GLY'],
          'chain': lig_chain})
     lig = self.select_from_index(lig_index)
 
@@ -439,11 +441,9 @@ def compute_pdockQ(self, rec_chain=None, lig_chain=None, cutoff=8.00):
     if contact_num == 0:
         return 0
 
-    # print(contact_num, rec_contact.shape[0], lig_contact.shape[0])
     # print(rec_plddt, lig_plddt)
 
     avg_plddt = np.average(rec_plddt + lig_plddt)
-    # print(avg_plddt)
 
     x = avg_plddt*np.log10(contact_num)
     pdockq = 0.724 / (1 + np.exp(-0.052*(x-152.611)))+0.018

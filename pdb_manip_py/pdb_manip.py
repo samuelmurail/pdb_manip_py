@@ -3270,7 +3270,7 @@ KLVPR'
                 index_list.append([max_index[0][i], max_index[1][i]])
         
         if len(index_list) > 1:
-            logger.warning('Ambigous alignement, several solution exists')
+            logger.warning(f'Ambigous alignement, {len(index_list)} solutions exists')
         
         i = index_list[0][0]
         j = index_list[0][1]

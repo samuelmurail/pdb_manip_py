@@ -149,4 +149,4 @@ def test_pdockq(tmp_path):
 
     pdockq = model_coor.compute_pdockQ()
 
-    assert pytest.approx(pdockq, 0.001) == 0.535
+    assert pytest.approx(pdockq, 0.001) == 0.2924
