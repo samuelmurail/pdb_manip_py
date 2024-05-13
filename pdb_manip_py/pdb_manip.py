@@ -923,7 +923,10 @@ class Coor:
                 if beta == "":
                     beta = 0.0
                 else:
-                    beta = float(beta)
+                    try:
+                        beta = float(beta)
+                    except ValueError:
+                        beta = 0.0
 
                 if res_num != old_res_num or insert_res != old_insert_res:
                     uniq_resid += 1
@@ -4210,7 +4213,10 @@ class Multi_Coor:
                     if beta == "":
                         beta = 0.0
                     else:
-                        beta = float(beta)
+                        try:
+                            beta = float(beta)
+                        except ValueError:
+                            beta = 0.0
 
                     if res_num != old_res_num:
                         uniq_resid += 1
