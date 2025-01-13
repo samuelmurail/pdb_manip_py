@@ -13,6 +13,9 @@
 .. image:: https://img.shields.io/pypi/v/pdb_manip_py.svg
         :target: https://pypi.python.org/pypi/pdb_manip_py
 
+.. image:: https://static.pepy.tech/badge/pdb-manip-py
+    :target: https://pepy.tech/projects/pdb-manip-py
+
 .. image:: https://img.shields.io/conda/vn/conda-forge/pdb_manip_py.svg
         :target: https://anaconda.org/conda-forge/pdb_manip_py
 
